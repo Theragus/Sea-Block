@@ -1,0 +1,82 @@
+# Publishing is deliberate: it runs on a pushed tag, never on a merge. A mod
+# portal release cannot be deleted once it exists, so the load test gates the
+# upload and a mismatch between the tag and info.json stops it outright.
+#
+#   git tag v2.1.2 && git push origin v2.1.2
+#
+# Needs a FACTORIO_API_KEY repository secret, from https://factorio.com/profile
+# with the "ModPortal: Upload Mods" usage.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.2
+        run: sudo apt-get update -qq && sudo apt-get install -y lua5.2
+
+      - name: Cache Factorio
+        uses: actions/cache@v4
+        with:
+          path: .loadtest/factorio
+          key: factorio-${{ hashFiles('tools/loadtest/dependencies.env') }}
+
+      # The tag is checked before anything expensive runs, so a typo costs
+      # seconds rather than a full load test.
+      - name: Check the tag against info.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(python3 -c 'import json; print(json.load(open("SeaBlock/info.json"))["version"])')"
+          if [ "$tag" != "$version" ]; then
+            echo "tag $GITHUB_REF_NAME does not match SeaBlock/info.json version $version"
+            exit 1
+          fi
+          echo "releasing $version"
+
+      - name: Run the load test
+        run: tools/loadtest/ci.sh
+
+      - name: Publish to the mod portal
+        env:
+          FACTORIO_API_KEY: ${{ secrets.FACTORIO_API_KEY }}
+        run: tools/publish.py --tag "$GITHUB_REF_NAME" --out dist
+
+      # The same zips, attached to the tag, so the GitHub side of the release
+      # is not just a bare commit pointer.
+      - name: Attach the zips to the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          body: |
+            See [changelog.txt](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/SeaBlock/changelog.txt) for what changed.
+
+            Also on the mod portal:
+            [SeaBlock21](https://mods.factorio.com/mod/SeaBlock21) ·
+            [SeaBlockMetaPack21](https://mods.factorio.com/mod/SeaBlockMetaPack21)
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: factorio-logs
+          path: |
+            .loadtest/*.log
+            .loadtest/factorio/factorio-current.log
+          if-no-files-found: ignore
+          retention-days: 7

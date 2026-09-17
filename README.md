@@ -69,6 +69,39 @@ for authoritative verification, and a fast Lua harness for whole-graph audits
 that would otherwise cost a game launch each. See
 [its README](tools/loadtest/README.md).
 
+## Releasing
+
+The mod portal does not watch GitHub, so a release has to be pushed to it.
+`.github/workflows/release.yml` does that on a tag:
+
+```sh
+git tag v2.1.2 && git push origin v2.1.2
+```
+
+The tag names `SeaBlock/info.json`'s version, and the workflow refuses to run if
+the two disagree. It then runs the load test, packs both mods, uploads to the
+portal over its [upload API][api], and attaches the same zips to a GitHub
+release. `SeaBlockMetaPack21` is versioned alongside Sea Block but only
+published when its version is new, so a release that does not touch the pack
+skips it.
+
+On a tag rather than on a merge, because **a mod portal release cannot be
+deleted**. Everything that can be checked before that point is:
+
+- the tag against `info.json`
+- `info.json` against the newest `changelog.txt` entry, so a version nobody
+  wrote a changelog for cannot ship
+- `LICENSE` present inside each mod, as MIT requires
+- the load test, on both configurations
+
+Publishing needs a `FACTORIO_API_KEY` repository secret, created at
+[factorio.com/profile](https://factorio.com/profile) with the
+**ModPortal: Upload Mods** usage. Registering a *new* mod name is a different
+permission and is not automated — `tools/publish.py` stops rather than create
+one. To build the zips without publishing, run `tools/package.py`.
+
+[api]: https://wiki.factorio.com/Mod_upload_API
+
 ## Licence and credit
 
 MIT, © KiwiHawk, which permits redistribution and modification provided the

@@ -1,1 +1,5 @@
 .loadtest/
+
+# Built by tools/package.py
+dist/
+__pycache__/

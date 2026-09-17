@@ -15,6 +15,13 @@ Date: ????
       has a Factorio 2.1 release
     - Removed the buff to Angel's Carbon 2 recipe, which Angel's no longer has
   Bugfixes:
+    - Fixed the starting rock chest killing a new game during chunk generation
+      - Bob's 3.0 removed stone, ceramic and nitinol pipes, and inserting an item that
+        no longer exists is a non-recoverable error there
+      - The stone pipes' 100 and 50 are folded into the plain pipes so the early run is
+        not short of them
+      - The list now skips anything that does not exist, rather than taking the save
+        down with it
     - Fixed two icons that crashed the graphical client while loading fine headless
       - sb-basic-circuit-board-tool declared icon_size 128 over Bob's 64px file, because
         the data-final-fixes refresh that used to correct it looked for the pre-2.0 item

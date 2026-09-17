@@ -138,6 +138,7 @@ Sea Block loads after the mod that trips it and cannot get in front of it.
 | `audit_recipes.lua` | recipes use the 2.0 ingredient/result shape, not the removed `{"name", count}` shorthand or `normal`/`expensive` split |
 | `dump.lua` | writes every prototype name to `$LOADTEST_DUMP` as `type<TAB>name` |
 | `audit_icons.lua` | every declared `icon_size` fits inside the actual PNG — the one class of breakage a headless server cannot see, because it never loads sprites |
+| `audit_starting_items.lua` | the starting rock chest can be filled — it runs in the control stage from chunk generation, where a missing item is non-recoverable, and neither a headless map creation nor a data stage load reaches it |
 | `check_references.py` | cross-references names written in Sea Block's source against a dump, so renamed prototypes show up all at once |
 
 `LOADTEST_STOP_AFTER=data` stops after a given stage, which is how you find

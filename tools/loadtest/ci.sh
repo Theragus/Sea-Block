@@ -101,7 +101,8 @@ run_config() {
         --out "$WORK/$label-manifest.lua" >/dev/null
     }
   LOADTEST_DETERMINISTIC=1 lua5.2 "$HERE/run.lua" "$WORK/$label-manifest.lua" \
-    "$HERE/audit_integrity.lua" "$HERE/audit_recipes.lua" "$HERE/audit_icons.lua"
+    "$HERE/audit_integrity.lua" "$HERE/audit_recipes.lua" "$HERE/audit_icons.lua" \
+    "$HERE/audit_starting_items.lua"
 }
 
 failed=0

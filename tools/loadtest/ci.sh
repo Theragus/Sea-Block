@@ -63,7 +63,7 @@ CORE_PACK=(boblibrary bobores bobplates bobelectronics boblogistics bobassembly
            bobrevamp bobtech bobwarfare bobgreenhouse bobvehicleequipment bobclasses
            angelsrefining angelsrefininggraphics angelspetrochem angelspetrochemgraphics
            angelssmelting angelssmeltinggraphics angelsbioprocessing
-           angelsbioprocessinggraphics angelsaddons-storage SeaBlock)
+           angelsbioprocessinggraphics angelsaddons-storage SeaBlock21)
 
 run_config() {
   local label="$1"; shift
@@ -102,7 +102,7 @@ run_config() {
     }
   LOADTEST_DETERMINISTIC=1 lua5.2 "$HERE/run.lua" "$WORK/$label-manifest.lua" \
     "$HERE/audit_integrity.lua" "$HERE/audit_recipes.lua" "$HERE/audit_icons.lua" \
-    "$HERE/audit_starting_items.lua" "$HERE/audit_milestones_preset.lua"
+    "$HERE/audit_starting_items.lua" "$HERE/audit_milestones_preset.lua" "$HERE/audit_reachability.lua"
 }
 
 failed=0

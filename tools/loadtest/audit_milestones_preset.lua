@@ -11,7 +11,7 @@
 -- prototype set the data stage produced.
 
 return function(data, mods, settings, resolve_path)
-  local path = resolve_path and resolve_path("__SeaBlock__/remote.lua")
+  local path = resolve_path and resolve_path("__SeaBlock21__/remote.lua")
   if not path then
     io.stderr:write("milestones preset audit: skipped, SeaBlock is not in this manifest\n")
     return 0

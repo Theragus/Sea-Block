@@ -3,6 +3,10 @@
 A fork of [modded-factorio/SeaBlock](https://github.com/modded-factorio/SeaBlock),
 carrying its unreleased 2.0 `dev` branch forward to **Factorio 2.1**.
 
+Published as **`SeaBlock21`** (and **`SeaBlockMetaPack21`** for the pack). The
+original names belong to Trainwreck on the mod portal, and mod names are unique
+per account, so a fork cannot reuse them. The in-game titles are unchanged.
+
 Sea Block was created by Trainwreck and is maintained upstream by KiwiHawk.
 The mod portal release is still [0.5.16 for Factorio 1.1](https://mods.factorio.com/mod/SeaBlock).
 This fork exists because the upstream port had stalled in a state that could
@@ -53,7 +57,7 @@ Known to be outstanding, all tracked upstream:
   them incompatible, and Factorio enables bundled mods that a `mod-list.json`
   does not mention.
 
-Install `SeaBlockMetaPack` to pull in the full recommended pack. Three mods that
+Install `SeaBlockMetaPack21` to pull in the full recommended pack. Three mods that
 were previously required have no 2.1 release: Explosive Excavation and Space
 Extension Mod are dropped, and LandfillPainting is now optional.
 
@@ -64,6 +68,13 @@ project had no way to do that. It drives the freely distributed headless build
 for authoritative verification, and a fast Lua harness for whole-graph audits
 that would otherwise cost a game launch each. See
 [its README](tools/loadtest/README.md).
+
+## Licence and credit
+
+MIT, © KiwiHawk, which permits redistribution and modification provided the
+notice travels with it — `LICENSE` ships inside both mods. Sea Block is
+Trainwreck's design, maintained upstream by KiwiHawk; this fork carries their
+work forward and claims none of it.
 
 ## Contributing back
 

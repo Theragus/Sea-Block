@@ -98,6 +98,19 @@ function seablock.lib.insert_effect(recipe_name, tech_name, index)
   end
 end
 
+---Append an effect to a technology, skipping one it already carries.
+---@param technology table
+---@param effect table
+function seablock.lib.add_effect(technology, effect)
+  technology.effects = technology.effects or {}
+  for _, existing in pairs(technology.effects) do
+    if existing.type == effect.type and existing.recipe == effect.recipe and existing.item == effect.item then
+      return
+    end
+  end
+  table.insert(technology.effects, effect)
+end
+
 function seablock.lib.moveeffect(name, fromtech, totech, insertindex)
   local effect = seablock.lib.takeeffect(fromtech, name)
 

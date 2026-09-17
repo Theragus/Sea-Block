@@ -10,7 +10,7 @@
 -- here with the item set the data stage produced.
 
 return function(data, mods, settings, resolve_path)
-  local path = resolve_path and resolve_path("__SeaBlock__/starting-items.lua")
+  local path = resolve_path and resolve_path("__SeaBlock21__/starting-items.lua")
   if not path then
     io.stderr:write("starting items audit: skipped, SeaBlock is not in this manifest\n")
     return 0

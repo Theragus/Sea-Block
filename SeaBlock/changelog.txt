@@ -2,6 +2,12 @@
 Version: 2.1.0
 Date: ????
   Changes:
+    - Renamed to SeaBlock21 for the mod portal, with the pack as SeaBlockMetaPack21
+      - Mod portal names are unique per account and the originals are Trainwreck's, so a
+        fork cannot publish under them. In-game titles are unchanged
+      - The remote interface is renamed to match; Bob's forbidden_mods entries for the old
+        name no longer apply, so Bob's own Milestones presets show alongside Sea Block's
+    - LICENSE now ships inside the mod, as MIT requires
     - Updated for Factorio 2.1, and for Bob's 3.0 and Angel's 2.1
       - Science packs are items rather than tools, which 2.1 removed as a prototype type
       - Recipe category is now the categories table
@@ -15,6 +21,13 @@ Date: ????
       has a Factorio 2.1 release
     - Removed the buff to Angel's Carbon 2 recipe, which Angel's no longer has
   Bugfixes:
+    - Fixed the automation science pack being uncraftable with ScienceCostTweakerM
+      - sct-automation-science-pack takes sb-startup4's place at the end of the tutorial
+        chain, but hiding sb-startup4 stranded its unlocks rather than moving them, and
+        the red science recipe is disabled with nothing else to grant it
+      - Its effects are now handed to the replacement before it is retired
+    - Fixed recipe bob-rocket-engine being visible but unobtainable, since the technology
+      that unlocked it is one of the military ones Sea Block removes
     - Fixed stale names in the Milestones preset Sea Block serves
       - bob-tungsten-plate and bob-tungsten-carbide lost their prefix when the base game
         gained tungsten

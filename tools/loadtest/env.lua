@@ -124,6 +124,147 @@ local real_defines = {
   constant = { default_icon_size = 64 },
 }
 
+-- defines.prototypes groups every prototype type under its base type. The base
+-- game's recycler mod walks defines.prototypes.item to generate a recycling
+-- recipe per item, so an empty table here means no recycling recipes at all --
+-- and then Bob's, which expects them, indexes a nil.
+local function name_set(names)
+  local set = {}
+  for index, name in ipairs(names) do
+    set[name] = index
+  end
+  return set
+end
+
+real_defines.prototypes = {
+  item = name_set({
+    "item",
+    "ammo",
+    "capsule",
+    "gun",
+    "module",
+    "tool",
+    "armor",
+    "repair-tool",
+    "rail-planner",
+    "item-with-entity-data",
+    "item-with-label",
+    "item-with-inventory",
+    "item-with-tags",
+    "blueprint",
+    "blueprint-book",
+    "deconstruction-item",
+    "upgrade-item",
+    "selection-tool",
+    "copy-paste-tool",
+    "spidertron-remote",
+    "mining-tool",
+    "space-platform-starter-pack",
+  }),
+  equipment = name_set({
+    "active-defense-equipment",
+    "battery-equipment",
+    "belt-immunity-equipment",
+    "energy-shield-equipment",
+    "generator-equipment",
+    "movement-bonus-equipment",
+    "night-vision-equipment",
+    "roboport-equipment",
+    "solar-panel-equipment",
+    "equipment-ghost",
+    "inventory-bonus-equipment",
+  }),
+  entity = name_set({
+    "accumulator",
+    "agricultural-tower",
+    "ammo-turret",
+    "arithmetic-combinator",
+    "artillery-turret",
+    "artillery-wagon",
+    "assembling-machine",
+    "asteroid-collector",
+    "beacon",
+    "boiler",
+    "burner-generator",
+    "car",
+    "cargo-landing-pad",
+    "cargo-wagon",
+    "character",
+    "cliff",
+    "constant-combinator",
+    "container",
+    "corpse",
+    "curved-rail-a",
+    "curved-rail-b",
+    "decider-combinator",
+    "display-panel",
+    "electric-energy-interface",
+    "electric-pole",
+    "electric-turret",
+    "fish",
+    "fluid-turret",
+    "fluid-wagon",
+    "furnace",
+    "fusion-generator",
+    "fusion-reactor",
+    "gate",
+    "generator",
+    "half-diagonal-rail",
+    "heat-interface",
+    "heat-pipe",
+    "infinity-container",
+    "infinity-pipe",
+    "inserter",
+    "lab",
+    "lamp",
+    "land-mine",
+    "lightning-attractor",
+    "linked-belt",
+    "linked-container",
+    "loader",
+    "loader-1x1",
+    "locomotive",
+    "logistic-container",
+    "market",
+    "mining-drill",
+    "offshore-pump",
+    "pipe",
+    "pipe-to-ground",
+    "plant",
+    "power-switch",
+    "programmable-speaker",
+    "pump",
+    "radar",
+    "rail-chain-signal",
+    "rail-ramp",
+    "rail-signal",
+    "rail-support",
+    "reactor",
+    "roboport",
+    "rocket-silo",
+    "selector-combinator",
+    "simple-entity",
+    "simple-entity-with-force",
+    "simple-entity-with-owner",
+    "solar-panel",
+    "space-platform-hub",
+    "spider-vehicle",
+    "splitter",
+    "storage-tank",
+    "straight-rail",
+    "thruster",
+    "train-stop",
+    "transport-belt",
+    "tree",
+    "turret",
+    "underground-belt",
+    "unit",
+    "unit-spawner",
+    "valve",
+    "wall",
+  }),
+}
+
 -- Leaf placeholder: usable as a number, a string key and a table lookup.
 local placeholder_mt = {
   __index = function(t, k)
@@ -170,5 +311,68 @@ env.feature_flags = {
   segmented_units = false,
   expansion_shaders = false,
 }
+
+---------------------------------------------------------------------------
+-- table.insert
+--
+-- Lua 5.1 accepted any position for table.insert; 5.2 added the "position out
+-- of bounds" check. Factorio's Lua does not enforce it, and mods rely on that:
+-- Bob's inserts its science pack at index 5 of a lab input list that another
+-- mod may have shortened to one entry. Clamp instead of erroring, so the
+-- harness follows the same path the game does.
+---------------------------------------------------------------------------
+local raw_insert = table.insert
+function env.install_permissive_table_insert()
+  table.insert = function(list, a, b)
+    if b == nil then
+      return raw_insert(list, a)
+    end
+    local position = a
+    if type(position) ~= "number" then
+      return raw_insert(list, position, b)
+    end
+    local limit = #list + 1
+    if position < 1 then
+      position = 1
+    elseif position > limit then
+      position = limit
+    end
+    return raw_insert(list, position, b)
+  end
+end
+
+---------------------------------------------------------------------------
+-- deterministic pairs
+--
+-- Lua randomises its string hash seed per process, so pairs() order changes
+-- between runs and any mod whose behaviour depends on it becomes a coin flip.
+-- Factorio pins its seed for multiplayer determinism and so always takes the
+-- same branch. Sorting keys gives the harness a stable order too -- not the
+-- game's order, but a reproducible one, which is what CI needs.
+---------------------------------------------------------------------------
+local raw_pairs = pairs
+function env.install_deterministic_pairs()
+  pairs = function(t)
+    local keys, strings_only = {}, true
+    for k in raw_pairs(t) do
+      keys[#keys + 1] = k
+      if type(k) ~= "string" then
+        strings_only = false
+      end
+    end
+    if not strings_only then
+      return raw_pairs(t)
+    end
+    table.sort(keys)
+    local i = 0
+    return function()
+      i = i + 1
+      local k = keys[i]
+      if k ~= nil then
+        return k, t[k]
+      end
+    end
+  end
+end
 
 return env

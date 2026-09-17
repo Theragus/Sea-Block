@@ -1,0 +1,48 @@
+name: Load test
+
+on:
+  push:
+  pull_request:
+  # Bob's and Angel's are tracked by branch, so upstream can break this without
+  # anything here changing. A weekly run surfaces that on its own schedule
+  # rather than in the middle of someone's pull request.
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: loadtest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  loadtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.2
+        run: sudo apt-get update -qq && sudo apt-get install -y lua5.2
+
+      # The Factorio headless build is a fixed version, so it only needs
+      # downloading again when dependencies.env changes.
+      - name: Cache Factorio
+        uses: actions/cache@v4
+        with:
+          path: .loadtest/factorio
+          key: factorio-${{ hashFiles('tools/loadtest/dependencies.env') }}
+
+      - name: Run the load test
+        run: tools/loadtest/ci.sh
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: factorio-logs
+          path: |
+            .loadtest/*.log
+            .loadtest/factorio/factorio-current.log
+          if-no-files-found: ignore
+          retention-days: 7

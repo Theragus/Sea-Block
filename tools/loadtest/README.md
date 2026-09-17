@@ -6,7 +6,24 @@ Block does not fail to compile — it fails at startup, one error at a time,
 and each round trip costs a full game launch. This directory exists to make
 that loop fast and to catch a whole class of breakage in one pass.
 
-There are two layers.
+There are two layers, and `ci.sh` drives both:
+
+```sh
+tools/loadtest/ci.sh              # fetch everything, then load two configurations
+tools/loadtest/ci.sh --skip-fetch # reuse what is already in .loadtest/
+```
+
+It loads the core pack and the core pack plus ScienceCostTweakerM, which
+exercises a lot of Sea Block code the core pack never reaches. A configuration
+passes when the game creates a map, Sea Block logs no warnings of its own, and
+the audits come back clean. Other mods' warnings are theirs; failing on those
+would make this rig hostage to upstream noise.
+
+`.github/workflows/loadtest.yml` runs exactly this on push and weekly.
+Dependency versions live in `dependencies.env`; they are branch refs rather than
+commits on purpose, so upstream breaking Sea Block shows up quickly — which
+means a pull request can go red without its own code changing, and the failure
+is worth reading before assuming it is yours.
 
 ## 1. The real game (authoritative)
 
@@ -65,9 +82,34 @@ The harness is not a substitute for the game. It does not validate prototypes,
 and it stubs the graphics metadata that `factorio-data` strips. Treat a
 disagreement between the two as the harness being wrong.
 
+### Engine behaviour the harness has to match
+
+Three things the game does that plain Lua 5.2 does not, each found by a
+disagreement between the two:
+
+- **`require` resolves relative to the requiring file first**, then the mod
+  root, then `core/lualib`. ScienceCostTweakerM's `prototypes/0_entity.lua`
+  does `require("entities.intermediates")` for a file beside it.
+- **`forced_value` beats `default_value`** when resolving a startup setting. Sea
+  Block pins Bob's and Angel's options with `forced_value`, so reading only
+  `default_value` silently runs a different configuration than the game does.
+- **`table.insert` does not enforce its position bound.** Lua 5.1 allowed any
+  position and 5.2 added the check; Factorio kept the old behaviour and mods
+  rely on it — Bob's inserts its science pack at index 5 of a lab input list
+  another mod may have cut to one entry.
+- **`defines.prototypes` groups every prototype type under its base type.** The
+  base game's recycler mod walks `defines.prototypes.item` to generate a
+  recycling recipe per item; an empty table there means no recycling recipes at
+  all, and then Bob's indexes a nil for one it expects.
+
+`LOADTEST_DETERMINISTIC=1` sorts `pairs()` keys. Lua randomises its string hash
+seed per process, so any mod whose behaviour depends on iteration order becomes
+a coin flip — see below. Factorio pins its seed; this gives the harness a stable
+order too. Not the game's order, but a reproducible one, which is what CI needs.
+
 ### A known flaky failure, and why it matters
 
-Roughly one run in three dies inside `angelsrefining`'s
+Without `LOADTEST_DETERMINISTIC=1`, roughly one run in three dies inside `angelsrefining`'s
 `override-functions.lua` with `table index is nil`, reached from
 `angelspetrochem`'s data-updates. It is not a harness bug. `p_result_merge` in
 `angelsrefining/prototypes/recipe-builder.lua` substitutes a void placeholder
@@ -95,6 +137,7 @@ Sea Block loads after the mod that trips it and cannot get in front of it.
 | `audit_integrity.lua` | every technology prerequisite, recipe unlock and science pack, and every recipe ingredient, result and category, resolves to something that exists |
 | `audit_recipes.lua` | recipes use the 2.0 ingredient/result shape, not the removed `{"name", count}` shorthand or `normal`/`expensive` split |
 | `dump.lua` | writes every prototype name to `$LOADTEST_DUMP` as `type<TAB>name` |
+| `audit_icons.lua` | every declared `icon_size` fits inside the actual PNG — the one class of breakage a headless server cannot see, because it never loads sprites |
 | `check_references.py` | cross-references names written in Sea Block's source against a dump, so renamed prototypes show up all at once |
 
 `LOADTEST_STOP_AFTER=data` stops after a given stage, which is how you find

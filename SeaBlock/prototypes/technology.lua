@@ -1,10 +1,17 @@
+-- The three sb-*-tool items exist only to put a recognisable cost on the
+-- tutorial technologies in the tech tree; control.lua completes those
+-- technologies outright. Their icons are copied from the real prototypes in
+-- data-final-fixes, so the ones here are base game placeholders: pointing
+-- straight at another mod's file means a silent break every time that mod
+-- moves or resizes it, and Sea Block does not depend on the graphics mods
+-- those files actually live in.
 data:extend({
   {
     type = "item",
     name = "sb-angelsore3-tool",
     localised_name = { "item-name.angels-ore3-crushed" },
-    icon = "__angelsrefining__/graphics/icons/angels-ore3-crushed.png",
-    icon_size = 32,
+    icon = "__base__/graphics/icons/iron-ore.png",
+    icon_size = 64,
     hidden = true,
     stack_size = 100,
   },
@@ -12,8 +19,8 @@ data:extend({
     type = "item",
     name = "sb-basic-circuit-board-tool",
     localised_name = { "item-name.basic-circuit-board" },
-    icon = "__bobelectronics__/graphics/icons/basic-circuit-board.png",
-    icon_size = 128,
+    icon = "__base__/graphics/icons/electronic-circuit.png",
+    icon_size = 64,
     hidden = true,
     stack_size = 100,
   },

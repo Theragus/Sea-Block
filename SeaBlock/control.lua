@@ -54,6 +54,21 @@ local function set_pvp()
   end
 end
 
+---ScienceCostTweakerM folds its sct-automation-science-pack technology into the
+---base game's automation-science-pack during data-final-fixes and deletes the
+---sct- name, so that name does not exist at runtime. Prefer the sct- name if it
+---is ever kept again, and fall back to the folded one.
+---@return string|nil name nil when ScienceCostTweakerM is not installed
+local function first_science_pack_tech()
+  if prototypes.technology["sct-automation-science-pack"] then
+    return "sct-automation-science-pack"
+  end
+  if script.active_mods["ScienceCostTweakerM"] and prototypes.technology["automation-science-pack"] then
+    return "automation-science-pack"
+  end
+  return nil
+end
+
 local function init()
   set_pvp()
   storage.starting_items = seablock.populate_starting_items(prototypes.item)
@@ -66,11 +81,7 @@ local function init()
     ["angels-ore3-crushed"] = { "sb-startup1", "angels-bio-wood-processing" },
     ["bob-basic-circuit-board"] = { "sb-startup3", "sct-lab-t1" },
   }
-  if prototypes.technology["sct-automation-science-pack"] then
-    storage.unlocks["lab"] = { "sct-automation-science-pack" }
-  else
-    storage.unlocks["lab"] = { "sb-startup4" }
-  end
+  storage.unlocks["lab"] = { first_science_pack_tech() or "sb-startup4" }
 
   if remote.interfaces["freeplay"] then
     local created_items = remote.call("freeplay", "get_created_items")
@@ -172,13 +183,17 @@ script.on_configuration_changed(function(cfg)
       force.technologies["kovarex-enrichment-process"].enabled = true
     end
 
+    local science_pack_tech = first_science_pack_tech()
     if
-      force.technologies["sct-automation-science-pack"]
+      science_pack_tech
+      and force.technologies[science_pack_tech]
       and force.technologies["sb-startup4"]
       and force.technologies["sb-startup4"].researched
     then
-      force.technologies["sct-lab-t1"].researched = true
-      force.technologies["sct-automation-science-pack"].researched = true
+      if force.technologies["sct-lab-t1"] then
+        force.technologies["sct-lab-t1"].researched = true
+      end
+      force.technologies[science_pack_tech].researched = true
     end
   end
 end)

@@ -17,9 +17,16 @@ for _, v in pairs(reactors) do
   end
 end
 
--- Refresh circuit board icon as it may have been overwritten
-if data.raw.item["sb-basic-circuit-board-tool"] and data.raw.item["basic-circuit-board"] then
-  seablock.lib.copy_icon(data.raw.item["sb-basic-circuit-board-tool"], data.raw.item["basic-circuit-board"])
+-- Give the tutorial cost items the icon of the thing they stand for, now that
+-- every mod has finished moving icons around. Bob's renamed basic-circuit-board
+-- to bob-basic-circuit-board in 2.0, so the old lookup here silently found
+-- nothing and left a hardcoded icon_size behind that no longer matched the file.
+for stand_in, real_item in pairs({
+  ["sb-angelsore3-tool"] = "angels-ore3-crushed",
+  ["sb-basic-circuit-board-tool"] = "bob-basic-circuit-board",
+  ["sb-lab-tool"] = "lab",
+}) do
+  seablock.lib.copy_icon(data.raw.item[stand_in], data.raw.item[real_item])
 end
 
 require("data-final-fixes/logistics")
@@ -31,6 +38,7 @@ require("data-final-fixes/research-triggers")
 require("data-final-fixes/lab-coverage")
 require("data-final-fixes/mapgen")
 require("data-final-fixes/SpaceMod")
+require("data-final-fixes/ScienceCostTweakerM")
 
 data.raw.recipe["copper-cable"].allow_decomposition = true
 data.raw.recipe["angels-solid-paper"].allow_decomposition = true

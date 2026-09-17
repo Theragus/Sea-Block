@@ -100,8 +100,35 @@ end
 
 function seablock.lib.moveeffect(name, fromtech, totech, insertindex)
   local effect = seablock.lib.takeeffect(fromtech, name)
+
+  if not effect then
+    -- Bob's and Angel's shuffle recipe unlocks between technologies often, and
+    -- what Sea Block cares about is the destination, not which technology the
+    -- unlock happened to start on. Follow it rather than giving up.
+    local actual = seablock.lib.findtechunlock(name)
+    if actual and actual.name == totech then
+      return
+    end
+    if actual then
+      effect = seablock.lib.takeeffect(actual.name, name)
+      log(
+        ("Sea Block: moveeffect - %s was not in %s but in %s; moved from there instead"):format(
+          name,
+          fromtech,
+          actual.name
+        )
+      )
+    end
+  end
+
   if not effect then
     log("Warning : seablock.lib.moveeffect - Effect " .. name .. " not found in tech " .. fromtech)
+    log(debug.traceback())
+    return
+  end
+
+  if not data.raw.technology[totech] then
+    log("Warning : seablock.lib.moveeffect - Destination tech " .. totech .. " does not exist")
     log(debug.traceback())
     return
   end

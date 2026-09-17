@@ -38,16 +38,11 @@ jobs:
           key: factorio-${{ hashFiles('tools/loadtest/dependencies.env') }}
 
       # The tag is checked before anything expensive runs, so a typo costs
-      # seconds rather than a full load test.
+      # seconds rather than a full load test. One tag releases whatever is new:
+      # it has to name a version some mod carries, and publish.py skips the mods
+      # the portal already has.
       - name: Check the tag against info.json
-        run: |
-          tag="${GITHUB_REF_NAME#v}"
-          version="$(python3 -c 'import json; print(json.load(open("SeaBlock/info.json"))["version"])')"
-          if [ "$tag" != "$version" ]; then
-            echo "tag $GITHUB_REF_NAME does not match SeaBlock/info.json version $version"
-            exit 1
-          fi
-          echo "releasing $version"
+        run: tools/publish.py --tag "$GITHUB_REF_NAME" --check-tag
 
       - name: Run the load test
         run: tools/loadtest/ci.sh

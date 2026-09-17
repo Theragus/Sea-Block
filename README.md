@@ -78,12 +78,23 @@ The mod portal does not watch GitHub, so a release has to be pushed to it.
 git tag v2.1.2 && git push origin v2.1.2
 ```
 
-The tag names `SeaBlock/info.json`'s version, and the workflow refuses to run if
-the two disagree. It then runs the load test, packs both mods, uploads to the
-portal over its [upload API][api], and attaches the same zips to a GitHub
-release. `SeaBlockMetaPack21` is versioned alongside Sea Block but only
-published when its version is new, so a release that does not touch the pack
-skips it.
+**One tag releases whatever is new.** The two mods are versioned on a single
+line but bump independently — the pack is a dependency list and rarely changes —
+so the tag names the version of whichever mod you bumped, and `publish.py` skips
+the ones the portal already has:
+
+| changed | do | published |
+| --- | --- | --- |
+| Sea Block only | bump it, tag `v2.1.3` | Sea Block; the pack is skipped |
+| the pack only | bump it, tag `v2.1.4` | the pack; Sea Block is skipped |
+| both | bump both, tag `v2.1.5` | both |
+
+The rule is *bump whatever changed, tag the next free number*. Versions
+interleave on one line, so tags never collide and there is only ever one tag to
+push. A tag matching no mod's version is refused before anything else runs.
+
+The workflow then runs the load test, packs both mods, uploads over the portal's
+[upload API][api], and attaches the zips to a GitHub release.
 
 On a tag rather than on a merge, because **a mod portal release cannot be
 deleted**. Everything that can be checked before that point is:

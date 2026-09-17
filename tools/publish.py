@@ -9,8 +9,15 @@ does that over the upload API rather than the web form, so a tag can drive it.
 The key comes from https://factorio.com/profile and needs the
 "ModPortal: Upload Mods" usage. A published release cannot be deleted, so
 this refuses anything it is not sure about rather than uploading and hoping:
-it checks the tag against info.json, skips versions already on the portal,
-and will not register a mod name that does not exist yet.
+the tag has to name a version some mod actually carries, versions already on
+the portal are skipped, and it will not register a mod name that does not
+exist yet.
+
+One tag releases whatever is new. The mods are versioned on one line but bump
+independently -- the pack is a dependency list and rarely changes -- so a tag
+names the mod or mods whose version it matches, and the rest are skipped
+because the portal already has them. Bump whatever changed, tag the next free
+number.
 
 Pass --dry-run to do everything except the upload itself.
 """
@@ -27,10 +34,6 @@ import uuid
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import package  # noqa: E402  (same directory, shares the packing rules)
-
-# The mod whose version the tag names. The pack is versioned alongside it but
-# does not always change, so it is published only when its version is new.
-ANCHOR = "SeaBlock"
 
 PORTAL = "https://mods.factorio.com"
 INIT_UPLOAD = f"{PORTAL}/api/v2/mods/releases/init_upload"
@@ -110,12 +113,12 @@ def main():
     ap.add_argument("--tag", help="release tag, e.g. v2.1.2; checked against info.json")
     ap.add_argument("--out", default=os.path.join(package.REPO, "dist"))
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument(
+        "--check-tag",
+        action="store_true",
+        help="validate the tag and exit, without an API key -- runs before the load test",
+    )
     args = ap.parse_args()
-
-    token = os.environ.get("FACTORIO_API_KEY")
-    if not token:
-        print("FACTORIO_API_KEY is not set", file=sys.stderr)
-        return 1
 
     os.makedirs(args.out, exist_ok=True)
     infos = {}
@@ -126,14 +129,24 @@ def main():
 
     if args.tag:
         wanted = args.tag[1:] if args.tag.startswith("v") else args.tag
-        actual = infos[ANCHOR]["version"]
-        if wanted != actual:
+        named = [mod for mod, info in infos.items() if info["version"] == wanted]
+        if not named:
+            versions = ", ".join(f"{mod} {info['version']}" for mod, info in sorted(infos.items()))
             print(
-                f"tag {args.tag} does not match {ANCHOR}/info.json version {actual} — "
-                "retag or bump, but do not publish a version nobody named",
+                f"tag {args.tag} matches no mod's info.json version ({versions}) — "
+                "bump whatever changed, or retag; do not publish a version nobody named",
                 file=sys.stderr,
             )
             return 1
+        print("releasing " + ", ".join(sorted(named)) + f" as {wanted}")
+
+    if args.check_tag:
+        return 0
+
+    token = os.environ.get("FACTORIO_API_KEY")
+    if not token:
+        print("FACTORIO_API_KEY is not set", file=sys.stderr)
+        return 1
 
     # Package first: its LICENSE and changelog checks are the last chance to
     # catch a bad build, and a portal release cannot be taken back.

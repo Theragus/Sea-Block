@@ -1,0 +1,18 @@
+---------------------------------------------------------------------------------------------------
+Version: 2.1.1
+Date: 2026-09-17
+  Changes:
+    - Declared incompatible with SeaBlock and SeaBlockMetaPack, the mods this forks
+    - Now requires SeaBlock21 2.1.1 or later, which is the first release that refuses to
+      load alongside the original
+---------------------------------------------------------------------------------------------------
+Version: 2.1.0
+Date: 2026-09-17
+  Changes:
+    - Renamed to SeaBlockMetaPack21 for the mod portal, depending on SeaBlock21
+      - Mod portal names are unique per account and the originals are Trainwreck's, so a
+        fork cannot publish under them. The in-game title is unchanged
+    - Updated for Factorio 2.1, Bob's 3.0 and Angel's 2.1
+    - Dropped Explosive Excavation and Space Extension Mod, neither of which has a
+      Factorio 2.1 release
+    - LandfillPainting is now optional rather than required

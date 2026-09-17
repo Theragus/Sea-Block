@@ -60,17 +60,21 @@ def pack(src, stem, out_dir):
     return out
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=os.path.join(REPO, "dist"))
-    args = ap.parse_args()
-    os.makedirs(args.out, exist_ok=True)
+def build(out_dir, infos=None):
+    """Check and pack every mod. Returns 0 on success, 1 if anything is wrong.
 
+    publish.py calls this too: the checks below are the last thing standing
+    between a mistake and a portal release, which cannot be taken back.
+    """
+    os.makedirs(out_dir, exist_ok=True)
     failed = False
     for mod in MODS:
         src = os.path.join(REPO, mod)
-        with open(os.path.join(src, "info.json"), encoding="utf-8") as fh:
-            info = json.load(fh)
+        if infos and mod in infos:
+            info = infos[mod]
+        else:
+            with open(os.path.join(src, "info.json"), encoding="utf-8") as fh:
+                info = json.load(fh)
 
         problems = check(src, info)
         if problems:
@@ -80,10 +84,17 @@ def main():
                 print(f"  {problem}")
             continue
 
-        out = pack(src, f"{info['name']}_{info['version']}", args.out)
+        out = pack(src, f"{info['name']}_{info['version']}", out_dir)
         print(f"{info['name']} {info['version']}  ->  {out}  ({os.path.getsize(out):,} bytes)")
 
     return 1 if failed else 0
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", default=os.path.join(REPO, "dist"))
+    args = ap.parse_args()
+    return build(args.out)
 
 
 if __name__ == "__main__":

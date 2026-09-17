@@ -1,0 +1,605 @@
+seablock = seablock or {}
+seablock.lib = {}
+seablock.reskins = {}
+
+---Sets a tile restriction on any specified prototype
+---does not replace existing autoplace dict but creates if it doesnt exist
+---@param ptype string "tile", "entity", ...
+---@param name string name of prototype
+---@param restriction string|table string for singular restrict, table for multiple restrictions
+function seablock.lib.set_tile_restriction(ptype, name, restriction)
+  if not data.raw[ptype] then
+    error("Tried to set tile restriction on " .. ptype .. " " .. name .. ": type does not exist")
+  end
+  if not data.raw[ptype][name] then
+    error("Tried to set tile restriction on " .. ptype .. " " .. name .. ": " .. name .. " does not exist")
+  end
+
+  data.raw[ptype][name].autoplace = data.raw[ptype][name].autoplace or {}
+
+  if type(restriction) == "string" then
+    restriction = { restriction }
+  end
+
+  data.raw[ptype][name].autoplace["tile_restriction"] = restriction
+end
+
+---Sets a probability expression on any specified prototype
+---does not replace existing autoplace dict but creates if it doesnt exist
+---@param ptype string "tile", "entity", ...
+---@param name string name of prototype
+---@param expression string expression
+function seablock.lib.set_probability_expression(ptype, name, expression)
+  if not data.raw[ptype] then
+    error("Tried to set probability expression on " .. ptype .. " " .. name .. ": type does not exist")
+  end
+  if not data.raw[ptype][name] then
+    error("Tried to set probability expression on " .. ptype .. " " .. name .. ": " .. name .. " does not exist")
+  end
+
+  data.raw[ptype][name].autoplace = data.raw[ptype][name].autoplace or {}
+  data.raw[ptype][name].autoplace["probability_expression"] = expression
+end
+
+function seablock.lib.findname(t, name)
+  for i, v in ipairs(t) do
+    if v.name == name then
+      return v
+    end
+  end
+end
+
+function seablock.lib.removename(t, name)
+  for i, v in ipairs(t) do
+    if v.name == name then
+      table.remove(t, i)
+      return
+    end
+  end
+end
+
+function seablock.lib.takeeffect(tech, name)
+  if not data.raw.technology[tech] then
+    log("Warning: seablock.lib.takeeffect - can't find technology : " .. tech)
+    log(debug.traceback())
+    return nil
+  end
+  local effects = data.raw.technology[tech].effects or {}
+  for i, v in ipairs(effects) do
+    if v.recipe == name then
+      return table.remove(effects, i)
+    end
+  end
+end
+
+function seablock.lib.findeffectidx(effects, name)
+  for i, v in ipairs(effects) do
+    if v.recipe == name then
+      return i
+    end
+  end
+end
+
+---Inserts recipe into tech at index
+---@param recipe_name string
+---@param tech_name string
+---@param index integer
+function seablock.lib.insert_effect(recipe_name, tech_name, index)
+  local tech = data.raw.technology[tech_name]
+
+  if not tech then
+    return
+  end
+
+  if index then
+    table.insert(tech.effects, index, { type = "unlock-recipe", recipe = recipe_name })
+  else
+    table.insert(tech.effects, { type = "unlock-recipe", recipe = recipe_name })
+  end
+end
+
+function seablock.lib.moveeffect(name, fromtech, totech, insertindex)
+  local effect = seablock.lib.takeeffect(fromtech, name)
+  if not effect then
+    log("Warning : seablock.lib.moveeffect - Effect " .. name .. " not found in tech " .. fromtech)
+    log(debug.traceback())
+    return
+  end
+  if insertindex then
+    table.insert(data.raw.technology[totech].effects, insertindex, effect)
+  else
+    table.insert(data.raw.technology[totech].effects, effect)
+  end
+end
+
+local function add_recipe_unlock(technology, recipe, insertindex)
+  local addit = true
+  if not technology.effects then
+    technology.effects = {}
+  end
+  for i, effect in pairs(technology.effects) do
+    if effect.type == "unlock-recipe" and effect.recipe == recipe then
+      addit = false
+    end
+  end
+  if addit then
+    bobmods.lib.recipe.enabled(recipe, false)
+    if insertindex then
+      table.insert(technology.effects, insertindex, { type = "unlock-recipe", recipe = recipe })
+    else
+      table.insert(technology.effects, { type = "unlock-recipe", recipe = recipe })
+    end
+  end
+end
+
+function seablock.lib.add_recipe_unlock(technology, recipe, insertindex)
+  if
+    type(technology) == "string"
+    and type(recipe) == "string"
+    and data.raw.technology[technology]
+    and data.raw.recipe[recipe]
+  then
+    add_recipe_unlock(data.raw.technology[technology], recipe, insertindex)
+  else
+    log(debug.traceback())
+    bobmods.lib.error.technology(technology)
+    bobmods.lib.error.recipe(recipe)
+  end
+end
+
+function seablock.lib.substingredient(name, from, to, count)
+  local recipe = data.raw.recipe[name]
+  if recipe then
+    for _, ingredient in pairs(recipe.ingredients or {}) do
+      if ingredient.name == from then
+        if to ~= nil then
+          ingredient.name = to
+        end
+        if count ~= nil then
+          ingredient.amount = count
+        end
+      end
+    end
+  else
+    log("Warning : seablock.lib.substingredient - can't find recipe : " .. name)
+    log(debug.traceback())
+  end
+end
+
+function seablock.lib.removeingredient(name, ingredient)
+  local recipe = data.raw.recipe[name]
+  if recipe then
+    for k, v in pairs(recipe.ingredients or {}) do
+      if v.name == ingredient then
+        table.remove(recipe.ingredients, k)
+        return
+      end
+    end
+  else
+    log("Warning : seablock.lib.removeingredient - can't find recipe : " .. name)
+    log(debug.traceback())
+  end
+end
+
+function seablock.lib.substresult(name, from, to, count)
+  local recipe = data.raw.recipe[name]
+  if recipe then
+    for _, result in pairs(recipe.results or {}) do
+      if result.name == from then
+        if to ~= nil then
+          result.name = to
+        end
+        if count ~= nil then
+          result.amount = count
+        end
+      end
+    end
+  else
+    log("Warning : seablock.lib.substresult - can't find recipe : " .. name)
+    log(debug.traceback())
+  end
+end
+
+function seablock.lib.addresult(name, resulttable)
+  local recipe = data.raw.recipe[name]
+  if recipe then
+    recipe.results = recipe.results or {}
+    table.insert(recipe.results, resulttable)
+  else
+    log("Warning: seablock.lib.addresult - can't find recipe : " .. name)
+    log(debug.traceback())
+  end
+end
+
+function seablock.lib.findtechunlock(recipename)
+  for _, tech in pairs(data.raw.technology) do
+    for _, effect in pairs(tech.effects or {}) do
+      if effect.type == "unlock-recipe" and effect.recipe == recipename then
+        return tech
+      end
+    end
+  end
+end
+
+function seablock.lib.tablefind(table, item)
+  for k, v in pairs(table) do
+    if v == item then
+      return k
+    end
+  end
+  return nil
+end
+
+function seablock.lib.unhide(type_name, name)
+  if not data.raw[type_name] then
+    log("Warning: seablock.lib.unhide - unknown type: " .. type_name)
+    log(debug.traceback())
+    return
+  end
+
+  local prototype = data.raw[type_name][name]
+
+  if not prototype then
+    log("Warning: seablock.lib.unhide - unknown " .. type_name .. ": " .. name)
+    log(debug.traceback())
+    return
+  end
+
+  prototype.hidden = false
+end
+
+function seablock.lib.hide_technology(technology_name)
+  local technology = data.raw.technology[technology_name]
+  if technology then
+    technology.hidden = true
+    technology.enabled = false
+  else
+    log("Warning: seablock.lib.hide_technology - Hide non existing tech : " .. technology_name)
+    log(debug.traceback())
+  end
+end
+
+function seablock.lib.copy_icon(to, from)
+  if to and from then
+    to.icon = from.icon
+    to.icons = from.icons
+    to.icon_size = from.icon_size
+    to.icon_mipmaps = from.icon_mipmaps
+  end
+end
+
+function seablock.lib.hide(type_name, name)
+  if not data.raw[type_name] then
+    log("Warning: seablock.lib.hide - Unknown type: " .. type_name)
+    log(debug.traceback())
+  else
+    local prototype = data.raw[type_name][name]
+    if not prototype then
+      log("Warning: seablock.lib.hide - Unknown " .. type_name .. ": " .. name)
+      log(debug.traceback())
+    else
+      if type_name == "fluid" then
+        prototype.hidden = true
+      else
+        prototype.hidden = true
+
+        if type_name == "item" then
+          if not prototype.flags then
+            prototype.flags = {}
+          end
+
+          table.insert(prototype.flags, "hide-from-bonus-gui")
+        end
+
+        prototype.next_upgrade = nil
+      end
+    end
+  end
+end
+
+function seablock.lib.hide_item(name)
+  seablock.lib.hide("item", name)
+end
+
+---Build a research cost for a technology that has lost its own, by taking the
+---most demanding science pack set among its prerequisites. Keeps a repaired
+---technology roughly where it sat in the tree instead of dropping it to red
+---science.
+---@param technology table
+---@return table|nil unit nil when no prerequisite has a cost to inherit
+function seablock.lib.inherited_tech_unit(technology)
+  local ingredients, count, time = nil, 0, 0
+  for _, prerequisite_name in pairs(technology.prerequisites or {}) do
+    local prerequisite = data.raw.technology[prerequisite_name]
+    local unit = prerequisite and prerequisite.unit
+    if unit and unit.ingredients then
+      if not ingredients or #unit.ingredients > #ingredients then
+        ingredients = unit.ingredients
+      end
+      count = math.max(count, tonumber(unit.count) or 0)
+      time = math.max(time, tonumber(unit.time) or 0)
+    end
+  end
+  if not ingredients then
+    return nil
+  end
+  return {
+    count = math.max(count, 10),
+    ingredients = table.deepcopy(ingredients),
+    time = math.max(time, 15),
+  }
+end
+
+function seablock.lib.unhide_recipe(name)
+  seablock.lib.unhide("recipe", name)
+end
+
+function seablock.lib.remove_effect(technology_name, effect_type, effect_key, effect_value)
+  local tech = data.raw.technology[technology_name]
+  if not tech then
+    log("Warning: seablock.lib.remove_effect - Unknown technology: " .. technology_name)
+    log(debug.traceback())
+    return
+  end
+
+  if tech.effects then
+    for i, effect in pairs(tech.effects) do
+      if effect.type == effect_type and effect[effect_key] == effect_value then
+        table.remove(tech.effects, i)
+        return
+      end
+    end
+  end
+end
+
+function seablock.lib.add_flag(type_name, name, flag)
+  if not data.raw[type_name] then
+    log("Warning : seablock.lib.add_flag - Unknown type: " .. type_name)
+    log(debug.traceback())
+    return
+  end
+
+  local prototype = data.raw[type_name][name]
+  if not prototype then
+    log("Warning : seablock.lib.add_flag - Unknown " .. type_name .. ": " .. name)
+    log(debug.traceback())
+    return
+  end
+
+  if prototype.flags then
+    table.insert(prototype.flags, flag)
+  else
+    prototype.flags = { flag }
+  end
+end
+
+--[[
+  Modified from code copied from Artisanal Reskins: Library v1.1.2
+  With permission from Kira
+  https://mods.factorio.com/mod/reskins-library
+  https://github.com/kirazy/reskins-library/
+--]]
+function seablock.reskins.composite_existing_icons(target_name, target_type, icons)
+  -- icons = table of ["name"] = {type, shift, scale} or ["name"] = {icon or icons}, where type, shift, and scale are optional, and icon/icons ignores other param values
+
+  -- Check to ensure the target is available
+  local target = data.raw[target_type][target_name]
+  if not target then
+    return
+  end
+
+  -- Initialize the icons table
+  local composite_icon = {}
+
+  -- Iterate through the list of icons to composite
+  for name, params in pairs(icons) do
+    if params.icons then
+      for _, layer in pairs(params.icons) do
+        table.insert(composite_icon, {
+          icon = layer.icon,
+          icon_size = layer.icon_size,
+          icon_mipmaps = layer.icon_mipmaps,
+          scale = layer.scale or (32 / layer.icon_size),
+          shift = layer.shift,
+          tint = layer.tint,
+        })
+      end
+    elseif params.icon then
+      table.insert(composite_icon, {
+        icon = params.icon.icon,
+        icon_size = params.icon.icon_size,
+        icon_mipmaps = params.icon.icon_mipmaps,
+        scale = params.icon.scale or (32 / params.icon.icon_size),
+        shift = params.icon.shift,
+        tint = params.icon.tint,
+      })
+    else
+      -- Check to ensure the object is available to copy from; abort if not
+      local source_type = params.type or "item"
+
+      -- Copy the current entity, return if it doesn't exist
+      if not data.raw[source_type][name] then
+        return
+      end
+      local entity = util.copy(data.raw[source_type][name])
+
+      -- Check for icons definition
+      if entity.icons then
+        -- Transcribe layers to the composite_icon table
+        for _, layer in pairs(entity.icons) do
+          local icon_size = layer.icon_size or entity.icon_size
+          table.insert(composite_icon, {
+            icon = layer.icon,
+            icon_size = icon_size,
+            icon_mipmaps = layer.icon_mipmaps or entity.icon_mipmaps,
+            tint = layer.tint,
+            scale = layer.scale or (32 / icon_size) * (params.scale or 1),
+            shift = {
+              (layer.shift and (layer.shift[1] or layer.shift.x) or 0) * (params.scale or 1)
+                + (params.shift and (params.shift[1] or params.shift.x) or 0),
+              (layer.shift and (layer.shift[2] or layer.shift.y) or 0) * (params.scale or 1)
+                + (params.shift and (params.shift[2] or params.shift.y) or 0),
+            },
+          })
+        end
+        -- Standard icon
+      else
+        -- Fully define an icons layer
+        table.insert(composite_icon, {
+          icon = entity.icon,
+          icon_size = entity.icon_size,
+          icon_mipmaps = entity.icon_mipmaps,
+          scale = params.scale and (params.scale * 32 / entity.icon_size) or (32 / entity.icon_size),
+          shift = {
+            (params.shift and (params.shift[1] or params.shift.x) or 0),
+            (params.shift and (params.shift[2] or params.shift.y) or 0),
+          },
+        })
+      end
+    end
+  end
+
+  -- Assign the composite icon
+  seablock.reskins.assign_icons(target_name, { type = target_type, icon = composite_icon })
+end
+
+function seablock.reskins.assign_icons(name, inputs)
+  -- Inputs required by this function
+  -- type            - Entity type
+  -- icon            - Table or string defining icon
+  -- icon_size       - Pixel size of icons
+  -- icon_mipmaps    - Number of mipmaps present in the icon image file
+
+  -- Initialize paths
+  local entity
+  if inputs.type then
+    entity = data.raw[inputs.type][name]
+  end
+
+  -- Recipes are exceptions to the usual pattern
+  local item, item_with_data, explosion, remnant
+  if inputs.type ~= "recipe" then
+    item = data.raw["item"][name]
+    item_with_data = data.raw["item-with-entity-data"][name]
+    explosion = data.raw["explosion"][name .. "-explosion"]
+    remnant = data.raw["corpse"][name .. "-remnants"]
+  end
+
+  -- Check whether icon or icons, ensure the key we're not using is erased
+  if type(inputs.icon) == "table" then
+    -- Set icon_size and icon_mipmaps per icons specification
+    for n = 1, #inputs.icon do
+      if not inputs.icon[n].icon_size then
+        inputs.icon[n].icon_size = inputs.icon_size
+      end
+
+      if not inputs.icon[n].icon_mipmaps then
+        inputs.icon[n].icon_mipmaps = inputs.icon_mipmaps or 1
+      end
+    end
+
+    -- Create icons that have multiple layers
+    if entity then
+      entity.icon = nil
+      entity.icons = inputs.icon
+    end
+
+    if item then
+      item.icon = nil
+      item.icons = inputs.icon
+    end
+
+    if item_with_data then
+      item_with_data.icon = nil
+      item_with_data.icons = inputs.icon
+    end
+
+    if explosion then
+      explosion.icon = nil
+      explosion.icons = inputs.icon
+    end
+
+    if remnant then
+      remnant.icon = nil
+      remnant.icons = inputs.icon
+    end
+  else
+    -- Create icons that do not have multiple layers
+    if entity then
+      entity.icons = nil
+      entity.icon = inputs.icon
+      entity.icon_size = inputs.icon_size
+      entity.icon_mipmaps = inputs.icon_mipmaps
+    end
+
+    if item then
+      item.icons = nil
+      item.icon = inputs.icon
+      item.icon_size = inputs.icon_size
+      item.icon_mipmaps = inputs.icon_mipmaps
+    end
+
+    if item_with_data then
+      item_with_data.icons = nil
+      item_with_data.icon = inputs.icon
+      item_with_data.icon_size = inputs.icon_size
+      item_with_data.icon_mipmaps = inputs.icon_mipmaps
+    end
+
+    if explosion then
+      explosion.icons = nil
+      explosion.icon = inputs.icon
+      explosion.icon_size = inputs.icon_size
+      explosion.icon_mipmaps = inputs.icon_mipmaps
+    end
+
+    if remnant then
+      remnant.icons = nil
+      remnant.icon = inputs.icon
+      remnant.icon_size = inputs.icon_size
+      remnant.icon_mipmaps = inputs.icon_mipmaps
+    end
+  end
+
+  -- Handle picture definitions
+  if entity then
+    if inputs.icon_picture and inputs.make_entity_pictures then
+      entity.pictures = inputs.icon_picture
+    end
+  end
+
+  if item then
+    if inputs.icon_picture and inputs.make_icon_pictures then
+      item.pictures = inputs.icon_picture
+    end
+  end
+
+  -- item-with-entity-data prototypes ignore pictures field as of 1.0
+  -- this has been left active in the hopes the default behavior is adjusted
+  if item_with_data then
+    if inputs.icon_picture and inputs.make_icon_pictures then
+      item_with_data.pictures = inputs.icon_picture
+    end
+  end
+
+  -- Clear out recipe so that icon is inherited properly
+  if inputs.type ~= "recipe" then
+    seablock.reskins.clear_icon_specification(name, "recipe")
+  end
+end
+
+function seablock.reskins.clear_icon_specification(name, type)
+  -- Inputs required by this function:
+  -- type        - Entity type
+
+  -- Fetch entity
+  local entity = data.raw[type][name]
+
+  -- If the entity exists, clear the icon specification
+  if entity then
+    entity.icon = nil
+    entity.icons = nil
+    entity.icon_size = nil
+    entity.icon_mipmaps = nil
+  end
+end

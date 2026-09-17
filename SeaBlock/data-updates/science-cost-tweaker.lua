@@ -13,6 +13,20 @@ if mods["ScienceCostTweakerM"] then
   -- Reduce processing unit cost of S.C.T. high-tech science
   seablock.lib.substingredient("sct-htech-injector", "processing-unit", nil, 3)
 
+  -- S.C.T. gates each science pack behind a lab tier, and those tiers carry
+  -- prerequisites written for a tree where ore and oil come out of the ground.
+  -- Sea Block inverts both, so two of them close loops in the early game.
+
+  -- Lab 1 is part of the Sea Block tutorial chain, reached from Basic Circuit
+  -- Board before anything else exists. S.C.T. has it wait on Electronics and
+  -- Steam Power, which in Sea Block come after Slag Processing 1 -- which in
+  -- turn waits on red science, which waits on Lab 1. Clear them and let
+  -- data-updates/startup.lua put it back on sb-startup3, the way the other
+  -- tutorial technologies are handled.
+  if data.raw.technology["sct-lab-t1"] then
+    data.raw.technology["sct-lab-t1"].prerequisites = {}
+  end
+
   -- Hide empty tech (Lab 2 will have been moved to it's own tech sct-lab-lab2
   seablock.lib.hide_technology("bob-advanced-research")
 

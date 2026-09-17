@@ -171,4 +171,33 @@ env.feature_flags = {
   expansion_shaders = false,
 }
 
+---------------------------------------------------------------------------
+-- table.insert
+--
+-- Lua 5.1 accepted any position for table.insert; 5.2 added the "position out
+-- of bounds" check. Factorio's Lua does not enforce it, and mods rely on that:
+-- Bob's inserts its science pack at index 5 of a lab input list that another
+-- mod may have shortened to one entry. Clamp instead of erroring, so the
+-- harness follows the same path the game does.
+---------------------------------------------------------------------------
+local raw_insert = table.insert
+function env.install_permissive_table_insert()
+  table.insert = function(list, a, b)
+    if b == nil then
+      return raw_insert(list, a)
+    end
+    local position = a
+    if type(position) ~= "number" then
+      return raw_insert(list, position, b)
+    end
+    local limit = #list + 1
+    if position < 1 then
+      position = 1
+    elseif position > limit then
+      position = limit
+    end
+    return raw_insert(list, position, b)
+  end
+end
+
 return env

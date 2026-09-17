@@ -65,6 +65,22 @@ The harness is not a substitute for the game. It does not validate prototypes,
 and it stubs the graphics metadata that `factorio-data` strips. Treat a
 disagreement between the two as the harness being wrong.
 
+### Engine behaviour the harness has to match
+
+Three things the game does that plain Lua 5.2 does not, each found by a
+disagreement between the two:
+
+- **`require` resolves relative to the requiring file first**, then the mod
+  root, then `core/lualib`. ScienceCostTweakerM's `prototypes/0_entity.lua`
+  does `require("entities.intermediates")` for a file beside it.
+- **`forced_value` beats `default_value`** when resolving a startup setting. Sea
+  Block pins Bob's and Angel's options with `forced_value`, so reading only
+  `default_value` silently runs a different configuration than the game does.
+- **`table.insert` does not enforce its position bound.** Lua 5.1 allowed any
+  position and 5.2 added the check; Factorio kept the old behaviour and mods
+  rely on it — Bob's inserts its science pack at index 5 of a lab input list
+  another mod may have cut to one entry.
+
 ### A known flaky failure, and why it matters
 
 Roughly one run in three dies inside `angelsrefining`'s

@@ -35,6 +35,7 @@ serpent = env.serpent
 defines = env.defines
 table_size = env.table_size
 feature_flags = env.feature_flags
+env.install_permissive_table_insert()
 
 mods = {}
 for _, m in ipairs(mods_list) do
@@ -63,10 +64,15 @@ end
 -- exactly as the game does.
 ---------------------------------------------------------------------------
 local mod_stack = {}
+local dir_stack = {}
 local module_cache = {}
 
 local function current_mod()
   return mod_stack[#mod_stack]
+end
+
+local function current_dir()
+  return dir_stack[#dir_stack]
 end
 
 local function file_exists(path)
@@ -97,6 +103,16 @@ local function resolve(name)
   end
 
   local tried = {}
+
+  local dir = current_dir()
+  if dir then
+    local path = dir .. "/" .. normalised .. ".lua"
+    if file_exists(path) then
+      return path
+    end
+    tried[#tried + 1] = path
+  end
+
   local mod = current_mod()
   if mod then
     local path = mod_path[mod] .. "/" .. normalised .. ".lua"
@@ -186,6 +202,7 @@ function require(name)
     error("could not load " .. path .. ": " .. tostring(load_err), 2)
   end
   mod_stack[#mod_stack + 1] = owning_mod(path)
+  dir_stack[#dir_stack + 1] = path:match("^(.*)/[^/]*$")
   local ok, result = xpcall(chunk, function(e)
     -- Capture the traceback here, at the point of failure: re-raising through
     -- nested requires would otherwise discard every frame below this one.
@@ -195,6 +212,7 @@ function require(name)
     return tostring(e) .. "\nstack traceback:\n" .. debug.traceback("", 2)
   end, name)
   mod_stack[#mod_stack] = nil
+  dir_stack[#dir_stack] = nil
   if not ok then
     module_cache[path] = nil
     error(result, 0)
@@ -215,6 +233,7 @@ local function run_stage(stage)
     local path = m.path .. "/" .. stage .. ".lua"
     if file_exists(path) then
       mod_stack[#mod_stack + 1] = m.name
+      dir_stack[#dir_stack + 1] = m.path
       local chunk, load_err = loadfile(path)
       if not chunk then
         failures[#failures + 1] = { mod = m.name, stage = stage, err = tostring(load_err) }
@@ -227,6 +246,7 @@ local function run_stage(stage)
         end
       end
       mod_stack[#mod_stack] = nil
+      dir_stack[#dir_stack] = nil
       if #failures > 0 then
         -- A failed stage leaves data.raw inconsistent; stop like the game does.
         return false
@@ -267,7 +287,14 @@ for proto_type in pairs(setting_types) do
     local bucket = proto.setting_type == "runtime-global" and settings.global
       or proto.setting_type == "runtime-per-user" and settings.player
       or settings.startup
-    bucket[name] = { value = proto.default_value }
+    -- forced_value wins over default_value: a mod that sets it is pinning the
+    -- setting regardless of what the player chose, which is how Sea Block
+    -- locks down Bob's and Angel's options.
+    local value = proto.default_value
+    if proto.forced_value ~= nil then
+      value = proto.forced_value
+    end
+    bucket[name] = { value = value }
     if bucket == settings.startup then
       startup_count = startup_count + 1
     end

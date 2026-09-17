@@ -15,6 +15,16 @@ Date: ????
       has a Factorio 2.1 release
     - Removed the buff to Angel's Carbon 2 recipe, which Angel's no longer has
   Bugfixes:
+    - Fixed ScienceCostTweakerM compatibility, which stopped the pack loading entirely
+      - Its tech_replace folds sct-automation-science-pack into the base game's
+        automation-science-pack during data-final-fixes, after Sea Block has written the
+        sct- name into every startup technology's prerequisites
+      - Lab 1 waited on Electronics and Steam Power, which Sea Block places after the
+        technologies that need Lab 1
+      - Lab 3 waited on Oil Processing, which in Sea Block comes from blue algae and so
+        sits behind the blue science Lab 3 gates
+      - The runtime lab unlock and the configuration-changed migration both looked for the
+        sct- name, which does not exist once folded
     - Fixed the thermal bore keeping a duplicated pre-2.0 setup that overwrote its ported
       one with 1.1 prototype names, and restored the technology unlock for its water recipe
     - Fixed military technologies losing every science pack, which made them free to research

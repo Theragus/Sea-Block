@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.2
+Date: 2026-09-17
+  Bugfixes:
+    - Basic electronics no longer sits at 99% with a full progress bar
+      - Its "craft 10 copper plate" trigger is satisfied in the first minute, but Sea Block
+        had gated it behind Slag processing 1, and Factorio holds a satisfied trigger at 99%
+        while a prerequisite is unresearched, which looks exactly like a broken research
+      - The technology unlocks nothing in Sea Block, so the gate bought nothing: what it
+        guarded was its successors, and they carry their own prerequisites
+---------------------------------------------------------------------------------------------------
 Version: 2.1.1
 Date: 2026-09-17
   Bugfixes:

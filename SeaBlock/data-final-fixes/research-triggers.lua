@@ -187,3 +187,42 @@ end
 if repaired > 0 or removed > 0 then
   log(("Sea Block: repaired %d trigger technologies (%d had no prerequisites)"):format(repaired + removed, removed))
 end
+
+-- A trigger technology that unlocks nothing does not need Sea Block's gate.
+--
+-- Vanilla trigger technologies have no prerequisites: the trigger is the gate.
+-- Sea Block gives every technology that has none a prerequisite from its
+-- startup chain, which leaves triggers the player satisfies in the first minute
+-- attached to technologies they are not allowed to finish for hours. Factorio
+-- holds those at 99% with a full progress bar and calls them available, which
+-- looks exactly like a broken research -- electronics ("craft 10 copper plate")
+-- sat there until angels-slag-processing-1 came in.
+--
+-- Where such a technology unlocks nothing, the gate buys nothing either: what it
+-- guards is its successors, and they carry their own prerequisites. Dropping it
+-- lets the technology resolve when the player earns it and keeps the tree
+-- honest. Technologies that do unlock something keep their gate -- there the
+-- wait is the point.
+local gates = {
+  [seablock.final_startup_tech] = true,
+  [seablock.final_scripted_tech] = true,
+}
+
+local ungated = 0
+for name, technology in pairs(data.raw.technology) do
+  local prerequisites = technology.prerequisites or {}
+  if
+    technology.research_trigger
+    and #(technology.effects or {}) == 0
+    and #prerequisites == 1
+    and gates[prerequisites[1]]
+  then
+    technology.prerequisites = nil
+    ungated = ungated + 1
+    log(("Sea Block: %s unlocks nothing, so its trigger no longer waits on %s"):format(name, prerequisites[1]))
+  end
+end
+
+if ungated > 0 then
+  log(("Sea Block: ungated %d trigger technologies that unlock nothing"):format(ungated))
+end

@@ -42,6 +42,9 @@
     "ScienceCostTweakerM",
     "SeaBlock21",
 
-    "? LandfillPainting"
+    "? LandfillPainting",
+
+    "! SeaBlock",
+    "! SeaBlockMetaPack"
   ]
 }

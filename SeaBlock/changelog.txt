@@ -15,6 +15,22 @@ Date: ????
       has a Factorio 2.1 release
     - Removed the buff to Angel's Carbon 2 recipe, which Angel's no longer has
   Bugfixes:
+    - Fixed two icons that crashed the graphical client while loading fine headless
+      - sb-basic-circuit-board-tool declared icon_size 128 over Bob's 64px file, because
+        the data-final-fixes refresh that used to correct it looked for the pre-2.0 item
+        name and silently found nothing
+      - sb-angelsore3-tool pointed at a file that is in angelsrefininggraphics, not
+        angelsrefining
+      - With ScienceCostTweakerM, sb-startup4 declared icon_size 128 over its 64px lab icon
+      - The three tutorial cost items now carry base game placeholders and take their real
+        icon from the item they stand for, so another mod moving or resizing a file cannot
+        break them again
+    - Fixed references to prototypes Bob's and Angel's have since moved or removed
+      - Technology bob-tungsten-alloy-processing is now angels-tungsten-smelting-1
+      - moveeffect follows a recipe unlock that upstream has moved to a different
+        technology instead of giving up, since the destination is what matters
+      - Dropped settings removed by Bob's, Angel's and ScienceCostTweakerM, which logged
+        an error on every load and did nothing
     - Fixed ScienceCostTweakerM compatibility, which stopped the pack loading entirely
       - Its tech_replace folds sct-automation-science-pack into the base game's
         automation-science-pack during data-final-fixes, after Sea Block has written the

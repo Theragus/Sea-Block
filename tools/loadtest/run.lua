@@ -36,6 +36,9 @@ defines = env.defines
 table_size = env.table_size
 feature_flags = env.feature_flags
 env.install_permissive_table_insert()
+if os.getenv("LOADTEST_DETERMINISTIC") then
+  env.install_deterministic_pairs()
+end
 
 mods = {}
 for _, m in ipairs(mods_list) do
@@ -343,13 +346,23 @@ print(
 -- audits
 ---------------------------------------------------------------------------
 local audit_failures = 0
--- An audit script returns a function(data, mods, settings) -> number of
--- findings. Returning a bare number from the chunk also works.
+-- Resolve a "__mod__/path" reference to a real file, for audits that need to
+-- look at an asset rather than a prototype.
+local function resolve_asset(reference)
+  local mod, rest = reference:match("^__([^_]+[^/]*)__/(.*)$")
+  if not mod or not mod_path[mod] then
+    return nil
+  end
+  return mod_path[mod] .. "/" .. rest
+end
+
+-- An audit script returns a function(data, mods, settings, resolve_asset) ->
+-- number of findings. Returning a bare number from the chunk also works.
 for i = 2, #arg do
   local chunk = assert(loadfile(arg[i]))
-  local result = chunk(data, mods, settings)
+  local result = chunk(data, mods, settings, resolve_asset)
   if type(result) == "function" then
-    result = result(data, mods, settings)
+    result = result(data, mods, settings, resolve_asset)
   end
   audit_failures = audit_failures + (tonumber(result) or 0)
 end

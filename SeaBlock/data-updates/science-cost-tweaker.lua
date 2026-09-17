@@ -6,9 +6,11 @@ if mods["ScienceCostTweakerM"] then
     data.raw.lab["bob-lab-2"].module_slots = 2
   end
 
-  -- Change tech to use lab icon from SCT
-  data.raw["technology"]["sb-startup4"].icon = "__ScienceCostTweakerM__/graphics/sct-lab-t1/icon-64.png"
-  data.raw["technology"]["sb-startup4"].icon_mipmaps = 0
+  -- Change tech to use lab icon from SCT. sb-startup4 declares icon_size 128,
+  -- so it needs the 128px file: pointing at icon-64.png leaves a 128 square
+  -- declared over a 64x64 image, which the graphical client rejects even
+  -- though a headless server never loads the sprite at all.
+  data.raw["technology"]["sb-startup4"].icon = "__ScienceCostTweakerM__/graphics/sct-lab-t1/icon-128.png"
 
   -- Reduce processing unit cost of S.C.T. high-tech science
   seablock.lib.substingredient("sct-htech-injector", "processing-unit", nil, 3)

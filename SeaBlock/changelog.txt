@@ -1,13 +1,17 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.1.0
-Date: ????
-  Changes:
+Version: 2.1.1
+Date: 2026-09-17
+  Bugfixes:
     - Declared incompatible with SeaBlock and SeaBlockMetaPack, the mods this forks
       - Installing both leaves two copies transforming the same prototypes, and Sea Block's
         data stage is not idempotent: data-updates/fuel.lua reads a fuel value, uses it,
         then clears it a few lines later, so the second copy reads nil and dies somewhere
         that looks unrelated to having two mods installed
       - Factorio now refuses the combination up front and says why
+---------------------------------------------------------------------------------------------------
+Version: 2.1.0
+Date: 2026-09-17
+  Changes:
     - Renamed to SeaBlock21 for the mod portal, with the pack as SeaBlockMetaPack21
       - Mod portal names are unique per account and the originals are Trainwreck's, so a
         fork cannot publish under them. In-game titles are unchanged

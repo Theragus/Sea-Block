@@ -1,6 +1,6 @@
 {
   "name": "SeaBlockMetaPack21",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "factorio_version": "2.1",
   "title": "Sea Block Pack 2.1",
   "author": "Trainwreck, KiwiHawk, Theragus",
@@ -40,7 +40,7 @@
     "KS_Power",
     "Milestones",
     "ScienceCostTweakerM",
-    "SeaBlock21",
+    "SeaBlock21 >= 2.1.1",
 
     "? LandfillPainting",
 

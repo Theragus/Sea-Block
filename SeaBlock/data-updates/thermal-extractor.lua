@@ -64,17 +64,19 @@ extractor.ingredient_count = 2
 extractor.fluid_boxes = {
   {
     production_type = "input",
-    base_area = 10,
-    base_level = -1,
+    volume = 1000,
     pipe_covers = pipecoverspictures(),
-    pipe_connections = { { type = "input", position = { 5, 3 } } },
+    pipe_connections = {
+      { flow_direction = "input", direction = defines.direction.east, position = { 4, 3 } },
+    },
   },
   {
     production_type = "output",
-    base_area = 10,
-    base_level = 1,
+    volume = 1000,
     pipe_covers = pipecoverspictures(),
-    pipe_connections = { { type = "output", position = { -5, -3 } } },
+    pipe_connections = {
+      { flow_direction = "output", direction = defines.direction.west, position = { -4, -3 } },
+    },
   },
 }
 extractor.animation = {
@@ -101,14 +103,10 @@ bore.ingredient_count = 1
 bore.fluid_boxes = {
   {
     production_type = "output",
-    base_area = 1,
-    base_level = 1,
+    volume = 100,
     pipe_covers = pipecoverspictures(),
     pipe_connections = {
-      {
-        type = "output",
-        position = { -5, -3 },
-      },
+      { flow_direction = "output", direction = defines.direction.west, position = { -4, -3 } },
     },
   },
 }
@@ -120,38 +118,8 @@ bore.animation = {
 }
 bore.crafting_categories = { "sb-thermal-bore" }
 bore.fixed_recipe = "sb-thermal-bore-water"
+bobmods.lib.tech.add_recipe_unlock("angels-thermal-water-extraction", "sb-thermal-bore-water")
 
-local function makesheet(sheet, count, d)
-  local r = table.deepcopy(sheet)
-  r.stripes = makestripes(r.filename, count)
-  r.frame_count = count
-  r.filename = nil
-  r.x = r.width * d
-  if r.hr_version then
-    r.hr_version = makesheet(r.hr_version, count, d)
-  end
-  return r
-end
-local function makeborelayers(d)
-  return {
-    layers = {
-      makesheet(bore.base_picture.sheets[1], bore.animations.north.layers[1].frame_count, d),
-      makesheet(bore.base_picture.sheets[2], bore.animations.north.layers[1].frame_count, d),
-      bore.animations.north.layers[1],
-      bore.animations.north.layers[2],
-    },
-  }
-end
-bore.animation = {
-  north = makeborelayers(0),
-  east = makeborelayers(1),
-  south = makeborelayers(2),
-  west = makeborelayers(3),
-}
-bore.crafting_categories = { "thermal-bore" }
-bore.fixed_recipe = "thermal-bore-water"
-bobmods.lib.tech.add_recipe_unlock("thermal-water-extraction", "thermal-bore-water")
-move_item("thermal-bore", "water-treatment-building", "f[thermal-extractor]-a[bore]", "item")
 move_item("angels-thermal-bore", "angels-water-treatment-building", "f[thermal-extractor]-a[bore]", "item")
 
 -- Fish Pressing requires thermal water so add a prerequisite

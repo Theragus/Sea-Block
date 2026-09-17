@@ -22,6 +22,10 @@ bobmods.lib.tech.add_recipe_unlock("angels-bio-wood-processing", "bob-basic-circ
 bobmods.lib.tech.remove_prerequisite("angels-bio-wood-processing-2", "angels-bio-farm-1")
 bobmods.lib.tech.remove_prerequisite("angels-bio-wood-processing-2", "angels-bio-wood-processing")
 bobmods.lib.tech.add_prerequisite("angels-bio-wood-processing-2", "angels-bio-processing-brown")
+-- Angel's 2.x moved the coal processing prerequisite up from tier 3 to tier 2.
+-- In Sea Block coal comes from wood rather than the other way round, and basic
+-- chemistry is made to depend on this tier below, so keeping it is circular.
+bobmods.lib.tech.remove_prerequisite("angels-bio-wood-processing-2", "angels-coal-processing")
 bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-2", "angels-wood-charcoal")
 bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-3", "angels-bio-resin-wood-reprocessing")
 bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-2", "bob-rubber")

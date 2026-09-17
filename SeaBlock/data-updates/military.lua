@@ -121,14 +121,14 @@ local mil_items = {
   { type = "land-mine", name = "bob-slowdown-mine" },
   { type = "locomotive", name = "bob-armoured-locomotive-2" },
   { type = "locomotive", name = "bob-armoured-locomotive" },
-  { type = "tool", name = "bob-alien-science-pack-blue" },
-  { type = "tool", name = "bob-alien-science-pack-green" },
-  { type = "tool", name = "bob-alien-science-pack-orange" },
-  { type = "tool", name = "bob-alien-science-pack-purple" },
-  { type = "tool", name = "bob-alien-science-pack-red" },
-  { type = "tool", name = "bob-alien-science-pack-yellow" },
-  { type = "tool", name = "bob-alien-science-pack" },
-  { type = "tool", name = "bob-science-pack-gold" },
+  { type = "item", name = "bob-alien-science-pack-blue" },
+  { type = "item", name = "bob-alien-science-pack-green" },
+  { type = "item", name = "bob-alien-science-pack-orange" },
+  { type = "item", name = "bob-alien-science-pack-purple" },
+  { type = "item", name = "bob-alien-science-pack-red" },
+  { type = "item", name = "bob-alien-science-pack-yellow" },
+  { type = "item", name = "bob-alien-science-pack" },
+  { type = "item", name = "bob-science-pack-gold" },
   { type = "unit", name = "bob-robot-flamethrower-drone" },
   { type = "unit", name = "bob-robot-gun-drone" },
   { type = "unit", name = "bob-robot-laser-drone" },
@@ -487,8 +487,13 @@ for _, v in pairs(mil_tech) do
   end
 end
 
+-- Guarded like the item, ammo and technology loops above: the list spans
+-- several optional mods and Bob's own settings decide whether some of these
+-- recipes are created at all.
 for _, v in pairs(mil_recipes) do
-  bobmods.lib.recipe.hide(v)
+  if data.raw.recipe[v] then
+    bobmods.lib.recipe.hide(v)
+  end
 end
 
 -- Remove hidden upgrade
@@ -918,7 +923,7 @@ for _, v in pairs(mil_techswap) do
   if data.raw.technology[v.tech_name] then
     bobmods.lib.tech.clear_science_packs(v.tech_name)
     for _, science_pack in pairs(v.science_packs) do
-      if data.raw.tool[science_pack[1]] then
+      if data.raw.item[science_pack[1]] then
         bobmods.lib.tech.add_new_science_pack(v.tech_name, science_pack[1], science_pack[2])
       end
     end
@@ -964,7 +969,7 @@ if mods["bobwarfare"] then
   bobmods.lib.tech.add_prerequisite("bob-plasma-turrets-2", "military-4")
   bobmods.lib.tech.add_prerequisite("bob-plasma-turrets-2", "bob-battery-2")
   bobmods.lib.tech.add_prerequisite("bob-plasma-turrets-2", "angels-titanium-smelting-1")
-  seablock.lib.substingredient("bob-plasma-turret-2", "battery", "bob-lithium-ion-battery", nil)
+  seablock.lib.substingredient("bob-plasma-turret-2", "battery", "bob-battery-2", nil)
   seablock.lib.substingredient("bob-plasma-turret-2", "advanced-circuit", "processing-unit", 40)
   seablock.lib.substingredient("bob-plasma-turret-2", "steel-plate", "bob-titanium-plate", nil)
 
@@ -1054,14 +1059,12 @@ if mods["bobvehicleequipment"] then
 
   if mods["bobtech"] then
     bobmods.lib.tech.add_prerequisite("bob-vehicle-battery-equipment-5", "bob-advanced-logistic-science-pack")
-    bobmods.lib.tech.add_prerequisite("bob-vehicle-big-turret-equipment-5", "bob-advanced-logistic-science-pack")
     bobmods.lib.tech.add_prerequisite("bob-vehicle-shield-equipment-4", "bob-advanced-logistic-science-pack")
     bobmods.lib.tech.add_prerequisite("bob-vehicle-fission-cell-equipment-4", "bob-advanced-logistic-science-pack")
     bobmods.lib.tech.add_prerequisite("bob-vehicle-fission-reactor-equipment-4", "bob-advanced-logistic-science-pack")
   end
 
   bobmods.lib.tech.add_prerequisite("bob-vehicle-battery-equipment-6", "utility-science-pack")
-  bobmods.lib.tech.add_prerequisite("bob-vehicle-big-turret-equipment-6", "utility-science-pack")
   bobmods.lib.tech.add_prerequisite("bob-vehicle-shield-equipment-5", "utility-science-pack")
   bobmods.lib.tech.add_prerequisite("bob-vehicle-fission-cell-equipment-5", "utility-science-pack")
   bobmods.lib.tech.add_prerequisite("bob-vehicle-fission-reactor-equipment-5", "utility-science-pack")

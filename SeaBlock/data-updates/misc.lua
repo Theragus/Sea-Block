@@ -35,13 +35,31 @@ end
 
 -- Remove resources so mining recipes don't show in FNEI
 -- Have to leave at least one resource or game will not load
-for k, v in pairs(data.raw["resource"]) do
-  -- Sea-pump-resource is a virtual resource.
-  -- When the offshore pump is placed, it is supposed to be replaced by the resource and a mining-drill.
-  -- Removing the resource causes placement of heavy pumps to crash new maps.
-  if k ~= "sea-pump-resource" then
+local keep_resources = {
+  -- The sea pump resource is virtual: placing an offshore pump is supposed to
+  -- replace it with the resource plus a mining drill, so removing it crashes
+  -- heavy pump placement on new maps (#317). Angel's renamed it in 2.0, and
+  -- both spellings are kept here so a rename cannot silently take it away.
+  ["angels-sea-pump-resource"] = true,
+  ["sea-pump-resource"] = true,
+}
+
+local kept = 0
+for k, _ in pairs(data.raw["resource"]) do
+  if keep_resources[k] then
+    kept = kept + 1
+  else
     data.raw["resource"][k] = nil
   end
+end
+
+if kept == 0 then
+  -- Factorio refuses to load with no resource prototype at all, so fail here
+  -- with something that names the cause instead of at prototype validation.
+  error(
+    "Sea Block: no resource prototype survived removal. The sea pump resource was "
+      .. "probably renamed again; update keep_resources in data-updates/misc.lua."
+  )
 end
 
 -- Tidy prerequisite for Brass
@@ -59,12 +77,12 @@ end
 
 -- Tidy up ore silo prerequisites
 if mods["angelsaddons-storage"] then
-  bobmods.lib.tech.remove_prerequisite("ore-silos", "angels-coal-processing")
-  bobmods.lib.tech.replace_prerequisite("ore-silos", "angels-ore-crushing", "angels-ore-advanced-crushing")
+  bobmods.lib.tech.remove_prerequisite("angels-ore-silos", "angels-coal-processing")
+  bobmods.lib.tech.replace_prerequisite("angels-ore-silos", "angels-ore-crushing", "angels-ore-advanced-crushing")
 end
 
 -- Logistic System prerequisite of Pink Science
-if not data.raw.tool["bob-advanced-logistic-science-pack"] then
+if not data.raw.item["bob-advanced-logistic-science-pack"] then
   bobmods.lib.tech.add_prerequisite("logistic-system", "utility-science-pack")
 end
 

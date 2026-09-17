@@ -119,7 +119,8 @@ seablock.lib.hide("item", "bob-liquid-fuel-barrel")
 -- Swap out Nickel and Zinc plates
 seablock.lib.substingredient("bob-roboport-antenna-3", "bob-nickel-plate", "bob-titanium-plate", nil)
 bobmods.lib.recipe.remove_ingredient("bob-roboport-antenna-4", "bob-nickel-plate")
-seablock.lib.substingredient("bob-silver-zinc-battery", "bob-zinc-plate", "angels-solid-zinc-oxide", nil)
+-- Bob's 2.1 renamed its battery recipes; silver-zinc is bob-battery-3.
+seablock.lib.substingredient("bob-battery-3", "bob-zinc-plate", "angels-solid-zinc-oxide", nil)
 seablock.lib.substingredient("angels-thorium-fuel-cell", "bob-zinc-plate", "steel-plate", nil)
 seablock.lib.substingredient("angels-deuterium-fuel-cell", "bob-zinc-plate", "steel-plate", nil)
 

@@ -90,7 +90,7 @@ local upgrades = {
 for _, recipe_name in pairs(recipes) do
   local recipe = data.raw.recipe[recipe_name]
   if recipe and recipe.ingredients then
-    for _, item in pairs(recipe.ingredients) do
+    for _, item in pairs(recipe.ingredients or {}) do
       local upgrade = upgrades[item.name]
       if upgrade and (data.raw.item[upgrade] or data.raw.module[upgrade]) then
         item.name = upgrade

@@ -2,8 +2,10 @@
 local washing_fluid_box = {
   production_type = "output",
   pipe_covers = pipecoverspictures(),
-  base_level = 1,
-  pipe_connections = { { position = { -3, 0 }, type = "output" } },
+  volume = 100,
+  pipe_connections = {
+    { flow_direction = "output", direction = defines.direction.west, position = { -2, 0 } },
+  },
 }
 for _, v in pairs({ "", "-2", "-3", "-4" }) do
   local washingplant = data.raw["assembling-machine"]["angels-washing-plant" .. v]
@@ -14,18 +16,18 @@ end
 seablock.lib.addresult("angels-water-heavy-mud", { type = "fluid", name = "angels-gas-hydrogen-sulfide", amount = 2 })
 
 -- Sulfuric acid prerequisites
-bobmods.lib.tech.add_prerequisite("angels-sulfur-processing-1", "angels-water-washing-1")
+bobmods.lib.tech.add_prerequisite("sulfur-processing", "angels-water-washing-1")
 
 -- Sulfur 1 tech: Remove prerequisite Advanced lead smelting 1
-bobmods.lib.tech.remove_prerequisite("angels-sulfur-processing-1", "angels-lead-smelting-1")
+bobmods.lib.tech.remove_prerequisite("sulfur-processing", "angels-lead-smelting-1")
 
 -- Move Sulfur Dioxide Gas from Sulfur processing 2 to Sulfur processing 1
 bobmods.lib.tech.remove_recipe_unlock("angels-sulfur-processing-2", "angels-gas-sulfur-dioxide")
-bobmods.lib.tech.add_recipe_unlock("angels-sulfur-processing-1", "angels-gas-sulfur-dioxide")
+bobmods.lib.tech.add_recipe_unlock("sulfur-processing", "angels-gas-sulfur-dioxide")
 
 -- Move Sulfur from Sulfur processing 3 to Sulfur processing 1
 bobmods.lib.tech.remove_recipe_unlock("angels-sulfur-processing-3", "angels-solid-sulfur")
-bobmods.lib.tech.add_recipe_unlock("angels-sulfur-processing-1", "angels-solid-sulfur")
+bobmods.lib.tech.add_recipe_unlock("sulfur-processing", "angels-solid-sulfur")
 
 -- Sulfur is now available sooner so no longer need Sulfur 2 as a prerequisite
 -- Basic chem 2 isn't strictly required but don't want too many techs to depend directly on Green Science tech

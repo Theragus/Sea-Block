@@ -8,7 +8,7 @@ for i = 1, 6 do
   recipe.localised_name = { "recipe-name.angels-slag-processing", { "item-name.angels-ore" .. i } }
   recipe.order = "a-a [angels-ore-" .. i .. "]"
 
-  recipe.category = "angels-crystallizing"
+  recipe.categories = { "angels-crystallizing" }
   recipe.energy_required = 4
   recipe.ingredients = { { type = "fluid", name = "angels-mineral-sludge", amount = 25 } }
   recipe.results = { { type = "item", name = "angels-ore" .. i, amount = 1 } }
@@ -48,8 +48,6 @@ bobmods.lib.tech.remove_recipe_unlock("angels-ore-crushing", "angels-ore2-crushe
 bobmods.lib.tech.remove_recipe_unlock("angels-ore-crushing", "angels-ore4-crushed-processing")
 bobmods.lib.recipe.hide("angels-ore2-crushed-processing")
 bobmods.lib.recipe.hide("angels-ore4-crushed-processing")
-bobmods.lib.recipe.hide("angels-ore5-crushed-smelting")
-bobmods.lib.recipe.hide("angels-ore6-crushed-smelting")
 
 -- Add prerequisites
 bobmods.lib.tech.add_prerequisite("angels-ore-floatation", "angels-ore-advanced-crushing")
@@ -59,6 +57,11 @@ bobmods.lib.tech.add_prerequisite("angels-advanced-ore-refining-1", "angels-ore-
 seablock.lib.moveeffect("angels-ore-crusher", "angels-ore-crushing", "automation")
 bobmods.lib.tech.remove_prerequisite("angels-slag-processing-1", "angels-ore-crushing")
 bobmods.lib.tech.remove_prerequisite("angels-slag-processing-1", "logistic-science-pack")
+-- Angel's 2.x gates slag processing behind the base game's sulfur-processing,
+-- which it uses as its own sulfur tier 1. In Sea Block slag processing is the
+-- very first technology, and sulfur arrives later as a washing byproduct, so
+-- keeping that edge makes the early tree circular.
+bobmods.lib.tech.remove_prerequisite("angels-slag-processing-1", "sulfur-processing")
 bobmods.lib.tech.remove_prerequisite("angels-ore-crushing", "angels-basic-chemistry")
 bobmods.lib.tech.add_prerequisite("angels-ore-crushing", "angels-slag-processing-1")
 

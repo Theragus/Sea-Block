@@ -89,7 +89,7 @@ local elevation = data.raw["noise-expression"]["elevation"]
 
 elevation.local_expressions = {
   base = "basis_noise{x = x, y = y, seed0 = map_seed, seed1 = 5, input_scale = 1/32, output_scale = 6}",
-  starting_tile = "if(x = 1 and y = 1, 100, 0)",
+  starting_tile = "if(distance <= 1, 100, 0)",
 }
 
 elevation.expression =
@@ -136,19 +136,32 @@ local function new_random_seed()
 end
 
 local function worm_autoplace(distance, probability, order, falloff, control_name)
+  local probability_expression = "worm_autoplace("
+    .. distance
+    .. ","
+    .. probability
+    .. ","
+    .. falloff
+    .. ","
+    .. new_random_seed()
+    .. ")"
+
+  if control_name then
+    -- Setting enemies to "none" in map generation sets no_enemies_mode, which
+    -- the engine applies to the base game's worms through
+    -- enemy_worm_autoplace. A custom probability_expression bypasses that, so
+    -- anything placed under the enemy-base control has to apply it itself or
+    -- the setting does nothing (#353). The puffer nest is deliberately left
+    -- out: it is an Angel's resource that happens to sit on the enemy force,
+    -- not something the enemy setting should remove.
+    probability_expression = "(" .. probability_expression .. ") * (1 - no_enemies_mode)"
+  end
+
   return {
     control = control_name,
     order = order,
     force = "enemy",
-    probability_expression = "worm_autoplace("
-      .. distance
-      .. ","
-      .. probability
-      .. ","
-      .. falloff
-      .. ","
-      .. new_random_seed()
-      .. ")",
+    probability_expression = probability_expression,
     richness_expression = 1,
   }
 end

@@ -20,7 +20,7 @@ local function updateline(line)
   end
 end
 for _, recipe in pairs(data.raw.recipe) do
-  for _, v in pairs(recipe.ingredients) do
+  for _, v in pairs(recipe.ingredients or {}) do
     updateline(v)
   end
   if recipe.result and itemrename[recipe.result] then
@@ -131,35 +131,30 @@ for k, v in pairs(data.raw.technology) do
   end
 end
 
-for k, v in pairs(recipes) do
-  for _, recipe in pairs(v) do
-    local items = {}
-    if recipe.ingredients then
-      for _, ingredient in pairs(recipe.ingredients) do
-        local item = ingredient.name
-        if unobtainable[item] then
-          items[item] = true
-        end
+-- Before 2.0 each entry here was a table of normal/expensive variants, so the
+-- body ran once per difficulty. 2.0 removed the difficulty split: the entry is
+-- the recipe itself.
+for _, recipe in pairs(recipes) do
+  local items = {}
+  for _, ingredient in pairs(recipe.ingredients or {}) do
+    local item = ingredient.name
+    if unobtainable[item] then
+      items[item] = true
+    end
+  end
+  local results = {}
+  for _, w in pairs(recipe.results or {}) do
+    table.insert(results, w.name)
+  end
+  if next(items) ~= nil then
+    for _, r in pairs(results) do
+      if unobtainable[r] ~= nil then
+        table.insert(unobtainable[r], table.deepcopy(items))
       end
     end
-    local results = {}
-    if recipe.result then
-      results = { recipe.result }
-    elseif recipe.results then
-      for _, w in pairs(recipe.results) do
-        table.insert(results, w.name)
-      end
-    end
-    if next(items) ~= nil then
-      for _, r in pairs(results) do
-        if unobtainable[r] ~= nil then
-          table.insert(unobtainable[r], table.deepcopy(items))
-        end
-      end
-    else
-      for _, r in pairs(results) do
-        unobtainable[r] = nil
-      end
+  else
+    for _, r in pairs(results) do
+      unobtainable[r] = nil
     end
   end
 end
@@ -183,15 +178,21 @@ while work do
 end
 
 -- Add hidden flag to disabled items so they don't show up in circuit menu/item filter/FNEI etc.
+-- Several entries are fluids rather than items, and some come from optional
+-- mods, so dispatch on what actually exists.
 for k, _ in pairs(unobtainable) do
-  seablock.lib.hide_item(k)
+  if data.raw.fluid[k] then
+    seablock.lib.hide("fluid", k)
+  elseif data.raw.item[k] then
+    seablock.lib.hide_item(k)
+  end
 end
 
 -- Remove any recipe that uses an unobtainable ingredient
 for recipe_name, recipe in pairs(data.raw.recipe) do
   local keep = true
   if recipe.ingredients then
-    for _, ingredient in pairs(recipe.ingredients) do
+    for _, ingredient in pairs(recipe.ingredients or {}) do
       if unobtainable[ingredient.name] then
         keep = false
         break
@@ -203,8 +204,13 @@ for recipe_name, recipe in pairs(data.raw.recipe) do
   end
 end
 
+-- The list above names recipes from optional mods and from Bob's/Angel's
+-- versions that have since dropped them, so skip what this configuration does
+-- not have rather than logging a stack trace per absent name.
 for k, _ in pairs(removerecipes) do
-  bobmods.lib.recipe.hide(k)
+  if data.raw.recipe[k] then
+    bobmods.lib.recipe.hide(k)
+  end
 end
 
 -- Remove disabled recipes from technology unlock

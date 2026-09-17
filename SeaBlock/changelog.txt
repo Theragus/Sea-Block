@@ -1,4 +1,41 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.0
+Date: ????
+  Changes:
+    - Updated for Factorio 2.1, and for Bob's 3.0 and Angel's 2.1
+      - Science packs are items rather than tools, which 2.1 removed as a prototype type
+      - Recipe category is now the categories table
+      - Product probability is now independent_probability
+      - Fluid boxes use volume instead of base_area / base_level, and pipe connections
+        use flow_direction plus a direction, positioned inside the entity
+      - Renamed references Bob's and Angel's have changed: carbon, bob-battery-3,
+        angels-ore-silos, angels-sea-pump-resource, angels-bio-wood-processing,
+        and the base game's sulfur-processing as Angel's sulfur tier 1
+    - Dropped support for Explosive Excavation and Space Extension Mod, neither of which
+      has a Factorio 2.1 release
+    - Removed the buff to Angel's Carbon 2 recipe, which Angel's no longer has
+  Bugfixes:
+    - Fixed the thermal bore keeping a duplicated pre-2.0 setup that overwrote its ported
+      one with 1.1 prototype names, and restored the technology unlock for its water recipe
+    - Fixed military technologies losing every science pack, which made them free to research
+    - Fixed the starting island never being raised, because its noise expression compared
+      with = instead of ==
+    - Fixed all resources being removed, including the sea pump resource that heavy pump
+      placement needs and that Factorio requires at least one of
+    - Fixed technology tree cycles between slag processing, sulfur processing and the early
+      wood and chemistry technologies
+    - Fixed trigger technologies pointing at prototypes Sea Block removes, such as
+      oil-processing being triggered by mining crude oil
+    - Fixed technologies whose science packs no lab accepts, left behind by clearing the
+      alien lab's input list
+    - Fixed enemies not being removed when map generation sets them to none
+    - Fixed seablock.lib.hide_item and seablock.lib.unhide_recipe being called but never
+      defined, and unobtainable fluids being hidden as if they were items
+    - Fixed crashes on recipes that declare no ingredients or no results, which 2.0 allows
+    - Fixed the unobtainable item scan iterating recipe fields as if they were the
+      normal/expensive variants 2.0 removed
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 Version: 2.0.0
 Date: ???
   Changes:

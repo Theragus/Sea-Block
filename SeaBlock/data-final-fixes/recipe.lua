@@ -7,7 +7,7 @@ bobmods.lib.recipe.set_result("bob-insulated-cable", { type = "item", name = "bo
 -- Combine Stone and Crushed Stone
 for _, recipe in pairs(data.raw.recipe) do
   if recipe.ingredients then
-    for _, ingredient in pairs(recipe.ingredients) do
+    for _, ingredient in pairs(recipe.ingredients or {}) do
       if ingredient.name == "stone" then
         ingredient.amount = ingredient.amount * 2
       elseif ingredient.name == "angels-stone-crushed" then
@@ -16,7 +16,7 @@ for _, recipe in pairs(data.raw.recipe) do
     end
   end
   if recipe.results then --needed for recipes parameter- which have no results
-    for _, result in pairs(recipe.results) do
+    for _, result in pairs(recipe.results or {}) do
       if result.name == "stone" then
         result.amount = result.amount * 2
       elseif result.name == "angels-stone-crushed" then

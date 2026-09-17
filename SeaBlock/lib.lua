@@ -150,7 +150,7 @@ end
 function seablock.lib.substingredient(name, from, to, count)
   local recipe = data.raw.recipe[name]
   if recipe then
-    for _, ingredient in pairs(recipe.ingredients) do
+    for _, ingredient in pairs(recipe.ingredients or {}) do
       if ingredient.name == from then
         if to ~= nil then
           ingredient.name = to
@@ -169,7 +169,7 @@ end
 function seablock.lib.removeingredient(name, ingredient)
   local recipe = data.raw.recipe[name]
   if recipe then
-    for k, v in pairs(recipe.ingredients) do
+    for k, v in pairs(recipe.ingredients or {}) do
       if v.name == ingredient then
         table.remove(recipe.ingredients, k)
         return
@@ -184,7 +184,7 @@ end
 function seablock.lib.substresult(name, from, to, count)
   local recipe = data.raw.recipe[name]
   if recipe then
-    for _, result in pairs(recipe.results) do
+    for _, result in pairs(recipe.results or {}) do
       if result.name == from then
         if to ~= nil then
           result.name = to
@@ -295,6 +295,43 @@ function seablock.lib.hide(type_name, name)
       end
     end
   end
+end
+
+function seablock.lib.hide_item(name)
+  seablock.lib.hide("item", name)
+end
+
+---Build a research cost for a technology that has lost its own, by taking the
+---most demanding science pack set among its prerequisites. Keeps a repaired
+---technology roughly where it sat in the tree instead of dropping it to red
+---science.
+---@param technology table
+---@return table|nil unit nil when no prerequisite has a cost to inherit
+function seablock.lib.inherited_tech_unit(technology)
+  local ingredients, count, time = nil, 0, 0
+  for _, prerequisite_name in pairs(technology.prerequisites or {}) do
+    local prerequisite = data.raw.technology[prerequisite_name]
+    local unit = prerequisite and prerequisite.unit
+    if unit and unit.ingredients then
+      if not ingredients or #unit.ingredients > #ingredients then
+        ingredients = unit.ingredients
+      end
+      count = math.max(count, tonumber(unit.count) or 0)
+      time = math.max(time, tonumber(unit.time) or 0)
+    end
+  end
+  if not ingredients then
+    return nil
+  end
+  return {
+    count = math.max(count, 10),
+    ingredients = table.deepcopy(ingredients),
+    time = math.max(time, 15),
+  }
+end
+
+function seablock.lib.unhide_recipe(name)
+  seablock.lib.unhide("recipe", name)
 end
 
 function seablock.lib.remove_effect(technology_name, effect_type, effect_key, effect_value)

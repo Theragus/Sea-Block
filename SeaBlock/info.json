@@ -1,12 +1,12 @@
 {
-  "name": "SeaBlock",
+  "name": "SeaBlock21",
   "version": "2.1.0",
   "factorio_version": "2.1",
   "title": "Sea Block",
-  "author": "Trainwreck",
+  "author": "Trainwreck, KiwiHawk, Theragus",
   "contact": "",
-  "homepage": "https://forums.factorio.com/viewtopic.php?t=93136",
-  "description": "No ore patches, expand from a small island. Also install the 'Sea Block Pack - Official' mod for a complete modpack",
+  "homepage": "https://github.com/Theragus/Sea-Block",
+  "description": "No ore patches, expand from a small island. A continuation of Trainwreck and KiwiHawk's Sea Block for Factorio 2.1. Also install 'Sea Block Pack 2.1' for the complete modpack.",
   "dependencies": [
     "base",
     "angelsbioprocessing >= 2.1.1",

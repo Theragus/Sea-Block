@@ -63,7 +63,7 @@ CORE_PACK=(boblibrary bobores bobplates bobelectronics boblogistics bobassembly
            bobrevamp bobtech bobwarfare bobgreenhouse bobvehicleequipment bobclasses
            angelsrefining angelsrefininggraphics angelspetrochem angelspetrochemgraphics
            angelssmelting angelssmeltinggraphics angelsbioprocessing
-           angelsbioprocessinggraphics angelsaddons-storage SeaBlock)
+           angelsbioprocessinggraphics angelsaddons-storage SeaBlock21)
 
 run_config() {
   local label="$1"; shift

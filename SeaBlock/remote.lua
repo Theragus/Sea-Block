@@ -205,7 +205,7 @@ local function milestones_presets()
 
   return {
     ["Sea Block"] = {
-      required_mods = { "SeaBlock", "bobplates", "bobelectronics", "angelsbioprocessing", "angelspetrochem" },
+      required_mods = { "SeaBlock21", "bobplates", "bobelectronics", "angelsbioprocessing", "angelspetrochem" },
       milestones = milestones,
     },
   }
@@ -239,7 +239,7 @@ local function better_victory_screen_statistics(winning_force, forces)
   return { by_force = stats_by_force }
 end
 
-remote.add_interface("SeaBlock", {
+remote.add_interface("SeaBlock21", {
   get_unlocks = get_unlocks,
   set_unlock = set_unlock,
   get_starting_items = get_starting_items,

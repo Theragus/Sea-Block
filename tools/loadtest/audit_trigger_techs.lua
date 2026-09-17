@@ -73,7 +73,9 @@ return function(data, mods, settings)
       )
     )
   else
-    io.stderr:write(("\ntrigger tech audit: %d of %d trigger technologies will stall at 99%%\n"):format(#stalled, total))
+    io.stderr:write(
+      ("\ntrigger tech audit: %d of %d trigger technologies will stall at 99%%\n"):format(#stalled, total)
+    )
   end
   return #stalled
 end

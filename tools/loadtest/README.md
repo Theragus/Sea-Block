@@ -140,6 +140,7 @@ Sea Block loads after the mod that trips it and cannot get in front of it.
 | `audit_icons.lua` | every declared `icon_size` fits inside the actual PNG — the one class of breakage a headless server cannot see, because it never loads sprites |
 | `audit_starting_items.lua` | the starting rock chest can be filled — it runs in the control stage from chunk generation, where a missing item is non-recoverable, and neither a headless map creation nor a data stage load reaches it |
 | `audit_milestones_preset.lua` | the Milestones preset Sea Block serves from `remote.lua` names real prototypes — Milestones drops invalid entries rather than erroring, so the only symptom is a milestone quietly missing |
+| `audit_reachability.lua` | every disabled but visible recipe is unlocked by a technology the player can actually research — the soft-lock check, and the one that found red science being uncraftable |
 | `check_references.py` | cross-references names written in Sea Block's source against a dump, so renamed prototypes show up all at once |
 
 `LOADTEST_STOP_AFTER=data` stops after a given stage, which is how you find

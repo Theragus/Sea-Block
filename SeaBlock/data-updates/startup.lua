@@ -102,6 +102,20 @@ if data.raw.technology["sct-automation-science-pack"] then
     ingredients = {},
     time = 1,
   }
+
+  -- sct-automation-science-pack takes sb-startup4's place at the end of the
+  -- tutorial chain, so it has to inherit what sb-startup4 unlocked. Hiding
+  -- sb-startup4 without moving its effects strands them: the automation
+  -- science pack recipe is disabled and nothing else grants it, so red
+  -- science becomes uncraftable and the run cannot start.
+  local retired = data.raw.technology["sb-startup4"]
+  local replacement = data.raw.technology["sct-automation-science-pack"]
+  replacement.effects = replacement.effects or {}
+  for _, effect in pairs(retired.effects or {}) do
+    seablock.lib.add_effect(replacement, effect)
+  end
+  retired.effects = {}
+
   seablock.lib.hide_technology("sb-startup4")
 end
 

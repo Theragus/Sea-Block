@@ -21,6 +21,13 @@ Date: ????
       has a Factorio 2.1 release
     - Removed the buff to Angel's Carbon 2 recipe, which Angel's no longer has
   Bugfixes:
+    - Fixed the automation science pack being uncraftable with ScienceCostTweakerM
+      - sct-automation-science-pack takes sb-startup4's place at the end of the tutorial
+        chain, but hiding sb-startup4 stranded its unlocks rather than moving them, and
+        the red science recipe is disabled with nothing else to grant it
+      - Its effects are now handed to the replacement before it is retired
+    - Fixed recipe bob-rocket-engine being visible but unobtainable, since the technology
+      that unlocked it is one of the military ones Sea Block removes
     - Fixed stale names in the Milestones preset Sea Block serves
       - bob-tungsten-plate and bob-tungsten-carbide lost their prefix when the base game
         gained tungsten

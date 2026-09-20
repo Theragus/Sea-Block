@@ -1,4 +1,5 @@
 -- Coal removal
+seablock.lib.substingredient("firearm-magazine", "coal", "angels-wood-charcoal")
 seablock.lib.substingredient("grenade", "coal", "angels-wood-charcoal")
 seablock.lib.substingredient("explosives", "coal", "angels-wood-charcoal")
 seablock.lib.substingredient("bob-solid-fuel-from-hydrogen", "coal", "angels-wood-charcoal")

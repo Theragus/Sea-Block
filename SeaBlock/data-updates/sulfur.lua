@@ -21,6 +21,16 @@ bobmods.lib.tech.add_prerequisite("sulfur-processing", "angels-water-washing-1")
 -- Sulfur 1 tech: Remove prerequisite Advanced lead smelting 1
 bobmods.lib.tech.remove_prerequisite("sulfur-processing", "angels-lead-smelting-1")
 
+-- Sulfur 1 tech: Remove the green science prerequisites
+-- Bob's gates it behind chemical processing 2 and nickel processing, which Angel's remaps
+-- onto Basic chemistry 2 and Advanced nickel smelting. Both need green science, green
+-- science needs tin, tin comes from ore, all early ore comes from mineral sludge, and
+-- mineral sludge needs the sulfuric acid this tech unlocks. Basic chemistry 1 is the real
+-- requirement: it unlocks the chemical plant the acid is made in.
+bobmods.lib.tech.remove_prerequisite("sulfur-processing", "angels-basic-chemistry-2")
+bobmods.lib.tech.remove_prerequisite("sulfur-processing", "angels-nickel-smelting-1")
+bobmods.lib.tech.add_prerequisite("sulfur-processing", "angels-basic-chemistry")
+
 -- Move Sulfur Dioxide Gas from Sulfur processing 2 to Sulfur processing 1
 bobmods.lib.tech.remove_recipe_unlock("angels-sulfur-processing-2", "angels-gas-sulfur-dioxide")
 bobmods.lib.tech.add_recipe_unlock("sulfur-processing", "angels-gas-sulfur-dioxide")

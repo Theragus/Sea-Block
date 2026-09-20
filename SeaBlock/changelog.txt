@@ -1,4 +1,21 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.3
+Date: 2026-09-20
+  Bugfixes:
+    - Sulfur processing no longer waits on green science, which cannot be reached without it
+      - Bob's gates it behind chemical processing 2 and nickel processing, which Angel's
+        remaps onto Basic chemistry 2 and Advanced nickel smelting, both green science
+      - Green science needs tin, tin comes from ore, all early ore comes from mineral
+        sludge, and mineral sludge needs the sulfuric acid this technology unlocks, so the
+        run stopped at the first ores with nothing left to research towards
+      - It is now gated behind Basic chemistry 1, which unlocks the chemical plant the acid
+        is made in, and Water washing 1 as before
+    - Firearm magazines can be crafted again, and take charcoal rather than coal
+      - Bob's warfare puts coal in the recipe and Angel's leaves it there, but nothing in
+        Sea Block produces coal, so Military unlocked a bullet that could not be made
+      - Grenades, explosives and solid fuel were already moved onto charcoal; this is the
+        same substitution, which the coal removal pass had missed
+---------------------------------------------------------------------------------------------------
 Version: 2.1.2
 Date: 2026-09-17
   Bugfixes:

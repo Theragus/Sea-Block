@@ -1,0 +1,143 @@
+name: 💥 Crash or bug
+description: The game won't start, crashed, showed an error, or something works wrong.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this! This tracker is for **Sea Block for Factorio 2.1** (`SeaBlock21` on the mod portal).
+
+        **Can't research or craft something you need?** The **🔒 Stuck** form asks the right questions for that.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you start
+      options:
+        - label: I checked the [open issues](https://github.com/Theragus/Sea-Block/issues) and the [changelog](https://github.com/Theragus/Sea-Block/blob/main/SeaBlock/changelog.txt), and this isn't already reported or fixed.
+          required: true
+
+  - type: dropdown
+    id: problem-type
+    attributes:
+      label: What kind of problem is it?
+      options:
+        - Factorio won't start or says it failed to load mods
+        - Error when starting a new game
+        - Crash or error while playing
+        - Something works wrong, but nothing crashed
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What were you doing, and what went wrong? Screenshots help, so drag them in here.
+      placeholder: I placed a washing plant and the game closed with an error.
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-message
+    attributes:
+      label: Error message
+      description: |
+        If Factorio showed an error, paste or type it here. The `Modifications:` line under it matters most, because it names every mod that changed the broken thing.
+      placeholder: |
+        Failed to load mods: Error while loading item prototype "bob-enriched-fuel" (item): ...
+        Modifications: Bob's Metals, Chemicals and Intermediates mod › Artisanal Reskins: Bob's Mods › Sea Block › Angel's Petrochemical Processing
+      render: text
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we make it happen again?
+      description: Steps that cause it on your game. Skip this if it happens every time you start Factorio.
+      placeholder: |
+        1. Start a new game
+        2. Research Water washing 1
+        3. Build a washing plant
+        4. ...
+
+  - type: input
+    id: sea-block-version
+    attributes:
+      label: Sea Block version
+      description: Main menu → Mods, then find Sea Block in the list.
+      placeholder: 2.1.3
+    validations:
+      required: true
+
+  - type: input
+    id: factorio-version
+    attributes:
+      label: Factorio version
+      description: Also on the first line of the log file. Sea Block needs 2.1.x.
+      placeholder: 2.1.20
+    validations:
+      required: true
+
+  - type: dropdown
+    id: save
+    attributes:
+      label: Which game did this happen in?
+      description: Older saves matter because not every update can convert them yet.
+      options:
+        - The game doesn't get that far (it fails on start)
+        - A new game
+        - A save I started with the same mod versions I have now
+        - A save I started before updating Sea Block or other mods
+        - A save I started with the original Sea Block
+    validations:
+      required: true
+
+  - type: dropdown
+    id: players
+    attributes:
+      label: Single player or multiplayer?
+      options:
+        - Single player
+        - Multiplayer
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Finding your log file
+
+        The log records your Factorio version and every mod with its version, so it answers most of our questions at once.
+
+        | System | Where to look |
+        | --- | --- |
+        | Windows | Press <kbd>Win</kbd>+<kbd>R</kbd>, paste `%appdata%\Factorio` and press Enter |
+        | macOS | In Finder: Go → Go to Folder…, then paste `~/Library/Application Support/factorio` |
+        | Linux | `~/.factorio` (Flatpak Steam: `~/.var/app/com.valvesoftware.Steam/.factorio`) |
+
+        Attach **`factorio-current.log`**. **Restarted Factorio since it happened?** Attach **`factorio-previous.log`** instead, because every launch starts a fresh log.
+
+        The log includes your Factorio username and some folder paths. There's nothing else personal in it.
+
+  - type: upload
+    id: log
+    attributes:
+      label: Log file
+      description: "`factorio-current.log`, or `factorio-previous.log` if you restarted since."
+    validations:
+      required: true
+      accept: ".log,.txt,.zip"
+
+  - type: upload
+    id: save-file
+    attributes:
+      label: Save file
+      description: Optional, but it lets us load your exact game. Saves are in the `saves` folder next to the log.
+    validations:
+      required: false
+      accept: ".zip"
+
+  - type: input
+    id: portal-thread
+    attributes:
+      label: Mod portal thread
+      description: Already posted this on the mod portal? Paste the link so we can reply in both places.
+      placeholder: https://mods.factorio.com/mod/SeaBlock21/discussion/...

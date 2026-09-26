@@ -1,0 +1,149 @@
+name: 🔒 Stuck, can't research or craft something
+description: A technology, item or building you need can't be reached, or you're not sure whether it's meant to be that way.
+labels: ["bug", "progression"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        In Sea Block everything comes out of the sea, so one missing link can stop a whole game. These reports are the most useful ones we get.
+
+        **Two quick checks first:**
+        - **Research stuck at 99%?** Research that completes by crafting or mining something waits at 99% until every technology it needs is researched. Check those first.
+        - **An item seems impossible to make?** Many items have more than one recipe. Look it up in Factoriopedia, or in FNEI if you have the Sea Block Pack.
+
+        **Not sure if it's a bug or intended?** Report it anyway.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you start
+      options:
+        - label: I checked the [open issues](https://github.com/Theragus/Sea-Block/issues) and the [changelog](https://github.com/Theragus/Sea-Block/blob/main/SeaBlock/changelog.txt), and this isn't already reported or fixed.
+          required: true
+
+  - type: input
+    id: stuck-on
+    attributes:
+      label: What can't you get?
+      description: The technology, item or building you're stuck on, with its in-game name.
+      placeholder: Sulfur processing (technology)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stuck-kind
+    attributes:
+      label: What's happening?
+      options:
+        - A technology needs something I can't get yet
+        - A recipe needs an item that nothing makes
+        - A research is stuck at 99% or won't finish
+        - Something is unlocked, but I still can't craft it
+        - I'm not sure if it's a bug or by design
+    validations:
+      required: true
+
+  - type: textarea
+    id: chain
+    attributes:
+      label: What's blocking it?
+      description: Follow the chain back until you reach the thing you can't make. In-game names are perfect, and screenshots of tooltips help too.
+      placeholder: |
+        Sulfur processing needs Advanced nickel smelting
+        → which needs Logistic science pack (green)
+        → which needs tin
+        → which needs sulfuric acid
+        → which needs Sulfur processing, the thing I'm trying to get
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sct
+    attributes:
+      label: Is ScienceCostTweaker enabled?
+      description: It comes with the Sea Block Pack and changes the technology tree a lot, so the answer is often different with and without it. Look for "ScienceCostTweaker Mod (mexmer)" under Main menu → Mods.
+      options:
+        - "Yes"
+        - "No"
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: sea-block-version
+    attributes:
+      label: Sea Block version
+      description: Main menu → Mods, then find Sea Block in the list.
+      placeholder: 2.1.3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: save
+    attributes:
+      label: Which game are you playing?
+      description: Older saves matter because not every update can convert them yet.
+      options:
+        - A new game
+        - A save I started with the same mod versions I have now
+        - A save I started before updating Sea Block or other mods
+        - A save I started with the original Sea Block
+    validations:
+      required: true
+
+  - type: dropdown
+    id: players
+    attributes:
+      label: Single player or multiplayer?
+      options:
+        - Single player
+        - Multiplayer
+
+  - type: upload
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: The technology tree or the recipe tooltip, showing what's missing.
+    validations:
+      required: false
+      accept: ".png,.jpg,.jpeg,.gif,.webp,.mp4,.webm"
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Finding your log file and saves
+
+        The log records your Factorio version and every mod with its version. Your saves are in the `saves` folder next to it.
+
+        | System | Where to look |
+        | --- | --- |
+        | Windows | Press <kbd>Win</kbd>+<kbd>R</kbd>, paste `%appdata%\Factorio` and press Enter |
+        | macOS | In Finder: Go → Go to Folder…, then paste `~/Library/Application Support/factorio` |
+        | Linux | `~/.factorio` (Flatpak Steam: `~/.var/app/com.valvesoftware.Steam/.factorio`) |
+
+        The log includes your Factorio username and some folder paths. There's nothing else personal in it.
+
+  - type: upload
+    id: log
+    attributes:
+      label: Log file
+      description: Optional, but it tells us your exact mod versions. Attach `factorio-current.log` from the folder above.
+    validations:
+      required: false
+      accept: ".log,.txt,.zip"
+
+  - type: upload
+    id: save-file
+    attributes:
+      label: Save file
+      description: Optional, but it lets us load your game and see exactly where it stops.
+    validations:
+      required: false
+      accept: ".zip"
+
+  - type: input
+    id: portal-thread
+    attributes:
+      label: Mod portal thread
+      description: Already posted this on the mod portal? Paste the link so we can reply in both places.
+      placeholder: https://mods.factorio.com/mod/SeaBlock21/discussion/...

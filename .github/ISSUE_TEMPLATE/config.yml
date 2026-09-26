@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Question or chat
+    url: https://mods.factorio.com/mod/SeaBlock21/discussion
+    about: How do I…? Is there a trick to…? Ask on the mod portal, where other players can help too.
+  - name: 🏝️ Playing the original Sea Block for Factorio 1.1?
+    url: https://github.com/modded-factorio/SeaBlock/issues
+    about: This tracker is only for Sea Block for Factorio 2.1 (SeaBlock21). Report problems with the original mod upstream.

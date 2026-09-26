@@ -23,15 +23,17 @@ seablock.lib.moveeffect("angels-pellet-coke", "angels-coal-cracking", "angels-co
 angelsmods.functions.move_item("angels-pellet-coke", "angels-bio-processing-wood", "f[pellet-coke]")
 angelsmods.functions.move_item("angels-pellet-coke", "angels-bio-processing-wood", "f[pellet-coke]", "recipe")
 
--- Clear fuel value so these don't appear in Helmod's fuel picker
-data.raw.item["carbon"].fuel_emissions_multiplier = nil
-data.raw.item["carbon"].fuel_value = nil
-data.raw.item["carbon"].fuel_category = nil
-data.raw.item["coal"].fuel_emissions_multiplier = nil
-data.raw.item["coal"].fuel_value = nil
-data.raw.item["coal"].fuel_category = nil
-data.raw.item["angels-coal-crushed"].fuel_value = nil
-data.raw.item["angels-coal-crushed"].fuel_category = nil
+-- Clear fuel value so these don't appear in Helmod's fuel picker. Factorio
+-- 2.1.20 renamed fuel_category to fuel_categories; the base game already uses
+-- the new name for coal, while Bob's and Angel's still set the old one, so both
+-- are cleared or coal is left a fuel worth nothing.
+for _, name in pairs({ "carbon", "coal", "angels-coal-crushed" }) do
+  local item = data.raw.item[name]
+  item.fuel_emissions_multiplier = nil
+  item.fuel_value = nil
+  item.fuel_category = nil
+  item.fuel_categories = nil
+end
 
 -- Move charcoal processing 3 to purple science
 -- Sodium carbonate is unusable before then

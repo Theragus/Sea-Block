@@ -15,13 +15,21 @@ BuffLandfill("angels-solid-mud-landfill")
 
 local default_landfill = "landfill"
 
--- Make landfill tech cheaper
+-- Make landfill a red science tech, straight after the Water washing 1 that
+-- makes the mud, as Sea Block 0.5 had it. The 2.0 rewrite kept the cost but
+-- lost these lines, which left the base game's Logistic science pack
+-- prerequisite in place: a 10 red science tech behind over 20 others, and mud
+-- landfill behind green science with Water washing 2.
+data.raw.technology["landfill"].prerequisites = { "angels-water-washing-1" }
 data.raw.technology["landfill"].unit = {
   count = 10,
   ingredients = { { "automation-science-pack", 1 } },
   time = 15,
 }
 bobmods.lib.tech.ignore_tech_cost_multiplier("landfill", true)
+bobmods.lib.tech.remove_prerequisite("angels-water-washing-2", "landfill")
+bobmods.lib.tech.remove_recipe_unlock("angels-water-washing-2", "angels-solid-mud-landfill")
+bobmods.lib.tech.add_recipe_unlock("landfill", "angels-solid-mud-landfill")
 
 -- For blueprint pasting on water
 local tile = data.raw.item[default_landfill].place_as_tile.result

@@ -3,12 +3,6 @@ seablock = seablock or {}
 require("starting-items")
 require("remote")
 
-function seablock.give_research(force)
-  if not force.technologies["sb-startup1"].researched then
-    force.add_research("sb-startup1")
-  end
-end
-
 function seablock.create_rock_chest(surface, pos)
   local has_items = false
 
@@ -77,6 +71,9 @@ local function init()
       remote.call("freeplay", "set_disable_crashsite", true)
     end
   end
+  -- The tutorial technologies complete through their research triggers. This
+  -- also completes them when a player holds the item without its having been
+  -- crafted, which the triggers do not count.
   storage.unlocks = {
     ["angels-ore3-crushed"] = { "sb-startup1", "angels-bio-wood-processing" },
     ["bob-basic-circuit-board"] = { "sb-startup3", "sct-lab-t1" },
@@ -94,14 +91,6 @@ local function init()
     remote.call("freeplay", "set_created_items", created_items)
   end
 end
-
-script.on_event(defines.events.on_player_joined_game, function(e)
-  seablock.give_research(game.players[e.player_index].force)
-end)
-
-script.on_event(defines.events.on_force_created, function(e)
-  seablock.give_research(e.force)
-end)
 
 script.on_event(defines.events.on_chunk_generated, function(e)
   local surface = e.surface

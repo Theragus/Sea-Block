@@ -1,38 +1,10 @@
--- The three sb-*-tool items exist only to put a recognisable cost on the
--- tutorial technologies in the tech tree; control.lua completes those
--- technologies outright. Their icons are copied from the real prototypes in
--- data-final-fixes, so the ones here are base game placeholders: pointing
--- straight at another mod's file means a silent break every time that mod
--- moves or resizes it, and Sea Block does not depend on the graphics mods
--- those files actually live in.
+-- The tutorial technologies are research triggers: the player completes each
+-- by making the item it names, before any lab exists. The tech tree says so
+-- ("Craft Crushed stiratite") instead of showing a science pack cost. A
+-- craft-item trigger counts what machines make as well as hand crafting, so
+-- the burner ore crusher's output completes sb-startup1. control.lua still
+-- completes them when the player merely holds the item, as a fallback.
 data:extend({
-  {
-    type = "item",
-    name = "sb-angelsore3-tool",
-    localised_name = { "item-name.angels-ore3-crushed" },
-    icon = "__base__/graphics/icons/iron-ore.png",
-    icon_size = 64,
-    hidden = true,
-    stack_size = 100,
-  },
-  {
-    type = "item",
-    name = "sb-basic-circuit-board-tool",
-    localised_name = { "item-name.basic-circuit-board" },
-    icon = "__base__/graphics/icons/electronic-circuit.png",
-    icon_size = 64,
-    hidden = true,
-    stack_size = 100,
-  },
-  {
-    type = "item",
-    name = "sb-lab-tool",
-    localised_name = { "item-name.lab" },
-    icon = "__base__/graphics/icons/lab.png",
-    icon_size = 64,
-    hidden = true,
-    stack_size = 100,
-  },
   {
     type = "technology",
     name = "sb-startup1",
@@ -43,11 +15,7 @@ data:extend({
       { type = "unlock-recipe", recipe = "copper-plate" },
       { type = "unlock-recipe", recipe = "copper-cable" },
     },
-    unit = {
-      count = 1,
-      ingredients = { { "sb-angelsore3-tool", 1 } },
-      time = 1,
-    },
+    research_trigger = { type = "craft-item", item = "angels-ore3-crushed" },
   },
   {
     type = "technology",
@@ -66,11 +34,9 @@ data:extend({
       { type = "unlock-recipe", recipe = "iron-chest" },
     },
     prerequisites = { "angels-bio-wood-processing" },
-    unit = {
-      count = 1,
-      ingredients = { { "sb-basic-circuit-board-tool", 1 } },
-      time = 1,
-    },
+    -- The 200 boards in the starting rock chest do not count: only a crafted
+    -- one does, which is what the tutorial asks for.
+    research_trigger = { type = "craft-item", item = "bob-basic-circuit-board" },
   },
   {
     type = "technology",
@@ -81,11 +47,7 @@ data:extend({
       { type = "unlock-recipe", recipe = "automation-science-pack" },
     },
     prerequisites = { "sb-startup3" },
-    unit = {
-      count = 1,
-      ingredients = { { "sb-lab-tool", 1 } },
-      time = 1,
-    },
+    research_trigger = { type = "craft-item", item = "lab" },
   },
   {
     type = "technology",

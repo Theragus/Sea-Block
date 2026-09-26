@@ -97,11 +97,11 @@ if data.raw.technology["sct-automation-science-pack"] then
 
   data.raw.technology["sct-automation-science-pack"].research_trigger = { type = "craft-item", item = "lab" }
   data.raw.technology["sct-automation-science-pack"].unit = nil
-  data.raw.technology["sct-lab-t1"].unit = {
-    count = 1,
-    ingredients = {},
-    time = 1,
-  }
+  -- Lab 1 completes with sb-startup3, on the first crafted board. S.C.T. asks
+  -- for ten, which the tech tree would show while control.lua completes it
+  -- after one.
+  data.raw.technology["sct-lab-t1"].research_trigger = { type = "craft-item", item = "bob-basic-circuit-board" }
+  data.raw.technology["sct-lab-t1"].unit = nil
 
   -- sct-automation-science-pack takes sb-startup4's place at the end of the
   -- tutorial chain, so it has to inherit what sb-startup4 unlocked. Hiding
@@ -214,10 +214,11 @@ for k, v in pairs(seablock.startup_techs) do
   end
 end
 
--- Make bio-wood-processing a startup tutorial tech
+-- Make bio-wood-processing a startup tutorial tech. It completes with
+-- sb-startup1, from the same crushed stiratite: Factorio records a trigger met
+-- while a prerequisite is unresearched and finishes the technology once the
+-- prerequisite is done.
 data.raw.technology["angels-bio-wood-processing"].prerequisites = { "sb-startup1" }
-data.raw.technology["angels-bio-wood-processing"].unit = {
-  count = 1,
-  ingredients = {},
-  time = 1,
-}
+data.raw.technology["angels-bio-wood-processing"].research_trigger =
+  { type = "craft-item", item = "angels-ore3-crushed" }
+data.raw.technology["angels-bio-wood-processing"].unit = nil

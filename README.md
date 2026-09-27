@@ -30,7 +30,7 @@ made everything else testable.
 
 ## Status
 
-**It loads and generates maps. It has not been play-tested.**
+**It loads and generates maps. It has been play-tested up until green science.**
 
 Verified against Factorio 2.1.19 and 2.1.20 headless with Bob's 3.0.x and Angel's 2.1.x,
 with and without ScienceCostTweakerM, and with enemies both on and disabled.

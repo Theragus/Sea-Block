@@ -121,9 +121,9 @@ body:
     id: log
     attributes:
       label: Log file
-      description: "`factorio-current.log`, or `factorio-previous.log` if you restarted since."
+      description: "Optional, but strongly recommended. `factorio-current.log`, or `factorio-previous.log` if you restarted since."
     validations:
-      required: true
+      required: false
       accept: ".log,.txt,.zip"
 
   - type: upload

@@ -106,9 +106,49 @@ run_config() {
     "$HERE/audit_trigger_techs.lua" "$HERE/audit_tutorial_techs.lua"
 }
 
+# Sea Block's main menu scenes build everything by name from script, so a
+# rename in Bob's or Angel's breaks them without breaking the load. menusim/
+# plays each one on the core pack and fails on a script error or on any
+# machine in it that is not running.
+run_menusim() {
+  echo
+  echo "== menu simulations =="
+  local enables=()
+  for mod in "${CORE_PACK[@]}" sb-menusim-test; do enables+=(--enable "$mod"); done
+  python3 "$HERE/build_mods.py" "${ROOTS[@]}" --root "$HERE/menusim" "${enables[@]}" \
+    --out "$GAME/mods" >/dev/null
+
+  rm -f "$WORK/menusim.zip"
+  if ! "$GAME/bin/x64/factorio" --create "$WORK/menusim.zip" \
+        --mod-directory "$GAME/mods" >"$WORK/menusim-create.log" 2>&1; then
+    echo "FAILED: could not create a map with the menu simulation test mod"
+    grep -a "Error" "$WORK/menusim-create.log" | tail -20
+    return 1
+  fi
+  # Enough ticks for every scene's warm-up and length back to back.
+  "$GAME/bin/x64/factorio" --benchmark "$WORK/menusim.zip" --benchmark-ticks 6000 \
+    --benchmark-runs 1 --mod-directory "$GAME/mods" >"$WORK/menusim.log" 2>&1 || true
+
+  grep -a "^MENUSIM" "$WORK/menusim.log" | grep -av "^MENUSIM MAP" | sed 's/^MENUSIM /  /'
+  if grep -aq "Error while running" "$WORK/menusim.log"; then
+    echo "FAILED: the test mod itself errored"
+    grep -a -A10 "Error while running" "$WORK/menusim.log"
+    return 1
+  fi
+  if ! grep -aq "^MENUSIM DONE" "$WORK/menusim.log"; then
+    echo "FAILED: the scenes did not all finish"
+    return 1
+  fi
+  if grep -aq "^MENUSIM FAIL" "$WORK/menusim.log"; then
+    echo "FAILED: see the MENUSIM FAIL lines above; $WORK/menusim.log has a map of each scene"
+    return 1
+  fi
+}
+
 failed=0
 run_config core "${CORE_PACK[@]}" || failed=1
 run_config sct "${CORE_PACK[@]}" ScienceCostTweakerM || failed=1
+run_menusim || failed=1
 
 echo
 if [ "$failed" -eq 0 ]; then

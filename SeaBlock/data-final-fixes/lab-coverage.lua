@@ -70,16 +70,12 @@ for _, candidate in ipairs({ "automation-science-pack", "logistic-science-pack" 
   end
 end
 
-local rewritten, expected = 0, 0
+local rewritten = 0
 for name, technology in pairs(data.raw.technology) do
   local packs = pack_names(technology.unit)
   if #packs > 0 then
     local covered, best = coverage(packs)
     if not covered then
-      -- Sea Block's tutorial technologies are completed from control.lua the
-      -- moment the player obtains the matching item, so their cost is only
-      -- ever a tech tree label. They are expected here, not a symptom.
-      local scripted = (seablock.scripted_techs or {})[name] == true
       local hidden = technology.hidden == true or technology.enabled == false
 
       local kept = {}
@@ -92,8 +88,6 @@ for name, technology in pairs(data.raw.technology) do
 
       if #kept > 0 then
         technology.unit.ingredients = kept
-      elseif scripted then
-        technology.unit = { count = 1, ingredients = { { fallback_pack, 1 } }, time = 1 }
       else
         -- Nothing of the original cost survives, so take the prerequisites'
         -- cost rather than dropping an endgame technology to red science.
@@ -101,29 +95,20 @@ for name, technology in pairs(data.raw.technology) do
           or { count = 1, ingredients = { { fallback_pack, 1 } }, time = 1 }
       end
 
-      if scripted then
-        expected = expected + 1
-      else
-        rewritten = rewritten + 1
-        local note = hidden and "hidden" or "VISIBLE, so its branch may have been pruned by mistake"
-        log(
-          ("Sea Block: technology %s (%s) required %s, which no lab accepts; rewritten as %s"):format(
-            name,
-            note,
-            table.concat(packs, " + "),
-            table.concat(pack_names(technology.unit), " + ")
-          )
+      rewritten = rewritten + 1
+      local note = hidden and "hidden" or "VISIBLE, so its branch may have been pruned by mistake"
+      log(
+        ("Sea Block: technology %s (%s) required %s, which no lab accepts; rewritten as %s"):format(
+          name,
+          note,
+          table.concat(packs, " + "),
+          table.concat(pack_names(technology.unit), " + ")
         )
-      end
+      )
     end
   end
 end
 
-if rewritten > 0 or expected > 0 then
-  log(
-    ("Sea Block: rewrote %d technology costs with no matching lab (%d scripted tutorial technologies)"):format(
-      rewritten + expected,
-      expected
-    )
-  )
+if rewritten > 0 then
+  log(("Sea Block: rewrote %d technology costs with no matching lab"):format(rewritten))
 end

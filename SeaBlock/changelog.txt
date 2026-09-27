@@ -1,4 +1,24 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.5
+Date: 2026-09-27
+  Bugfixes:
+    - The first tutorial technologies no longer look like they cost red science (#12)
+      - Crush stiratite, Basic circuit board and Laboratory were priced in hidden stand-in
+        items that no lab accepts. Factorio 2.1 refuses to load that, so Sea Block rewrote
+        each cost to one automation science pack, and the tech tree asked for red science
+        before a lab could exist, which read as a soft-lock
+      - They are now research triggers, so the tech tree says "Craft Crushed stiratite",
+        "Craft Basic circuit board" and "Craft Lab". Each completes when that item is made,
+        by hand or in a machine, so crushed stiratite from the burner ore crusher counts
+      - Wood processing, and the Electromagnetism Lab with ScienceCostTweakerM, now show the
+        same trigger as the technology before them and still complete alongside it
+      - Only crafted circuit boards count, as before; the ones in the starting chest do not
+      - Existing saves keep their progress. Factorio drops a tutorial technology left in
+        the research queue by earlier versions, since a lab can no longer research it
+  Changes:
+    - Removed the hidden stand-in items sb-angelsore3-tool, sb-basic-circuit-board-tool and
+      sb-lab-tool
+---------------------------------------------------------------------------------------------------
 Version: 2.1.4
 Date: 2026-09-26
   Bugfixes:

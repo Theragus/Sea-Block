@@ -51,6 +51,12 @@ bobmods.lib.tech.replace_prerequisite(
 bobmods.lib.tech.remove_prerequisite("angels-bio-processing-blue", "chemical-science-pack")
 bobmods.lib.tech.remove_science_pack("angels-bio-processing-blue", "chemical-science-pack")
 bobmods.lib.tech.remove_recipe_unlock("angels-bio-processing-blue", "angels-algae-farm-4")
+-- Angel's gates Blue algae on concrete brick and aluminium for Algae farm 4,
+-- which sb-bio-processing-advanced unlocks instead and carries both
+-- prerequisites itself. Left in, they put Blue algae, and with it Sea Block's
+-- only crude oil, behind blue science.
+bobmods.lib.tech.remove_prerequisite("angels-bio-processing-blue", "angels-stone-smelting-2")
+bobmods.lib.tech.remove_prerequisite("angels-bio-processing-blue", "angels-aluminium-smelting-1")
 bobmods.lib.recipe.set_category("angels-algae-blue", "angels-bio-processing-2")
 
 -- Red algae. Make Calcium carbonate in an assembling machine, not a liquefier

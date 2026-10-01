@@ -60,6 +60,7 @@ data:extend({
     prerequisites = {
       "angels-bio-processing-red",
       "advanced-circuit",
+      "angels-aluminium-smelting-1",
       "angels-stone-smelting-2",
       "bob-zinc-processing",
       "chemical-science-pack",

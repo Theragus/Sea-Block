@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.7
+Date: 2026-10-02
+  Bugfixes:
+    - Cobalt steel axe now requires Cobalt steel smelting 1 instead of Brass processing
+      - Angel's swaps Cobalt processing for Brass processing everywhere, so the axe became
+        available long before the 50 cobalt steel it asks for, which needs blue science
+---------------------------------------------------------------------------------------------------
 Version: 2.1.6
 Date: 2026-10-01
   Bugfixes:

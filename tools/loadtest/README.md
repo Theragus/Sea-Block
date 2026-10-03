@@ -59,6 +59,25 @@ loop to use while fixing errors.
 A successful run ends with `Done.` and leaves a map file behind. Any prototype
 problem prints as `Error Util.cpp:81: ...` and names the prototype.
 
+## Main menu scenes
+
+`menusim/` is a test mod that plays Sea Block's main menu simulations in the
+headless game. A menu simulation's script runs as a console command with a
+`game.simulation` object the headless build never creates, so the mod reads
+each scene's source out of the data stage and runs it on a fresh surface
+behind stand-ins for `game.simulation`, `game.surfaces.nauvis` and the event
+registration calls. It then runs the scene's warm-up and length, and prints:
+
+- what the scene built, and the status and craft count of every machine;
+- a character map of the 60 by 34 tiles a 1080p screen shows;
+- a `MENUSIM FAIL` line for a script error, an entity the scene places where
+  `can_place_entity` says it cannot go, or a machine that neither ends the
+  scene working nor finished anything while the scene was on screen.
+
+`ci.sh` runs it on the core pack after the two load configurations. It is the
+only check the scenes get short of watching the main menu, and it cannot see
+what they look like: a scene that passes can still be badly framed.
+
 ## 2. The Lua harness (fast, for audits)
 
 `run.lua` runs the same data stage under plain `lua5.2` using the real

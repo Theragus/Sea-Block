@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.1.6
-Date: 2026-09-27
+Version: 2.1.7
+Date: 2026-10-03
   Features:
     - Two Sea Block main menu scenes, built from script rather than a save
       - A new game's sand island and rock chest, the engineer landfilling a way out to the logo
@@ -11,6 +11,18 @@ Date: 2026-09-27
     - Removed the vanilla menu scenes built on ore patches and oil fields: burner city, early
       smelting, mining defense and oil pumpjacks. Sea Block deletes every resource, so they
       loaded with their drills and pumpjacks standing on bare ground
+---------------------------------------------------------------------------------------------------
+Version: 2.1.6
+Date: 2026-10-01
+  Bugfixes:
+    - Blue algae processing no longer needs Cement processing 2, which costs blue science
+      - Angel's added Cement processing 2 and Aluminium smelting 1 to it for Algae
+        farm 4, which Sea Block unlocks later with Advanced algae processing instead
+      - Blue algae is Sea Block's only source of crude oil, so oil processing and everything
+        after it (lubricant, electric engines, robotics, steam cracking) was stuck behind
+        blue science, although none of it costs blue science packs
+      - Advanced algae processing now requires Aluminium smelting 1 itself, since Algae
+        farm 4 is built from aluminium plates
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.5
 Date: 2026-09-27

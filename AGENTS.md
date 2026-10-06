@@ -87,13 +87,13 @@ SeaBlock/                     the mod (portal name SeaBlock21)
 SeaBlockMetaPack/             the pack (portal name SeaBlockMetaPack21): info.json, changelog, LICENSE, thumbnail
 tools/
   package.py                  zips both mods as name_version.zip; checks LICENSE and changelog/version
-  publish.py                  uploads to the mod portal; --check-tag validates a tag offline
+  publish.py                  uploads to the mod portal; --pending asks it what is new, --check-tag checks a tag
   loadtest/                   the test rig (see its README): ci.sh, build_mods.py, discover.py,
                               run.lua + env.lua (Lua harness), audit_*.lua, check_references.py
 .github/workflows/
   loadtest.yml                push, PR, weekly: tools/loadtest/ci.sh
-  stylua.yml                  push: formats *.lua and commits "Format Code" as StyLuaFormatter
-  release.yml                 tag v*: tag check, load test, publish, GitHub release
+  stylua.yml                  push: formats *.lua and commits "Format Code" as StyLuaFormatter (check run "prettier")
+  release.yml                 push to main: asks the portal what is new; on approval, load test, publish, tag, release
 .github/ISSUE_TEMPLATE/       crash, soft-lock, suggestion forms
 stylua.toml                   2-space indent (everything else StyLua default, 120 columns)
 assets.sh                     one-off ImageMagick script that made graphics/technology/*.png; not a build step
@@ -309,14 +309,26 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 - Commit and PR titles follow the history: an imperative summary, with the
   version in parentheses when the change bumps it, e.g.
   `Gate the Cobalt steel axe on cobalt steel (2.1.7)`.
-- **A pushed tag `vX.Y.Z` publishes to the mod portal**, and a portal release
-  cannot be deleted. `release.yml` checks the tag names some mod's current
-  version, runs the load test, uploads whatever the portal does not already
-  have, and attaches the zips to a GitHub release. Never push a tag as an
-  experiment. Registering a brand-new mod name is not automated.
-- `python3 tools/package.py --out dist` builds the zips locally.
-  `python3 tools/publish.py --tag vX.Y.Z --check-tag` validates a tag without
-  an API key. Both run anywhere Python 3 exists.
+- **A merge to `main` that bumps a version proposes a release.** Bump
+  `info.json` and add the changelog entry in the same pull request as the
+  change. On every push to `main`, `release.yml` runs
+  `tools/publish.py --pending`, which asks the portal whether any mod carries a
+  version it does not have yet. Usually not, and the run ends in seconds. When
+  it does, the workflow checks the changelog and packaging, then waits for
+  approval on the `release` GitHub environment (which also holds the
+  `FACTORIO_API_KEY` secret). Once approved from the run page it runs the load
+  test, uploads, and creates the `vX.Y.Z` tag and a GitHub release itself. A
+  portal release cannot be deleted.
+- **Do not create or push tags by hand.** The workflow tags what it published,
+  so a tag always marks a release. A bump to a version already tagged on
+  another commit is refused before approval is asked for. "Run workflow" on
+  the Actions tab re-checks `main` by hand, for example after a failed upload.
+  Registering a brand-new mod name is not automated.
+- `python3 tools/package.py --out dist` builds the zips locally and runs the
+  LICENSE and changelog checks. `python3 tools/publish.py --pending` prints the
+  tag a release would use (it queries the portal, no key needed), and
+  `python3 tools/publish.py --tag vX.Y.Z --check-tag` validates a tag against
+  `info.json` offline. All need only Python 3.
 
 ## Testing and verification
 
@@ -394,8 +406,10 @@ Say so in the PR rather than claiming the load test passed.
   joins the recommended pack.
 - **Touch the Milestones preset.** `remote.lua`; `audit_milestones_preset.lua`
   checks the names, because Milestones drops bad entries silently.
-- **Release.** Bump `info.json`, add the changelog entry, merge to `main`,
-  then `git tag vX.Y.Z && git push origin vX.Y.Z`. See README "Releasing".
+- **Release.** Bump `info.json` and add the changelog entry in the same pull
+  request as the change, then merge. The release workflow notices the new
+  version and waits for approval on the `release` environment; nobody pushes
+  a tag. See README "Releasing".
 
 ## Gotchas and known quirks
 

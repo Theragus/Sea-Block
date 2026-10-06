@@ -95,6 +95,7 @@ tools/
   stylua.yml                  push: formats *.lua and commits "Format Code" as StyLuaFormatter (check run "prettier")
   release.yml                 push to main: asks the portal what is new; on approval, load test, publish, tag, release
 .github/ISSUE_TEMPLATE/       crash, soft-lock, suggestion forms
+.github/CODEOWNERS            `* @Theragus`: every pull request needs the owner's review before merging
 stylua.toml                   2-space indent (everything else StyLua default, 120 columns)
 assets.sh                     one-off ImageMagick script that made graphics/technology/*.png; not a build step
 factorio-mods-localization.json  Crowdin bot config inherited from upstream (points at a "dev" branch this repo lacks)
@@ -439,4 +440,6 @@ Say so in the PR rather than claiming the load test passed.
   test setup must explicitly disable `quality`, `space-age` and
   `elevated-rails`. `build_mods.py` does this by default.
 - Default branch is `main`; changes arrive by pull request, recent ones squash
-  merged with the PR number in the title.
+  merged with the PR number in the title. `CODEOWNERS` assigns everything to
+  the repository owner, so a pull request stays "blocked" until they review
+  it, whatever CI says.

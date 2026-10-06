@@ -88,8 +88,11 @@ def post(url, fields, files=None, token=None):
 
 def published_versions(name):
     """Versions already on the portal, or None if the mod is not registered."""
+    # Cloudflare caches this for up to 15 minutes per edge, so a release that
+    # just went up can still read as missing. A unique query string skips it.
+    url = f"{PORTAL}/api/mods/{name}?nocache={uuid.uuid4().hex}"
     try:
-        with urllib.request.urlopen(f"{PORTAL}/api/mods/{name}", timeout=60) as response:
+        with urllib.request.urlopen(url, timeout=60) as response:
             data = json.loads(response.read().decode())
     except urllib.error.HTTPError as err:
         if err.code == 404:

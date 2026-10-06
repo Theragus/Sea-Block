@@ -1,4 +1,18 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.8
+Date: 2026-10-06
+  Bugfixes:
+    - Recipes that Sea Block moves to another catalyst now give that catalyst back, not the
+      one Angel's used before (catalytic cracking of naphtha took a green catalyst and returned
+      the hidden red one)
+      - Angel's 2.1 returns the catalyst 90% of the time and an empty carrier otherwise, and
+        Sea Block only swapped the catalyst the recipe takes, not the one it returns
+      - Mineral oil from catalyst now also returns its purple catalyst 90% of the time,
+        like every other catalyst recipe
+    - Green, blue and purple catalysts cost 1 catalyst carrier each again
+      - Angel's 2.1 makes 1 catalyst per craft instead of 10, and Sea Block still asked for
+        10 carriers, so each catalyst cost 10 carriers
+---------------------------------------------------------------------------------------------------
 Version: 2.1.7
 Date: 2026-10-02
   Bugfixes:

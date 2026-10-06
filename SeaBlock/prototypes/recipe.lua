@@ -80,12 +80,12 @@ data:extend({
     energy_required = 2,
     enabled = false,
     ingredients = {
-      { type = "item", name = "angels-catalyst-metal-carrier", amount = 10 },
+      { type = "item", name = "angels-catalyst-metal-carrier", amount = 1, ignored_by_stats = 1 },
       { type = "item", name = "bob-gold-ore", amount = 1 },
       { type = "item", name = "bob-rutile-ore", amount = 1 },
     },
     results = {
-      { type = "item", name = "sb-catalyst-metal-purple", amount = 10 },
+      { type = "item", name = "sb-catalyst-metal-purple", amount = 1 },
     },
   },
   {

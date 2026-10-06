@@ -1,29 +1,74 @@
-# Publishing is deliberate: it runs on a pushed tag, never on a merge. A mod
-# portal release cannot be deleted once it exists, so the load test gates the
-# upload and a mismatch between the tag and info.json stops it outright.
+# Publishing is deliberate: a merge that bumps a version proposes a release,
+# and nothing reaches the mod portal until it is approved. A portal release
+# cannot be deleted once it exists.
 #
-#   git tag v2.1.2 && git push origin v2.1.2
+# Every push to main asks the portal whether any mod's info.json carries a
+# version it does not have yet. Usually the answer is no and the run ends there.
+# When it is yes, the release job waits on the "release" environment, whose
+# required reviewer approves it from the run page; it then runs the load test,
+# publishes, and creates the tag and GitHub release itself, so a tag always
+# marks what was published and there is no tag to remember to push.
 #
-# Needs a FACTORIO_API_KEY repository secret, from https://factorio.com/profile
-# with the "ModPortal: Upload Mods" usage.
+# Needs a "release" environment (Settings -> Environments) with a required
+# reviewer and a FACTORIO_API_KEY secret, from https://factorio.com/profile
+# with the "ModPortal: Upload Mods" usage. "Run workflow" re-checks by hand.
 name: Release
 
 on:
   push:
-    tags:
-      - "v*"
-
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
+  check:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tag: ${{ steps.pending.outputs.tag }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ask the portal what is new
+        id: pending
+        run: |
+          tag="$(tools/publish.py --pending)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # Cheap checks run before anyone is asked to approve, so a missing
+      # changelog entry fails here rather than after the approval.
+      - name: Check the tag is free and the mods pack
+        if: steps.pending.outputs.tag != ''
+        env:
+          TAG: ${{ steps.pending.outputs.tag }}
+        run: |
+          echo "releasing as $TAG"
+          existing="$(git ls-remote --tags origin "refs/tags/$TAG" | cut -f1)"
+          if [ -n "$existing" ] && [ "$existing" != "$GITHUB_SHA" ]; then
+            echo "tag $TAG already exists on another commit; bump to the next free version" >&2
+            exit 1
+          fi
+          tools/package.py --out dist
+
   release:
+    needs: check
+    if: needs.check.outputs.tag != ''
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment: release
+    # One release at a time; a second run waits rather than racing the upload.
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ needs.check.outputs.tag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -37,29 +82,26 @@ jobs:
           path: .loadtest/factorio
           key: factorio-${{ hashFiles('tools/loadtest/dependencies.env') }}
 
-      # The tag is checked before anything expensive runs, so a typo costs
-      # seconds rather than a full load test. One tag releases whatever is new:
-      # it has to name a version some mod carries, and publish.py skips the mods
-      # the portal already has.
-      - name: Check the tag against info.json
-        run: tools/publish.py --tag "$GITHUB_REF_NAME" --check-tag
-
       - name: Run the load test
         run: tools/loadtest/ci.sh
 
+      # Skips any version the portal already has, so approving a second run
+      # for the same version publishes nothing twice.
       - name: Publish to the mod portal
         env:
           FACTORIO_API_KEY: ${{ secrets.FACTORIO_API_KEY }}
-        run: tools/publish.py --tag "$GITHUB_REF_NAME" --out dist
+        run: tools/publish.py --tag "$TAG" --out dist
 
-      # The same zips, attached to the tag, so the GitHub side of the release
-      # is not just a bare commit pointer.
-      - name: Attach the zips to the GitHub release
+      # Creates the tag on this commit if it does not exist yet, and attaches
+      # the same zips, so the GitHub side is not just a bare commit pointer.
+      - name: Tag and attach the zips to a GitHub release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
           files: dist/*.zip
           body: |
-            See [changelog.txt](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/SeaBlock/changelog.txt) for what changed.
+            See [changelog.txt](https://github.com/${{ github.repository }}/blob/${{ env.TAG }}/SeaBlock/changelog.txt) for what changed.
 
             Also on the mod portal:
             [SeaBlock21](https://mods.factorio.com/mod/SeaBlock21) ·

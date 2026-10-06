@@ -6,6 +6,10 @@ does that over the upload API rather than the web form, so a tag can drive it.
 
     FACTORIO_API_KEY=... tools/publish.py --tag v2.1.2
 
+The release workflow runs on every push to main and asks first, with
+--pending, whether any mod carries a version the portal does not have yet.
+Only then does it wait for approval and call this again with that tag.
+
 The key comes from https://factorio.com/profile and needs the
 "ModPortal: Upload Mods" usage. A published release cannot be deleted, so
 this refuses anything it is not sure about rather than uploading and hoping:
@@ -84,14 +88,43 @@ def post(url, fields, files=None, token=None):
 
 def published_versions(name):
     """Versions already on the portal, or None if the mod is not registered."""
+    # Cloudflare caches this for up to 15 minutes per edge, so a release that
+    # just went up can still read as missing. A unique query string skips it.
+    url = f"{PORTAL}/api/mods/{name}?nocache={uuid.uuid4().hex}"
     try:
-        with urllib.request.urlopen(f"{PORTAL}/api/mods/{name}", timeout=60) as response:
+        with urllib.request.urlopen(url, timeout=60) as response:
             data = json.loads(response.read().decode())
     except urllib.error.HTTPError as err:
         if err.code == 404:
             return None
         raise Failure(f"could not be read from the portal: HTTP {err.code}")
     return {release["version"] for release in data.get("releases", [])}
+
+
+def version_key(version):
+    return tuple(int(part) for part in version.split("."))
+
+
+def pending(infos):
+    """The tag to release under, or None when the portal has every version.
+
+    Mods bump independently on one version line, so when more than one is new
+    the highest version names the tag, as it would by hand.
+    """
+    new = []
+    for mod, info in sorted(infos.items()):
+        name, version = info["name"], info["version"]
+        live = published_versions(name)
+        if live is None:
+            raise Failure(f"{name} is not on the mod portal; its first release has to be published by hand")
+        if version in live:
+            print(f"  {name}: {version} is already published", file=sys.stderr)
+        else:
+            print(f"  {name}: {version} is new", file=sys.stderr)
+            new.append(version)
+    if not new:
+        return None
+    return "v" + max(new, key=version_key)
 
 
 def upload(name, zip_path, token, dry_run):
@@ -118,14 +151,30 @@ def main():
         action="store_true",
         help="validate the tag and exit, without an API key -- runs before the load test",
     )
+    ap.add_argument(
+        "--pending",
+        action="store_true",
+        help="print the tag to release under, or nothing if the portal is up to date -- needs no API key",
+    )
     args = ap.parse_args()
 
-    os.makedirs(args.out, exist_ok=True)
     infos = {}
     for mod in package.MODS:
         src = os.path.join(package.REPO, mod)
         with open(os.path.join(src, "info.json"), encoding="utf-8") as fh:
             infos[mod] = json.load(fh)
+
+    if args.pending:
+        try:
+            tag = pending(infos)
+        except Failure as err:
+            print(f"  {err}", file=sys.stderr)
+            return 1
+        if tag:
+            print(tag)
+        return 0
+
+    os.makedirs(args.out, exist_ok=True)
 
     if args.tag:
         wanted = args.tag[1:] if args.tag.startswith("v") else args.tag

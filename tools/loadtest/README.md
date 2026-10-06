@@ -161,6 +161,7 @@ Sea Block loads after the mod that trips it and cannot get in front of it.
 | `audit_milestones_preset.lua` | the Milestones preset Sea Block serves from `remote.lua` names real prototypes — Milestones drops invalid entries rather than erroring, so the only symptom is a milestone quietly missing |
 | `audit_reachability.lua` | every disabled but visible recipe is unlocked by a technology the player can actually research — the soft-lock check, and the one that found red science being uncraftable |
 | `audit_trigger_techs.lua` | no trigger technology that unlocks nothing is gated behind a prerequisite — Factorio holds a satisfied trigger at 99% with a full bar while a prerequisite is unresearched, which reads as a broken research |
+| `audit_trigger_items.lua` | no craft-item technology becomes available before its item can be made — the item's recipe must be enabled, unlocked on the prerequisite chain, or unlocked by a chain of research triggers alone; otherwise the tree offers a research the player cannot complete yet |
 | `audit_tutorial_techs.lua` | every tutorial technology completes by research trigger rather than a science pack cost, and its trigger item has a recipe that is enabled or unlocked on the way there — the tutorial runs before any lab exists, and a pack cost there reads as a soft-lock |
 | `check_references.py` | cross-references names written in Sea Block's source against a dump, so renamed prototypes show up all at once |
 

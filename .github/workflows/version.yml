@@ -1,0 +1,55 @@
+# A change only reaches players when the mod's version is bumped: release.yml
+# publishes a version the portal does not have yet, and nothing else. This
+# checks pull requests for the two ways that goes quietly wrong.
+#
+# - The newest changelog entry must match info.json. tools/package.py already
+#   refuses a mismatch, but release.yml only runs it once a version is new, so a
+#   changelog entry without its info.json bump would otherwise merge unnoticed.
+#   This fails the check.
+#
+# - A pull request that changes a mod folder but keeps its version will not be
+#   released when merged. That is often intended (a translation update, a
+#   cleanup waiting for the next release), so it is a warning on the changed
+#   file, not a failure. Files outside the mod folders (workflows, tools, docs)
+#   never ship and are not looked at.
+name: Version
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # The pull request's merge commit, with its first parent (the base branch
+      # tip) so the diff is exactly what merging would change.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check the changelog matches info.json
+        run: tools/package.py --out "$RUNNER_TEMP/dist"
+
+      - name: Note whether merging proposes a release
+        run: |
+          version() { git show "$1:$2/info.json" | python3 -c 'import json, sys; print(json.load(sys.stdin)["version"])'; }
+          for mod in SeaBlock SeaBlockMetaPack; do
+            changed="$(git diff --name-only HEAD^1 HEAD -- "$mod/")"
+            [ -n "$changed" ] || continue
+            before="$(version HEAD^1 "$mod")"
+            after="$(version HEAD "$mod")"
+            if [ "$before" = "$after" ]; then
+              first="$(echo "$changed" | head -n1)"
+              message="This changes $mod/ but keeps version $after, so merging it releases nothing. Bump info.json and add a changelog entry if players should get it."
+              echo "::warning file=$first,line=1,title=$mod is not released by this pull request::$message"
+              echo "- :warning: **$mod**: $message" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::notice title=$mod $before -> $after::Merging proposes a release, which waits for approval on the release environment."
+              echo "- **$mod**: $before → $after; merging proposes a release." >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done

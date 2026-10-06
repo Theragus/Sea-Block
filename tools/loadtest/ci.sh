@@ -103,7 +103,7 @@ run_config() {
   LOADTEST_DETERMINISTIC=1 lua5.2 "$HERE/run.lua" "$WORK/$label-manifest.lua" \
     "$HERE/audit_integrity.lua" "$HERE/audit_recipes.lua" "$HERE/audit_icons.lua" \
     "$HERE/audit_starting_items.lua" "$HERE/audit_milestones_preset.lua" "$HERE/audit_reachability.lua" \
-    "$HERE/audit_trigger_techs.lua" "$HERE/audit_tutorial_techs.lua"
+    "$HERE/audit_trigger_techs.lua" "$HERE/audit_trigger_items.lua" "$HERE/audit_tutorial_techs.lua"
 }
 
 # Sea Block's main menu scenes build everything by name from script, so a

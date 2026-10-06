@@ -72,42 +72,58 @@ that would otherwise cost a game launch each. See
 ## Releasing
 
 The mod portal does not watch GitHub, so a release has to be pushed to it.
-`.github/workflows/release.yml` does that on a tag:
+`.github/workflows/release.yml` does that, and **a merge that bumps a version is
+what proposes a release**:
 
-```sh
-git tag v2.1.2 && git push origin v2.1.2
-```
+1. Bump `version` in the changed mod's `info.json` and add a matching entry at
+   the top of its `changelog.txt`, in the same pull request as the change.
+2. Merge it. On every push to `main` the workflow asks the portal whether any
+   mod carries a version it does not have yet. For an ordinary merge the answer
+   is no and the run ends in seconds.
+3. When there is a new version, the release job waits for approval on the
+   `release` environment. Approve it from the run page (or reject it to hold
+   the release) and it runs the load test, uploads over the portal's
+   [upload API][api], then creates the `v…` tag on that commit and a GitHub
+   release with the zips.
 
-**One tag releases whatever is new.** The two mods are versioned on a single
+There is no tag to push by hand: the workflow tags what it published, so a tag
+always marks a release and a merged bump cannot be forgotten. **Run workflow**
+on the Actions tab re-checks `main` by hand, for example after a failed upload.
+
+The other half, a change merged *without* a bump, is flagged on the pull
+request by `.github/workflows/version.yml`. It warns when `SeaBlock/` or
+`SeaBlockMetaPack/` changes but that mod's version does not, since that merge
+releases nothing, and fails when the newest changelog entry and `info.json`
+disagree. Changes outside the two mod folders never ship and are not checked.
+
+**One release covers whatever is new.** The two mods are versioned on a single
 line but bump independently — the pack is a dependency list and rarely changes —
-so the tag names the version of whichever mod you bumped, and `publish.py` skips
+so the tag takes the version of whichever mod you bumped, and `publish.py` skips
 the ones the portal already has:
 
-| changed | do | published |
+| changed | bump | published as |
 | --- | --- | --- |
-| Sea Block only | bump it, tag `v2.1.3` | Sea Block; the pack is skipped |
-| the pack only | bump it, tag `v2.1.4` | the pack; Sea Block is skipped |
-| both | bump both, tag `v2.1.5` | both |
+| Sea Block only | Sea Block to `2.1.3` | `v2.1.3`; the pack is skipped |
+| the pack only | the pack to `2.1.4` | `v2.1.4`; Sea Block is skipped |
+| both | both to `2.1.5` | `v2.1.5`, both |
 
-The rule is *bump whatever changed, tag the next free number*. Versions
-interleave on one line, so tags never collide and there is only ever one tag to
-push. A tag matching no mod's version is refused before anything else runs.
+The rule is *bump whatever changed to the next free number*. Versions interleave
+on one line, so tags never collide; a bump to a number that is already tagged
+on another commit is refused before approval is asked for.
 
-The workflow then runs the load test, packs both mods, uploads over the portal's
-[upload API][api], and attaches the zips to a GitHub release.
+Approval rather than publishing on every merge, because **a mod portal release
+cannot be deleted**. Everything that can be checked before that point is:
 
-On a tag rather than on a merge, because **a mod portal release cannot be
-deleted**. Everything that can be checked before that point is:
-
-- the tag against `info.json`
 - `info.json` against the newest `changelog.txt` entry, so a version nobody
-  wrote a changelog for cannot ship
+  wrote a changelog for cannot ship — checked before approval is asked for
 - `LICENSE` present inside each mod, as MIT requires
 - the load test, on both configurations
 
-Publishing needs a `FACTORIO_API_KEY` repository secret, created at
+Publishing needs a `release` environment (Settings → Environments) with you as
+required reviewer and a `FACTORIO_API_KEY` secret, created at
 [factorio.com/profile](https://factorio.com/profile) with the
-**ModPortal: Upload Mods** usage. Registering a *new* mod name is a different
+**ModPortal: Upload Mods** usage. Keeping the key on the environment means only
+an approved job can read it. Registering a *new* mod name is a different
 permission and is not automated — `tools/publish.py` stops rather than create
 one. To build the zips without publishing, run `tools/package.py`.
 

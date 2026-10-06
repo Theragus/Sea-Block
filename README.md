@@ -90,6 +90,12 @@ There is no tag to push by hand: the workflow tags what it published, so a tag
 always marks a release and a merged bump cannot be forgotten. **Run workflow**
 on the Actions tab re-checks `main` by hand, for example after a failed upload.
 
+The other half, a change merged *without* a bump, is flagged on the pull
+request by `.github/workflows/version.yml`. It warns when `SeaBlock/` or
+`SeaBlockMetaPack/` changes but that mod's version does not, since that merge
+releases nothing, and fails when the newest changelog entry and `info.json`
+disagree. Changes outside the two mod folders never ship and are not checked.
+
 **One release covers whatever is new.** The two mods are versioned on a single
 line but bump independently — the pack is a dependency list and rarely changes —
 so the tag takes the version of whichever mod you bumped, and `publish.py` skips

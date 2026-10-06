@@ -94,6 +94,7 @@ tools/
   loadtest.yml                push, PR, weekly: tools/loadtest/ci.sh
   stylua.yml                  push: formats *.lua and commits "Format Code" as StyLuaFormatter (check run "prettier")
   release.yml                 push to main: asks the portal what is new; on approval, load test, publish, tag, release
+  version.yml                 PR: changelog must match info.json; warns when a mod folder changes without a version bump
 .github/ISSUE_TEMPLATE/       crash, soft-lock, suggestion forms
 .github/CODEOWNERS            `* @Theragus`: every pull request needs the owner's review before merging
 stylua.toml                   2-space indent (everything else StyLua default, 120 columns)
@@ -300,7 +301,14 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
   versions that interleave on one line (currently `SeaBlock21` is at 2.1.7 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
-  `info.json`.** `tools/package.py` fails otherwise, and so does the release.
+  `info.json`.** `tools/package.py` fails otherwise, and so does the release,
+  and so does the `version.yml` check on every pull request.
+- **A pull request that changes `SeaBlock/` or `SeaBlockMetaPack/` without
+  bumping that mod's version releases nothing when merged.** `version.yml`
+  warns about it on the changed file rather than failing, since a translation
+  update or a cleanup may deliberately wait for the next release. Changes
+  outside the two mod folders (workflows, `tools/`, docs) never ship and need
+  no bump.
 - `changelog.txt` is Factorio's strict format. Newest entry first. Copy an
   existing block: the 99-dash separator line, `Version: x.y.z`,
   `Date: YYYY-MM-DD`, a category indented two spaces (`Bugfixes:`, `Changes:`,

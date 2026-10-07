@@ -27,6 +27,8 @@ require("data-final-fixes/lab-coverage")
 require("data-final-fixes/mapgen")
 require("data-final-fixes/SpaceMod")
 require("data-final-fixes/ScienceCostTweakerM")
+-- After every pass that edits prerequisites, including ScienceCostTweakerM's folding
+require("data-final-fixes/hidden-prerequisites")
 
 data.raw.recipe["copper-cable"].allow_decomposition = true
 data.raw.recipe["angels-solid-paper"].allow_decomposition = true

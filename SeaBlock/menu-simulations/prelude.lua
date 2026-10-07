@@ -23,12 +23,14 @@
 --                  scatters fish over whatever water is near the camera
 --
 -- tools/loadtest/menusim plays these scenes in the headless game and fails the
--- load test if any machine in them is not running.
+-- load test on a script error, on anything placed where it cannot go, and on a
+-- machine that does no work while the scene is on screen.
 return [[
 local surface = game.surfaces.nauvis
 local area = { { -96, -64 }, { 96, 64 } }
 
-surface.request_to_generate_chunks({ 0, 0 }, 4)
+-- Radius 3 is the 7x7 chunks that cover the area; no more is ever seen.
+surface.request_to_generate_chunks({ 0, 0 }, 3)
 surface.force_generate_chunk_requests()
 for _, entity in pairs(surface.find_entities(area)) do
   if entity.valid then

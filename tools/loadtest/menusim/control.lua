@@ -5,11 +5,12 @@
 -- machine in it is actually running, and a character map of the screen.
 --
 -- The simulation API the scene sees is stood in for by proxies: game.simulation
--- is a plain table, game.surfaces.nauvis is the scene's surface, and the
--- script's event handlers are collected here rather than registered, so they
--- stop when the scene does. Every player-force entity is checked with
--- can_place_entity before it is created, which catches overlaps and pumps that
--- are not on the shore.
+-- is a table that stores positions the way the real one returns them,
+-- game.surfaces.nauvis is the scene's surface, and the script's event handlers
+-- are collected here rather than registered, so they stop when the scene does.
+-- Every entity a scene places is checked with can_place_entity before it is
+-- created, which catches overlaps, pumps that are not on the shore and worms
+-- or trees put in the sea.
 --
 -- Output lines all start with MENUSIM; ci.sh looks for "MENUSIM DONE" and no
 -- "MENUSIM FAIL".
@@ -31,12 +32,8 @@ for name, value in pairs(defines.entity_status) do
   status_names[value] = name
 end
 
-local expected_gone = {
-  "nauvis_burner_city",
-  "nauvis_early_smelting",
-  "nauvis_mining_defense",
-  "nauvis_oil_pumpjacks",
-}
+-- How often a machine's status is sampled while its scene is on screen.
+local sample_every = 10
 
 local names = {}
 for name in pairs(config.scenes) do
@@ -65,17 +62,15 @@ local function surface_proxy(scene, surface)
         return surface[key]
       end
       return function(definition)
-        if definition.force == "player" and definition.name ~= "character" then
-          local placeable = surface.can_place_entity({
-            name = definition.name,
-            position = definition.position,
-            direction = definition.direction,
-            force = definition.force,
-            build_check_type = defines.build_check_type.manual,
-          })
-          if not placeable then
-            fail(scene, definition.name .. " cannot be placed at " .. serpent.line(definition.position))
-          end
+        local placeable = surface.can_place_entity({
+          name = definition.name,
+          position = definition.position,
+          direction = definition.direction,
+          force = definition.force or "neutral",
+          build_check_type = defines.build_check_type.manual,
+        })
+        if not placeable then
+          fail(scene, definition.name .. " cannot be placed at " .. serpent.line(definition.position))
         end
         local entity = surface.create_entity(definition)
         if not entity then
@@ -86,6 +81,20 @@ local function surface_proxy(scene, surface)
     end,
     __newindex = function(_, key, value)
       surface[key] = value
+    end,
+  })
+end
+
+-- LuaSimulation takes a position in either form and hands back {x =, y =}.
+local function camera_stub()
+  local values = { camera_position = { x = 0, y = 0 }, camera_zoom = 1 }
+  return setmetatable({}, {
+    __index = values,
+    __newindex = function(_, key, value)
+      if key == "camera_position" then
+        value = { x = value.x or value[1], y = value.y or value[2] }
+      end
+      values[key] = value
     end,
   })
 end
@@ -159,7 +168,7 @@ local type_chars = { tree = "T", turret = "w", fish = "f" }
 
 -- The screen at 1920x1080 and zoom 1 is 60 by 34 tiles.
 local function draw(surface, camera)
-  local cx, cy = math.floor(camera.camera_position[1]), math.floor(camera.camera_position[2])
+  local cx, cy = math.floor(camera.camera_position.x), math.floor(camera.camera_position.y)
   local left, top, width, height = cx - 30, cy - 17, 60, 34
   local grid = {}
   for row = 0, height - 1 do
@@ -188,6 +197,11 @@ local function draw(surface, camera)
   end
 end
 
+local machine_types = {}
+for machine_type in pairs(must_work) do
+  machine_types[#machine_types + 1] = machine_type
+end
+
 -- Crafts finished by each machine when the warm-up ends and the scene would
 -- come on screen.
 local function count_crafts(surface)
@@ -198,7 +212,19 @@ local function count_crafts(surface)
   return crafts
 end
 
-local function report(scene, surface, camera, shown_crafts)
+-- How many of the on-screen samples found each machine working.
+local function sample(surface, samples)
+  for _, entity in pairs(surface.find_entities_filtered({ area = area, type = machine_types })) do
+    local tally = samples[entity.unit_number] or { taken = 0, working = 0 }
+    tally.taken = tally.taken + 1
+    if entity.status == defines.entity_status.working then
+      tally.working = tally.working + 1
+    end
+    samples[entity.unit_number] = tally
+  end
+end
+
+local function report(scene, surface, camera, shown_crafts, samples)
   local counts, lines = {}, {}
   for _, entity in pairs(surface.find_entities(area)) do
     counts[entity.name] = (counts[entity.name] or 0) + 1
@@ -209,6 +235,10 @@ local function report(scene, surface, camera, shown_crafts)
         local recipe = entity.get_recipe()
         text = text .. " [" .. (recipe and recipe.name or "no recipe") .. ", " .. entity.products_finished .. " done]"
       end
+      local tally = samples[entity.unit_number]
+      if tally and tally.taken > 0 then
+        text = text .. (", working %d%% of the time on screen"):format(math.floor(100 * tally.working / tally.taken))
+      end
       -- A machine that goes idle between batches, like a clarifier voiding
       -- faster than it is fed, is fine so long as it worked while on screen.
       local crafted = shown_crafts and shown_crafts[entity.unit_number]
@@ -216,7 +246,7 @@ local function report(scene, surface, camera, shown_crafts)
       if not busy then
         fail(scene, text)
         -- Where the fluids are is nearly always the question when a machine
-        -- here is idle.
+        -- here is idle. Each line carries the prefix so ci.sh prints it.
         for i = 1, entity.fluids_count do
           local fluid = entity.get_fluid(i)
           local filter = entity.get_fluid_filter(i)
@@ -227,18 +257,29 @@ local function report(scene, surface, camera, shown_crafts)
               .. where(connection.target_position)
               .. (connection.target and "->connected" or "")
           end
-          text = text
-            .. ("\n      box %d filter=%s %s %s"):format(
+          print(
+            ("MENUSIM FAIL %s:   box %d filter=%s %s %s"):format(
+              scene,
               i,
               tostring(filter and filter.name),
               fluid and (fluid.name .. "=" .. math.floor(fluid.amount)) or "empty",
               table.concat(targets, " ")
             )
+          )
         end
       end
       lines[#lines + 1] = text
     elseif entity.type == "character" then
       lines[#lines + 1] = "character ends at " .. where(entity.position)
+      -- A scripted walk that never reaches its last waypoint keeps walking,
+      -- typically into water the scene forgot to landfill.
+      if entity.walking_state.walking then
+        fail(scene, "the character is still walking at the end, at " .. where(entity.position))
+      end
+      local tile = surface.get_tile(entity.position.x, entity.position.y)
+      if tile.collides_with("water_tile") then
+        fail(scene, "the character ends on " .. tile.name .. " at " .. where(entity.position))
+      end
     end
   end
   table.sort(lines)
@@ -258,7 +299,7 @@ local function start(scene, tick)
   local definition = config.scenes[scene]
   local surface = game.create_surface("menusim-" .. scene)
   local handlers = { events = {}, nth = {} }
-  local camera = { camera_position = { 0, 0 }, camera_zoom = 1 }
+  local camera = camera_stub()
   local env = environment(scene, surface, handlers, camera)
 
   print("MENUSIM start " .. scene)
@@ -284,6 +325,7 @@ local function start(scene, tick)
     handlers = handlers,
     camera = camera,
     update = update,
+    samples = {},
     started = tick,
     shown = tick + definition.init_update_count,
     stop = tick + definition.init_update_count + definition.length,
@@ -297,7 +339,8 @@ local function step(scene, tick)
     ok = run(scene.name, on_tick, { tick = tick, name = defines.events.on_tick })
   end
   for nth, handler in pairs(scene.handlers.nth) do
-    if ok and (tick - scene.started) % nth == 0 then
+    -- The engine fires on_nth_tick on game.tick, not on time since init.
+    if ok and tick % nth == 0 then
       ok = run(scene.name, handler, { tick = tick, nth_tick = nth })
     end
   end
@@ -312,14 +355,26 @@ script.on_event(defines.events.on_tick, function(event)
     return
   end
   if current then
-    if event.tick == current.shown then
+    -- A scene with no warm-up is on screen from its first tick, which is
+    -- already past by the time this runs, so take the baseline then.
+    if not current.shown_crafts and event.tick >= current.shown then
       current.shown_crafts = count_crafts(current.surface)
     end
+    if event.tick >= current.shown and (event.tick - current.shown) % sample_every == 0 then
+      sample(current.surface, current.samples)
+    end
     if not step(current, event.tick) or event.tick >= current.stop then
-      report(current.name, current.surface, current.camera, current.shown_crafts)
+      report(current.name, current.surface, current.camera, current.shown_crafts, current.samples)
       current = nil
     end
     return
+  end
+  if next_scene == 1 then
+    local needed = 0
+    for _, name in ipairs(names) do
+      needed = needed + config.scenes[name].init_update_count + config.scenes[name].length + 2
+    end
+    print(("MENUSIM needs about %d ticks for %d scenes"):format(needed, #names))
   end
   if names[next_scene] then
     current = start(names[next_scene], event.tick)
@@ -327,12 +382,17 @@ script.on_event(defines.events.on_tick, function(event)
     return
   end
 
-  print("MENUSIM other simulations: " .. table.concat(config.others, ", "))
+  -- What is left of the rotation, with the save each scene replays, so a
+  -- reviewer can see which save-based scenes Sea Block still shows.
   local others = {}
-  for _, name in pairs(config.others) do
-    others[name] = true
+  for _, other in ipairs(config.others) do
+    others[other.name] = true
+    print("MENUSIM other simulation " .. other.name .. (other.save and (" (" .. other.save .. ")") or ""))
   end
-  for _, name in ipairs(expected_gone) do
+  if #config.removed == 0 then
+    fail("vanilla", "Sea Block reported no removed simulations")
+  end
+  for _, name in ipairs(config.removed) do
     if others[name] then
       fail("vanilla", name .. " is still in the rotation")
     end

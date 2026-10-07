@@ -5,17 +5,23 @@
 return [[
 local shore = 6
 
--- The original sand island, landfilled around long ago.
-local function island(x, y)
+-- The original sand island, landfilled around long ago. Positive inside it,
+-- by roughly how far in.
+local function island_depth(x, y)
   local dx, dy = x + 0.5 + 16, y + 0.5 + 13
   local angle = math.atan2(dy, dx)
   local r = 4.5 + 0.8 * math.sin(3 * angle) + 0.4 * math.cos(5 * angle)
-  return dx * dx + dy * dy <= r * r
+  return r - math.sqrt(dx * dx + dy * dy)
 end
 
 paint(function(x, y)
   if y < shore then
-    return island(x, y) and "sand-1" or "landfill"
+    -- Sea Block's own island tiles: sand-5 inland, sand-4 for the beach.
+    local depth = island_depth(x, y)
+    if depth > 1 then
+      return "sand-5"
+    end
+    return depth > 0 and "sand-4" or "landfill"
   end
   local deep = shore + 3 + math.floor(1.5 * math.sin(x * 0.35) + 0.5)
   return y < deep and "water" or "deepwater"
@@ -27,15 +33,18 @@ for _, tree in pairs({ { "tree-02", -18, -14 }, { "tree-03", -15, -12 }, { "tree
   surface.create_entity({ name = tree[1], position = { tree[2], tree[3] } })
 end
 
+-- A straight run of pipe, both ends included. Anything but a whole number of
+-- tiles along one axis is a layout mistake, and stepping towards an end it can
+-- never land on would hang the menu, so it is refused instead.
 local function pipes(x1, y1, x2, y2)
-  local sx, sy = sign(x2 - x1), sign(y2 - y1)
-  local x, y = x1, y1
-  while true do
-    place("pipe", x, y)
-    if x == x2 and y == y2 then
-      break
-    end
-    x, y = x + sx, y + sy
+  local dx, dy = x2 - x1, y2 - y1
+  local length = math.abs(dx) + math.abs(dy)
+  if (dx ~= 0 and dy ~= 0) or length % 1 ~= 0 then
+    error(("pipes from (%g, %g) to (%g, %g) is not a straight run of whole tiles"):format(x1, y1, x2, y2))
+  end
+  local sx, sy = sign(dx), sign(dy)
+  for step = 0, length do
+    place("pipe", x1 + sx * step, y1 + sy * step)
   end
 end
 

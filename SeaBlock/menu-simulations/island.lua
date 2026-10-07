@@ -38,6 +38,12 @@ for i = 2, #path do
   walked[i] = walked[i - 1] + math.abs(path[i][1] - path[i - 1][1]) + math.abs(path[i][2] - path[i - 1][2])
 end
 
+-- Tile keys as numbers rather than strings: paint() asks about every tile in
+-- the scene, and this runs before the menu shows its first frame.
+local function key(x, y)
+  return (x + 1024) * 2048 + (y + 1024)
+end
+
 local cells, causeway = {}, {}
 for i = 1, #path - 1 do
   local a, b = path[i], path[i + 1]
@@ -46,9 +52,8 @@ for i = 1, #path - 1 do
     local px, py = a[1] + sx * step, a[2] + sy * step
     for cx = px - 1, px do
       for cy = py - 1, py do
-        local key = cx .. "," .. cy
-        if not causeway[key] then
-          causeway[key] = true
+        if not causeway[key(cx, cy)] then
+          causeway[key(cx, cy)] = true
           cells[#cells + 1] = { x = cx, y = cy, along = walked[i] + step }
         end
       end
@@ -57,35 +62,36 @@ for i = 1, #path - 1 do
 end
 
 -- Shallow water hugs the land, and the line the causeway will take.
-local function near_land(x, y)
-  if island_depth(x, y) > -3 then
+local near_causeway = {}
+for _, cell in ipairs(cells) do
+  for dx = -2, 2 do
+    for dy = -2, 2 do
+      near_causeway[key(cell.x + dx, cell.y + dy)] = true
+    end
+  end
+end
+
+local function near_land(x, y, depth)
+  if depth > -3 or near_causeway[key(x, y)] then
     return true
   end
   local px = math.max(pad.left - x, 0, x - pad.right)
   local py = math.max(pad.top - y, 0, y - pad.bottom)
-  if math.max(px, py) <= 2 then
-    return true
-  end
-  for dx = -2, 2 do
-    for dy = -2, 2 do
-      if causeway[(x + dx) .. "," .. (y + dy)] then
-        return true
-      end
-    end
-  end
-  return false
+  return math.max(px, py) <= 2
 end
 
 paint(function(x, y)
   if x >= pad.left and x <= pad.right and y >= pad.top and y <= pad.bottom then
     return "landfill"
   end
+  -- Sea Block's own island tiles: sand-5 inland, where its trees grow, and
+  -- sand-4 for the beach.
   local depth = island_depth(x, y)
   if depth > 1 then
-    return "sand-1"
+    return "sand-5"
   elseif depth > 0 then
-    return "sand-2"
-  elseif near_land(x, y) then
+    return "sand-4"
+  elseif near_land(x, y, depth) then
     return "water"
   end
   return "deepwater"
@@ -100,7 +106,7 @@ for _, tree in pairs({
   { "tree-05", -19, 7.5 },
   { "tree-03", -36, -10 },
   { "tree-02", -34, -8 },
-  { "tree-05", 35, 9 },
+  { "tree-05", 34.5, 9 },
   { "tree-02", -9, 14 },
 }) do
   surface.create_entity({ name = tree[1], position = { tree[2], tree[3] } })
@@ -110,7 +116,7 @@ place("sb-rock-chest", -20.5, 4.5, { force = "neutral" })
 -- Sea Block's only natives, on an islet of their own. The prelude's
 -- cease-fire keeps them from spitting at the engineer on the way past.
 place("medium-worm-turret", 27, -9.5, { force = "enemy" })
-place("small-worm-turret", 25, -7.5, { force = "enemy" })
+place("small-worm-turret", 26, -7.5, { force = "enemy" })
 
 place_fish(30, 7)
 

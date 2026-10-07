@@ -9,8 +9,8 @@ Date: 2026-10-06
         burning wood pellets
   Changes:
     - Removed the vanilla menu scenes built on ore patches and oil fields: burner city, early
-      smelting, mining defense and oil pumpjacks. Sea Block deletes every resource, so they
-      loaded with their drills and pumpjacks standing on bare ground
+      smelting, mining defense, oil pumpjacks and uranium processing. Sea Block deletes every
+      resource, so they loaded with their drills and pumpjacks standing on bare ground
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.8
 Date: 2026-10-06

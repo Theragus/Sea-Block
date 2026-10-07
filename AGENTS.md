@@ -158,7 +158,8 @@ sees the recipe graph after all the shuffling above.
 `data-final-fixes.lua`: `logistics` (belt speeds), `icons`, `recipe`,
 `tech-tree`, `unobtainable_items` (internal renames so FNEI search works),
 `research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod`, `ScienceCostTweakerM`,
-and last of all `fuel-categories`, so it sees every item any stage touched.
+`menu-simulations` (swaps the ore-based vanilla menu scenes for Sea Block's), and
+last of all `fuel-categories`, so it sees every item any stage touched.
 
 ### The startup (tutorial) chain
 
@@ -301,7 +302,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.7 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.9 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,

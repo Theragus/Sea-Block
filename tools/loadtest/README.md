@@ -68,11 +68,19 @@ each scene's source out of the data stage and runs it on a fresh surface
 behind stand-ins for `game.simulation`, `game.surfaces.nauvis` and the event
 registration calls. It then runs the scene's warm-up and length, and prints:
 
-- what the scene built, and the status and craft count of every machine;
+- what the scene built, and for every machine its status, craft count and
+  the share of its time on screen it spent working;
 - a character map of the 60 by 34 tiles a 1080p screen shows;
+- the vanilla scenes left in the rotation, with the save each one replays;
 - a `MENUSIM FAIL` line for a script error, an entity the scene places where
-  `can_place_entity` says it cannot go, or a machine that neither ends the
-  scene working nor finished anything while the scene was on screen.
+  `can_place_entity` says it cannot go, a machine that neither ends the scene
+  working nor finished anything while the scene was on screen, a character
+  still walking at the end or standing in water, or a vanilla scene Sea Block
+  removes that is still in the rotation.
+
+A machine that pauses between batches passes, so a low working share is worth
+a look rather than a failure. The saves behind the vanilla scenes do not ship
+with the headless build, so which of them stand on ore cannot be tested here.
 
 `ci.sh` runs it on the core pack after the two load configurations. It is the
 only check the scenes get short of watching the main menu, and it cannot see

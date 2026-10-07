@@ -136,7 +136,8 @@ run_menusim() {
     return 1
   fi
   if ! grep -aq "^MENUSIM DONE" "$WORK/menusim.log"; then
-    echo "FAILED: the scenes did not all finish"
+    echo "FAILED: the scenes did not all finish in 6000 ticks; raise --benchmark-ticks above:"
+    grep -a "^MENUSIM needs" "$WORK/menusim.log" | sed 's/^MENUSIM /  /'
     return 1
   fi
   if grep -aq "^MENUSIM FAIL" "$WORK/menusim.log"; then

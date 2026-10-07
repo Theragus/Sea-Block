@@ -62,7 +62,7 @@ data:extend({
       "advanced-circuit",
       "angels-aluminium-smelting-1",
       "angels-stone-smelting-2",
-      "bob-zinc-processing",
+      "bob-brass-processing",
       "chemical-science-pack",
     },
     effects = {

@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.9
+Date: 2026-10-07
+  Bugfixes:
+    - Swamp, Desert and Temperate farming environment, Assembling machine 3, Military 3 and
+      seven other technologies can be researched again, and with them everything after blue
+      science up to the rocket silo
+      - They required Zinc processing, which Angel's 2.1 disables after moving brass to Brass
+        processing. The tech tree does not show disabled technologies, so every prerequisite
+        looked green while the game still reported one missing
+      - They now require Brass processing instead
+    - Artillery can be researched again
+      - It required Cobalt processing, which Angel's disables. It now requires Cobalt smelting 1
+    - With ScienceCostTweakerM, Production science pack can be researched again
+      - It required Gas processing, which Sea Block hides
+---------------------------------------------------------------------------------------------------
 Version: 2.1.8
 Date: 2026-10-06
   Bugfixes:

@@ -144,6 +144,7 @@ Sea Block loads after the mod that trips it and cannot get in front of it.
 | `audit_trigger_techs.lua` | no trigger technology that unlocks nothing is gated behind a prerequisite — Factorio holds a satisfied trigger at 99% with a full bar while a prerequisite is unresearched, which reads as a broken research |
 | `audit_trigger_items.lua` | no craft-item technology becomes available before its item can be made — the item's recipe must be enabled, unlocked on the prerequisite chain, or unlocked by a chain of research triggers alone; otherwise the tree offers a research the player cannot complete yet |
 | `audit_tutorial_techs.lua` | every tutorial technology completes by research trigger rather than a science pack cost, and its trigger item has a recipe that is enabled or unlocked on the way there — the tutorial runs before any lab exists, and a pack cost there reads as a soft-lock |
+| `audit_hidden_prerequisites.lua` | no visible technology requires a hidden or disabled one — the tree does not draw hidden technologies, so the player sees every prerequisite green and is still told one is missing; prerequisites whose content Sea Block cut on purpose (alien research, Bob's extra nuclear fuels) are counted, not failed |
 | `check_references.py` | cross-references names written in Sea Block's source against a dump, so renamed prototypes show up all at once |
 
 `LOADTEST_STOP_AFTER=data` stops after a given stage, which is how you find

@@ -81,6 +81,8 @@ SeaBlock/                     the mod (portal name SeaBlock21)
   data/                       tables.lua (startup-chain config), tech-tree, recipe, misc, SCT
   data-updates/               one file per topic: coal, algae, landfill, military, startup, ...
   data-final-fixes/           research-triggers, lab-coverage, mapgen, tech-tree, ...
+  menu-simulations/           main menu scenes built from script (prelude, island, factory); registered
+                              in data-final-fixes/menu-simulations.lua, which also drops the ore-based vanilla ones
   settings-updates/           one file per dependency mod whose settings are forced
   migrations/                 upstream 0.5.x/0.6.0 migrations (JSON renames and Lua)
   locale/<lang>/SeaBlock.cfg  translations; en is the source
@@ -90,7 +92,8 @@ tools/
   package.py                  zips both mods as name_version.zip; checks LICENSE and changelog/version
   publish.py                  uploads to the mod portal; --pending asks it what is new, --check-tag checks a tag
   loadtest/                   the test rig (see its README): ci.sh, build_mods.py, discover.py,
-                              run.lua + env.lua (Lua harness), audit_*.lua, check_references.py
+                              run.lua + env.lua (Lua harness), audit_*.lua, check_references.py,
+                              menusim/ (test mod that plays the menu scenes headless)
 .github/workflows/
   loadtest.yml                push, PR, weekly: tools/loadtest/ci.sh
   stylua.yml                  push: formats *.lua and commits "Format Code" as StyLuaFormatter (check run "prettier")
@@ -157,7 +160,8 @@ sees the recipe graph after all the shuffling above.
 `tech-tree`, `unobtainable_items` (internal renames so FNEI search works),
 `research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod`, `ScienceCostTweakerM`,
 `hidden-prerequisites` (after every pass that edits prerequisites),
-`alien-artifacts` and `hidden-ingredients`.
+`alien-artifacts`, `hidden-ingredients` and `menu-simulations` (swaps the
+ore-based vanilla menu scenes for Sea Block's).
 
 ### The startup (tutorial) chain
 
@@ -315,7 +319,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.7 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.12 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,

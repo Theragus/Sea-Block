@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.12
+Date: 2026-10-08
+  Features:
+    - Two Sea Block main menu scenes, built from script rather than a save
+      - A new game's sand island and rock chest, the engineer landfilling a way out to the logo
+      - A landfill base on the coast: a seafloor pump feeding a four-stage mud washing column,
+        its solid mud belted to an assembler pressing landfill, and algae farms on steam power
+        burning wood pellets
+  Changes:
+    - Removed the vanilla menu scenes built on ore patches and oil fields: burner city, early
+      smelting, mining defense, oil pumpjacks and uranium processing. Sea Block deletes every
+      resource, so they loaded with their drills and pumpjacks standing on bare ground
+---------------------------------------------------------------------------------------------------
 Version: 2.1.11
 Date: 2026-10-08
   Changes:

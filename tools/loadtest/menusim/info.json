@@ -1,0 +1,9 @@
+{
+  "name": "sb-menusim-test",
+  "version": "0.0.1",
+  "factorio_version": "2.1",
+  "title": "Sea Block menu simulation test",
+  "author": "Theragus",
+  "description": "Load test only. Plays Sea Block's main menu simulations in an ordinary game and reports on them.",
+  "dependencies": ["base", "SeaBlock21"]
+}

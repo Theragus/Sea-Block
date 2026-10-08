@@ -155,7 +155,8 @@ sees the recipe graph after all the shuffling above.
 
 `data-final-fixes.lua`: `logistics` (belt speeds), `icons`, `recipe`,
 `tech-tree`, `unobtainable_items` (internal renames so FNEI search works),
-`research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod` and `ScienceCostTweakerM`.
+`research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod`, `ScienceCostTweakerM`
+and, after every pass that edits prerequisites, `hidden-prerequisites`.
 
 ### The startup (tutorial) chain
 
@@ -211,7 +212,7 @@ entities. Cliffs are not reimplemented (upstream #352).
 
 ### Self-repair passes in `data-final-fixes`
 
-Two modules are generic "find it and fix it" passes rather than per-name
+Three modules are generic "find it and fix it" passes rather than per-name
 patches, so they keep working as Bob's, Angel's and the base game move:
 
 - `research-triggers.lua`: a 2.x research trigger that names a prototype Sea
@@ -223,6 +224,15 @@ patches, so they keep working as Bob's, Angel's and the base game move:
   pack set, hidden ones included, is not accepted in full by some lab. Hidden
   technologies are rewritten quietly; a visible one failing is logged loudly
   because that is a real progression bug.
+- `hidden-prerequisites.lua`: a visible technology that requires a hidden or
+  disabled one can never be researched, and the tree does not draw the hidden
+  one, so the player sees every prerequisite green. Angel's disables Bob's
+  `bob-<metal>-processing` technologies, and Bob's mods that load later add
+  them back as prerequisites; the pass points each at
+  `angels-<metal>-smelting-1`, or at an entry in its `successors` table.
+  Prerequisites with no known successor are left for
+  `audit_hidden_prerequisites.lua`, which fails on any it was not told is cut
+  content.
 
 When adding a fix, prefer this shape over patching one prototype by name if the
 same breakage can recur elsewhere.

@@ -5,6 +5,10 @@ on: [push]
 jobs:
   prettier:
     runs-on: ubuntu-latest
+    # Pushes the "Format Code" commit. The repository default token is read-only,
+    # so without this the push is refused with a 403.
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v2

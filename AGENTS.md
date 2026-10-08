@@ -28,9 +28,9 @@ major versions to Factorio, and Bob's and Angel's had moved to 2.1).
   `petrochem`, `smelting`, `bioprocessing`). Many more are optional and gated
   with `if mods["..."]`. `quality`, `space-age`, `alien-biomes` and
   `angelsexploration` are declared incompatible. See `SeaBlock/info.json`.
-- **Status.** It loads and generates maps on Factorio 2.1.19 and 2.1.20
-  headless, with and without ScienceCostTweakerM, and has been play-tested to
-  green science. Cliffs, migrations and balance are open upstream (README).
+- **Status.** It loads and generates maps on Factorio 2.1.19, 2.1.20 and
+  2.1.21 headless, with and without ScienceCostTweakerM, and has been
+  play-tested to green science. Cliffs, migrations and balance are open upstream (README).
 - **Languages.** Lua (Factorio embeds Lua 5.2) for the mod; Python 3 and bash
   for tooling, standard library only. No package manager, no lockfile.
 - **Licence.** MIT, © KiwiHawk. `LICENSE` must ship inside each mod zip;

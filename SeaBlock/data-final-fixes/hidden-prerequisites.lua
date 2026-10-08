@@ -86,11 +86,13 @@ for _, technology_name in ipairs(names) do
       if replacement ~= nil then
         bobmods.lib.tech.remove_prerequisite(technology_name, prerequisite)
         if replacement and requires(replacement, technology_name) then
-          log(("Sea Block: %s cannot require %s in place of %s, it would close a loop"):format(
-            technology_name,
-            replacement,
-            prerequisite
-          ))
+          log(
+            ("Sea Block: %s cannot require %s in place of %s, it would close a loop"):format(
+              technology_name,
+              replacement,
+              prerequisite
+            )
+          )
         elseif replacement and not requires(technology_name, replacement) then
           bobmods.lib.tech.add_prerequisite(technology_name, replacement)
           log(("Sea Block: %s required hidden %s, now requires %s"):format(technology_name, prerequisite, replacement))

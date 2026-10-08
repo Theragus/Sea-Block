@@ -70,9 +70,7 @@ return function(data, mods, settings)
       )
     )
   else
-    io.stderr:write(
-      ("\nhidden prerequisite audit: %d visible technologies require a hidden one\n"):format(#findings)
-    )
+    io.stderr:write(("\nhidden prerequisite audit: %d visible technologies require a hidden one\n"):format(#findings))
   end
   return #findings
 end

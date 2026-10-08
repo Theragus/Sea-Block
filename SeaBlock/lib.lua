@@ -370,6 +370,33 @@ function seablock.lib.inherited_tech_unit(technology)
   }
 end
 
+---Whether technology `from` requires `target`, directly or through its prerequisites.
+---Used before adding a prerequisite, to skip one that is already implied and to
+---refuse one that would close a loop.
+---@param from string
+---@param target string
+---@return boolean
+function seablock.lib.requires_technology(from, target)
+  local seen = {}
+  local function visit(name)
+    if name == target then
+      return true
+    end
+    if seen[name] then
+      return false
+    end
+    seen[name] = true
+    local technology = data.raw.technology[name]
+    for _, prerequisite in pairs(technology and technology.prerequisites or {}) do
+      if visit(prerequisite) then
+        return true
+      end
+    end
+    return false
+  end
+  return visit(from)
+end
+
 function seablock.lib.unhide_recipe(name)
   seablock.lib.unhide("recipe", name)
 end

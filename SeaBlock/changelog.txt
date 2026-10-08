@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.1.10
+Version: 2.1.11
 Date: 2026-10-08
   Changes:
     - Sea Block now needs Factorio 2.1.20 or later, Bob's Metals, Chemicals and Intermediates
@@ -8,6 +8,32 @@ Date: 2026-10-08
       - These releases set fuel categories the way Factorio 2.1.20 expects, so Sea Block no
         longer converts them on their behalf. The conversion added in 2.1.4 is removed
     - Tested on Factorio 2.1.21
+---------------------------------------------------------------------------------------------------
+Version: 2.1.10
+Date: 2026-10-08
+  Bugfixes:
+    - Large alien artifacts can be made again, from the small ones Alien bio processing 3 grows
+      - Aliens drop no artifacts in Sea Block, and Bob's Enemies 2.x took that to mean no small
+        artifacts either, hiding the recipes that turn them into large ones. Artifact processing
+        unlocked nothing, and every recipe that uses large artifacts could not be crafted:
+        Power armor MK3 to MK5, Energy shield MK3 to MK6, Battery MK4 and MK5, Fission reactor
+        equipment 2 and 3, Night vision 3, Solar panel equipment 4, Personal laser defense 5,
+        Plasma turrets 1 and 2, and Bob's vehicle equipment from the same tiers
+      - Technologies that make something from large artifacts now require Artifact processing
+      - Power armor MK3 and Fission reactor equipment 3 required the hidden Alien research,
+        so they and everything after them could not be researched. They now require Artifact
+        processing instead
+    - Boiler 3, Oil boiler 2, Burner and Fluid reactor 2, Heat pipe 2, Heat exchanger 2,
+      Roboport antenna 2 and Roboport chargepad 2 use steel plate again instead of nickel plate
+      - Sea Block has no nickel plate, and Bob's 2.x puts it in these recipes in place of steel.
+        Through the antenna and chargepad this also blocked Personal roboport MK2 and MK3, Zone
+        expander 2 and the modular roboport parts
+  Changes:
+    - Hidden the equipment that is made from alien alloys or alien fluids, which only alien
+      research makes and Sea Block cuts: Exoskeleton 3, Fission reactor equipment 4, Personal
+      laser defense 6, and vehicle big turret 4, fission cell 5 and 6, fission reactor 5 and 6,
+      laser defense 6 and solar panel 5. Their technologies could not be researched
+    - Hidden Explosives 3, which only unlocks recipes Sea Block already hides
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.9
 Date: 2026-10-07

@@ -155,8 +155,9 @@ sees the recipe graph after all the shuffling above.
 `data-final-fixes.lua`: `logistics` (belt speeds), `icons`, `recipe`,
 `tech-tree`, `unobtainable_items` (internal renames so FNEI search works),
 `research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod`, `ScienceCostTweakerM`,
-`hidden-prerequisites` (after every pass that edits prerequisites), and last of
-all `fuel-categories`, so it sees every item any stage touched.
+`hidden-prerequisites` (after every pass that edits prerequisites),
+`alien-artifacts`, `hidden-ingredients`, and last of all `fuel-categories`, so it
+sees every item any stage touched.
 
 ### The startup (tutorial) chain
 
@@ -212,7 +213,7 @@ entities. Cliffs are not reimplemented (upstream #352).
 
 ### Self-repair passes in `data-final-fixes`
 
-Four modules are generic "find it and fix it" passes rather than per-name
+Six modules are generic "find it and fix it" passes rather than per-name
 patches, so they keep working as Bob's, Angel's and the base game move:
 
 - `research-triggers.lua`: a 2.x research trigger that names a prototype Sea
@@ -230,9 +231,18 @@ patches, so they keep working as Bob's, Angel's and the base game move:
   `bob-<metal>-processing` technologies, and Bob's mods that load later add
   them back as prerequisites; the pass points each at
   `angels-<metal>-smelting-1`, or at an entry in its `successors` table.
+  Hidden alien research is succeeded by `bob-artifact-processing`.
   Prerequisites with no known successor are left for
-  `audit_hidden_prerequisites.lua`, which fails on any it was not told is cut
-  content.
+  `audit_hidden_prerequisites.lua`, which fails on every one; a technology
+  behind content Sea Block cuts on purpose must be hidden with it.
+- `alien-artifacts.lua`: any visible technology whose recipes use large alien
+  artifacts gets `bob-artifact-processing` as a prerequisite, since that is
+  where the only artifact recipes are unlocked (small artifacts come from
+  Angel's alien bio processing; `data-updates/military.lua` unhides the
+  recipes Bob's Enemies hides when aliens drop no artifacts).
+- `hidden-ingredients.lua`: replaces ingredients Sea Block hid with what the
+  recipe used before; today `bob-nickel-plate` becomes `steel-plate`, the
+  plate Bob's swaps out whenever nickel plate exists.
 - `fuel-categories.lua`: moves `fuel_category` to `fuel_categories` on Bob's
   and Angel's items from Factorio 2.1.20 on. Remove once they ship 2.1.20
   releases.

@@ -7,47 +7,23 @@
 -- the environment farms and everything after blue science without any error.
 --
 -- data-final-fixes/hidden-prerequisites.lua repairs the cases it knows a
--- successor for. The prerequisites below are left in place on purpose: their
--- content is cut from Sea Block, and the equipment that requires them is made
--- from materials Sea Block removed, so it stays out of reach. They are counted
--- and reported rather than hidden, so a new technology walled off behind one of
--- them still shows up here.
+-- successor for. There are no exceptions: a technology behind content Sea Block
+-- cuts on purpose (the equipment made from alien alloys) is hidden along with it
+-- in data-updates/military.lua, so anything reported here is either missing a
+-- successor or missing from that list.
 
 return function(data, mods, settings)
-  local cut = {
-    -- data-updates/military.lua: no alien artifacts without biter nests
-    ["bob-alien-research"] = true,
-    ["bob-alien-blue-research"] = true,
-    ["bob-alien-green-research"] = true,
-    ["bob-alien-orange-research"] = true,
-    ["bob-alien-purple-research"] = true,
-    ["bob-alien-red-research"] = true,
-    ["bob-alien-yellow-research"] = true,
-    -- data-updates/military.lua: the explosives chain past nitroglycerin is hidden,
-    -- and Angel's Explosives 3 unlocks only hidden recipes
-    ["angels-explosives-2"] = true,
-    -- Bob's nuclear fuels beyond uranium and its heavy water are not in the pack
-    ["bob-heavy-water-processing"] = true,
-    ["bob-nuclear-power-2"] = true,
-    ["bob-plutonium-fuel-cell"] = true,
-    ["bob-thorium-plutonium-fuel-cell"] = true,
-  }
-
   local function usable(technology)
     return not technology.hidden and technology.enabled ~= false
   end
 
-  local findings, behind_cut = {}, 0
+  local findings = {}
   for name, technology in pairs(data.raw.technology) do
     if usable(technology) then
       for _, prerequisite in pairs(technology.prerequisites or {}) do
         local required = data.raw.technology[prerequisite]
         if required and not usable(required) then
-          if cut[prerequisite] then
-            behind_cut = behind_cut + 1
-          else
-            table.insert(findings, { name = name, on = prerequisite })
-          end
+          table.insert(findings, { name = name, on = prerequisite })
         end
       end
     end
@@ -64,11 +40,7 @@ return function(data, mods, settings)
   end
 
   if #findings == 0 then
-    print(
-      ("hidden prerequisite audit: no visible technology requires a hidden one (%d behind cut content, left alone)"):format(
-        behind_cut
-      )
-    )
+    print("hidden prerequisite audit: no visible technology requires a hidden one")
   else
     io.stderr:write(
       ("\nhidden prerequisite audit: %d visible technologies require a hidden one\n"):format(#findings)

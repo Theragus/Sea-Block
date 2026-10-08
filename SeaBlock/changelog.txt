@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.11
+Date: 2026-10-08
+  Bugfixes:
+    - Sniper rifle can be crafted again. It uses 10 steel plate in place of gunmetal, as
+      Bob's sniper rifle does without gunmetal
+      - Sea Block hides gunmetal, but Bob's Warfare 2.x still put it in the rifle, so its
+        technology unlocked a recipe that nothing could supply
+  Changes:
+    - Hidden Solid fuel from sour gas, and Flammables no longer unlocks it
+      - Angel's hides sour gas and the oil processing recipes that make it, so the recipe
+        could never run
+---------------------------------------------------------------------------------------------------
 Version: 2.1.10
 Date: 2026-10-08
   Bugfixes:

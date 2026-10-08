@@ -33,7 +33,7 @@ a map exercises everything short of actually playing.
 
 ```sh
 # one-off setup
-curl -L -o headless.tar.xz https://factorio.com/get-download/2.1.20/headless/linux64
+curl -L -o headless.tar.xz https://factorio.com/get-download/2.1.21/headless/linux64
 tar xJf headless.tar.xz            # gives ./factorio
 
 # assemble a mods directory from source checkouts

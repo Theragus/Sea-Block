@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.1.11
+Version: 2.1.12
 Date: 2026-10-08
   Bugfixes:
     - Sniper rifle can be crafted again. It uses 10 steel plate in place of gunmetal, as
@@ -10,6 +10,16 @@ Date: 2026-10-08
     - Hidden Solid fuel from sour gas, and Flammables no longer unlocks it
       - Angel's hides sour gas and the oil processing recipes that make it, so the recipe
         could never run
+---------------------------------------------------------------------------------------------------
+Version: 2.1.11
+Date: 2026-10-08
+  Changes:
+    - Sea Block now needs Factorio 2.1.20 or later, Bob's Metals, Chemicals and Intermediates
+      3.0.2, Angel's Petrochemical Processing 2.1.3 and Angel's Bioprocessing 2.1.2, and, if
+      installed, Bob's Greenhouse 3.0.1
+      - These releases set fuel categories the way Factorio 2.1.20 expects, so Sea Block no
+        longer converts them on their behalf. The conversion added in 2.1.4 is removed
+    - Tested on Factorio 2.1.21
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.10
 Date: 2026-10-08

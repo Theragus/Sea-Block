@@ -148,6 +148,7 @@ local mil_tech = {
   "bob-alien-yellow-research",
   "angels-explosives-1",
   "angels-explosives-2",
+  "angels-explosives-3", -- Its toluene and TNT recipes are hidden above
   "bob-acid-bullets",
   "bob-acid-rocket",
   "bob-ap-bullets",
@@ -495,6 +496,72 @@ end
 for _, v in pairs(mil_recipes) do
   if data.raw.recipe[v] then
     bobmods.lib.recipe.hide(v)
+  end
+end
+
+-- Bob's 2.x makes its top equipment tiers from alien alloys and alien fluids, which
+-- only alien research unlocks. Sea Block cuts that research and hides those
+-- materials above, so this equipment can never be crafted; the -6 vehicle fission
+-- tiers are made from the -5 ones. Hide it rather than leave a research the player
+-- can see and never complete. Each name is a technology, the recipe it unlocks and
+-- the item that recipe makes.
+for _, name in pairs({
+  "bob-exoskeleton-equipment-3",
+  "bob-fission-reactor-equipment-4",
+  "bob-personal-laser-defense-equipment-6",
+  "bob-vehicle-big-turret-equipment-4",
+  "bob-vehicle-fission-cell-equipment-5",
+  "bob-vehicle-fission-cell-equipment-6",
+  "bob-vehicle-fission-reactor-equipment-5",
+  "bob-vehicle-fission-reactor-equipment-6",
+  "bob-vehicle-laser-defense-equipment-6",
+  "bob-vehicle-solar-panel-equipment-5",
+}) do
+  if data.raw.technology[name] then
+    seablock.lib.hide_technology(name)
+  end
+  if data.raw.recipe[name] then
+    bobmods.lib.recipe.hide(name)
+  end
+  if data.raw.item[name] then
+    seablock.lib.hide_item(name)
+  end
+end
+
+-- Large alien artifacts are what Bob's equipment, power armor MK3 to MK5 and plasma
+-- turrets are made from. Sea Block makes them from small artifacts, which Angel's
+-- Bioprocessing grows (Alien bio processing 3), and Angel's already places Artifact
+-- processing after that technology. But aliens drop no artifacts in Sea Block, and
+-- Bob's Enemies 2.x reads that setting as "no small artifacts", hiding them along
+-- with the recipes that turn them into large ones. Every recipe that needed one was
+-- then uncraftable and Artifact processing unlocked nothing. Sea Block 1.1 unlocked
+-- the same recipes at Alien bio processing 3.
+if mods["bobenemies"] then
+  for _, name in pairs({
+    "bob-small-alien-artifact",
+    "bob-small-alien-artifact-red",
+    "bob-small-alien-artifact-orange",
+    "bob-small-alien-artifact-yellow",
+    "bob-small-alien-artifact-green",
+    "bob-small-alien-artifact-blue",
+    "bob-small-alien-artifact-purple",
+  }) do
+    if data.raw.item[name] then
+      seablock.lib.unhide("item", name)
+    end
+  end
+  for _, name in pairs({
+    "bob-alien-artifact",
+    "bob-alien-artifact-red-from-small",
+    "bob-alien-artifact-orange-from-small",
+    "bob-alien-artifact-yellow-from-small",
+    "bob-alien-artifact-green-from-small",
+    "bob-alien-artifact-blue-from-small",
+    "bob-alien-artifact-purple-from-small",
+  }) do
+    if data.raw.recipe[name] then
+      seablock.lib.unhide_recipe(name)
+    end
   end
 end
 

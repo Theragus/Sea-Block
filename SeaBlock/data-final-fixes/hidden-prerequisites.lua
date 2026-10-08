@@ -14,10 +14,10 @@
 --
 -- Rather than chase each of those by name, find every visible technology with a
 -- hidden prerequisite and swap in the successor below. Prerequisites with no
--- known successor are left alone: alien research and Bob's nuclear fuel cells
--- are cut on purpose, and the equipment behind them needs materials Sea Block
--- removed, so unblocking it would only offer a research whose result cannot be
--- crafted. tools/loadtest/audit_hidden_prerequisites.lua lists those.
+-- known successor are left alone: a visible technology still behind one fails
+-- tools/loadtest/audit_hidden_prerequisites.lua, and is either given a successor
+-- here or hidden itself (the equipment made from alien alloys in
+-- data-updates/military.lua).
 
 -- Where a hidden technology's content went. false drops the prerequisite.
 local successors = {
@@ -27,6 +27,11 @@ local successors = {
   -- Angel's removes this from bob-bodies itself; kept in case Bob's Classes ever
   -- loads after it and adds it back.
   ["bob-wood-processing"] = false,
+  -- data-updates/military.lua hides alien research and its science packs; what is
+  -- left of it is turning small alien artifacts into large ones, which Artifact
+  -- processing unlocks (data-final-fixes/alien-artifacts.lua). Power armor MK3 and
+  -- Fission reactor equipment 3 still name it.
+  ["bob-alien-research"] = "bob-artifact-processing",
 }
 
 local function usable(name)
@@ -46,27 +51,7 @@ local function successor(name)
   return nil
 end
 
--- Whether technology `from` already requires `target`, directly or indirectly.
-local function requires(from, target)
-  local seen = {}
-  local function visit(name)
-    if name == target then
-      return true
-    end
-    if seen[name] then
-      return false
-    end
-    seen[name] = true
-    local technology = data.raw.technology[name]
-    for _, prerequisite in pairs(technology and technology.prerequisites or {}) do
-      if visit(prerequisite) then
-        return true
-      end
-    end
-    return false
-  end
-  return visit(from)
-end
+local requires = seablock.lib.requires_technology
 
 local names = {}
 for name in pairs(data.raw.technology) do

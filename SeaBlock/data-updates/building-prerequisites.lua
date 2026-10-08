@@ -19,16 +19,18 @@ bobmods.lib.tech.add_prerequisite("fluid-handling", "angels-stone-smelting-1")
 bobmods.lib.tech.add_prerequisite("angels-gardens", "angels-stone-smelting-1")
 
 -- Brass prerequisites
-bobmods.lib.tech.add_prerequisite("angels-advanced-chemistry-2", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("angels-metallurgy-3", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("automation-3", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("angels-bio-desert-farm", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("angels-bio-refugium-puffer-1", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("angels-bio-swamp-farm", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("angels-bio-temperate-farm", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("bob-electronics-machine-2", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("angels-slag-processing-2", "bob-zinc-processing")
-bobmods.lib.tech.add_prerequisite("angels-water-treatment-3", "bob-zinc-processing")
+-- Brass used to come with Zinc processing. Angel's 2.1 moves it to Brass processing and
+-- disables Zinc processing, which would leave every technology below unresearchable.
+bobmods.lib.tech.add_prerequisite("angels-advanced-chemistry-2", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("angels-metallurgy-3", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("automation-3", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("angels-bio-desert-farm", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("angels-bio-refugium-puffer-1", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("angels-bio-swamp-farm", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("angels-bio-temperate-farm", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("bob-electronics-machine-2", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("angels-slag-processing-2", "bob-brass-processing")
+bobmods.lib.tech.add_prerequisite("angels-water-treatment-3", "bob-brass-processing")
 
 -- Concrete Brick prerequisites
 bobmods.lib.tech.add_prerequisite("angels-advanced-chemistry-2", "angels-stone-smelting-2")

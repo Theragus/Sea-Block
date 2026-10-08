@@ -42,9 +42,7 @@ return function(data, mods, settings)
   if #findings == 0 then
     print("hidden prerequisite audit: no visible technology requires a hidden one")
   else
-    io.stderr:write(
-      ("\nhidden prerequisite audit: %d visible technologies require a hidden one\n"):format(#findings)
-    )
+    io.stderr:write(("\nhidden prerequisite audit: %d visible technologies require a hidden one\n"):format(#findings))
   end
   return #findings
 end

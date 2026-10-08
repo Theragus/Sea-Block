@@ -36,6 +36,3 @@ for _, v in pairs(data.raw.character) do
     table.insert(v.crafting_categories, "sb-crafting-handonly")
   end
 end
-
--- Last, so it sees every item any earlier stage has touched
-require("data-final-fixes/fuel-categories")

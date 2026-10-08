@@ -28,9 +28,10 @@ major versions to Factorio, and Bob's and Angel's had moved to 2.1).
   `petrochem`, `smelting`, `bioprocessing`). Many more are optional and gated
   with `if mods["..."]`. `quality`, `space-age`, `alien-biomes` and
   `angelsexploration` are declared incompatible. See `SeaBlock/info.json`.
-- **Status.** It loads and generates maps on Factorio 2.1.19, 2.1.20 and
-  2.1.21 headless, with and without ScienceCostTweakerM, and has been
-  play-tested to green science. Cliffs, migrations and balance are open upstream (README).
+- **Status.** It needs Factorio 2.1.20 or later, and loads and generates maps
+  on 2.1.20 and 2.1.21 headless, with and without ScienceCostTweakerM. It has
+  been play-tested to green science. Cliffs, migrations and balance are open
+  upstream (README).
 - **Languages.** Lua (Factorio embeds Lua 5.2) for the mod; Python 3 and bash
   for tooling, standard library only. No package manager, no lockfile.
 - **Licence.** MIT, © KiwiHawk. `LICENSE` must ship inside each mod zip;
@@ -79,7 +80,7 @@ SeaBlock/                     the mod (portal name SeaBlock21)
   prototypes/                 Sea Block's own prototypes: items, recipes, categories, techs, rock chest
   data/                       tables.lua (startup-chain config), tech-tree, recipe, misc, SCT
   data-updates/               one file per topic: coal, algae, landfill, military, startup, ...
-  data-final-fixes/           research-triggers, lab-coverage, fuel-categories, mapgen, tech-tree, ...
+  data-final-fixes/           research-triggers, lab-coverage, mapgen, tech-tree, ...
   settings-updates/           one file per dependency mod whose settings are forced
   migrations/                 upstream 0.5.x/0.6.0 migrations (JSON renames and Lua)
   locale/<lang>/SeaBlock.cfg  translations; en is the source
@@ -154,8 +155,7 @@ sees the recipe graph after all the shuffling above.
 
 `data-final-fixes.lua`: `logistics` (belt speeds), `icons`, `recipe`,
 `tech-tree`, `unobtainable_items` (internal renames so FNEI search works),
-`research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod`, `ScienceCostTweakerM`,
-and last of all `fuel-categories`, so it sees every item any stage touched.
+`research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod` and `ScienceCostTweakerM`.
 
 ### The startup (tutorial) chain
 
@@ -211,7 +211,7 @@ entities. Cliffs are not reimplemented (upstream #352).
 
 ### Self-repair passes in `data-final-fixes`
 
-Three modules are generic "find it and fix it" passes rather than per-name
+Two modules are generic "find it and fix it" passes rather than per-name
 patches, so they keep working as Bob's, Angel's and the base game move:
 
 - `research-triggers.lua`: a 2.x research trigger that names a prototype Sea
@@ -223,9 +223,6 @@ patches, so they keep working as Bob's, Angel's and the base game move:
   pack set, hidden ones included, is not accepted in full by some lab. Hidden
   technologies are rewritten quietly; a visible one failing is logged loudly
   because that is a real progression bug.
-- `fuel-categories.lua`: moves `fuel_category` to `fuel_categories` on Bob's
-  and Angel's items from Factorio 2.1.20 on. Remove once they ship 2.1.20
-  releases.
 
 When adding a fix, prefer this shape over patching one prototype by name if the
 same breakage can recur elsewhere.

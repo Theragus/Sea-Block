@@ -28,9 +28,10 @@ major versions to Factorio, and Bob's and Angel's had moved to 2.1).
   `petrochem`, `smelting`, `bioprocessing`). Many more are optional and gated
   with `if mods["..."]`. `quality`, `space-age`, `alien-biomes` and
   `angelsexploration` are declared incompatible. See `SeaBlock/info.json`.
-- **Status.** It loads and generates maps on Factorio 2.1.19 and 2.1.20
-  headless, with and without ScienceCostTweakerM, and has been play-tested to
-  green science. Cliffs, migrations and balance are open upstream (README).
+- **Status.** It needs Factorio 2.1.20 or later, and loads and generates maps
+  on 2.1.20 and 2.1.21 headless, with and without ScienceCostTweakerM. It has
+  been play-tested to green science. Cliffs, migrations and balance are open
+  upstream (README).
 - **Languages.** Lua (Factorio embeds Lua 5.2) for the mod; Python 3 and bash
   for tooling, standard library only. No package manager, no lockfile.
 - **Licence.** MIT, © KiwiHawk. `LICENSE` must ship inside each mod zip;
@@ -79,7 +80,7 @@ SeaBlock/                     the mod (portal name SeaBlock21)
   prototypes/                 Sea Block's own prototypes: items, recipes, categories, techs, rock chest
   data/                       tables.lua (startup-chain config), tech-tree, recipe, misc, SCT
   data-updates/               one file per topic: coal, algae, landfill, military, startup, ...
-  data-final-fixes/           research-triggers, lab-coverage, fuel-categories, mapgen, tech-tree, ...
+  data-final-fixes/           research-triggers, lab-coverage, mapgen, tech-tree, ...
   menu-simulations/           main menu scenes built from script (prelude, island, factory); registered
                               in data-final-fixes/menu-simulations.lua, which also drops the ore-based vanilla ones
   settings-updates/           one file per dependency mod whose settings are forced
@@ -158,8 +159,9 @@ sees the recipe graph after all the shuffling above.
 `data-final-fixes.lua`: `logistics` (belt speeds), `icons`, `recipe`,
 `tech-tree`, `unobtainable_items` (internal renames so FNEI search works),
 `research-triggers`, `lab-coverage`, `mapgen`, `SpaceMod`, `ScienceCostTweakerM`,
-`menu-simulations` (swaps the ore-based vanilla menu scenes for Sea Block's), and
-last of all `fuel-categories`, so it sees every item any stage touched.
+`hidden-prerequisites` (after every pass that edits prerequisites),
+`alien-artifacts`, `hidden-ingredients` and `menu-simulations` (swaps the
+ore-based vanilla menu scenes for Sea Block's).
 
 ### The startup (tutorial) chain
 
@@ -215,7 +217,7 @@ entities. Cliffs are not reimplemented (upstream #352).
 
 ### Self-repair passes in `data-final-fixes`
 
-Three modules are generic "find it and fix it" passes rather than per-name
+Five modules are generic "find it and fix it" passes rather than per-name
 patches, so they keep working as Bob's, Angel's and the base game move:
 
 - `research-triggers.lua`: a 2.x research trigger that names a prototype Sea
@@ -227,9 +229,24 @@ patches, so they keep working as Bob's, Angel's and the base game move:
   pack set, hidden ones included, is not accepted in full by some lab. Hidden
   technologies are rewritten quietly; a visible one failing is logged loudly
   because that is a real progression bug.
-- `fuel-categories.lua`: moves `fuel_category` to `fuel_categories` on Bob's
-  and Angel's items from Factorio 2.1.20 on. Remove once they ship 2.1.20
-  releases.
+- `hidden-prerequisites.lua`: a visible technology that requires a hidden or
+  disabled one can never be researched, and the tree does not draw the hidden
+  one, so the player sees every prerequisite green. Angel's disables Bob's
+  `bob-<metal>-processing` technologies, and Bob's mods that load later add
+  them back as prerequisites; the pass points each at
+  `angels-<metal>-smelting-1`, or at an entry in its `successors` table.
+  Hidden alien research is succeeded by `bob-artifact-processing`.
+  Prerequisites with no known successor are left for
+  `audit_hidden_prerequisites.lua`, which fails on every one; a technology
+  behind content Sea Block cuts on purpose must be hidden with it.
+- `alien-artifacts.lua`: any visible technology whose recipes use large alien
+  artifacts gets `bob-artifact-processing` as a prerequisite, since that is
+  where the only artifact recipes are unlocked (small artifacts come from
+  Angel's alien bio processing; `data-updates/military.lua` unhides the
+  recipes Bob's Enemies hides when aliens drop no artifacts).
+- `hidden-ingredients.lua`: replaces ingredients Sea Block hid with what the
+  recipe used before; today `bob-nickel-plate` becomes `steel-plate`, the
+  plate Bob's swaps out whenever nickel plate exists.
 
 When adding a fix, prefer this shape over patching one prototype by name if the
 same breakage can recur elsewhere.
@@ -302,7 +319,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.9 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.12 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,

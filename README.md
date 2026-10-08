@@ -32,7 +32,7 @@ made everything else testable.
 
 **It loads and generates maps. It has been play-tested up until green science.**
 
-Verified against Factorio 2.1.19 and 2.1.20 headless with Bob's 3.0.x and Angel's 2.1.x,
+Verified against Factorio 2.1.20 and 2.1.21 headless with Bob's 3.0.x and Angel's 2.1.x,
 with and without ScienceCostTweakerM, and with enemies both on and disabled.
 That covers load-time and static-graph correctness — prototype validity,
 technology tree integrity, recipe and science pack reachability. It says
@@ -50,7 +50,7 @@ Known to be outstanding, all tracked upstream:
 
 ## Requirements
 
-- **Factorio 2.1.x.** At time of writing 2.1 is the experimental branch; 2.0.x
+- **Factorio 2.1.20 or later.** At time of writing 2.1 is the experimental branch; 2.0.x
   is still marked stable. On Steam: Properties → Betas → `experimental`.
 - Bob's mods 3.0.x and Angel's mods 2.1.x from the mod portal.
 - `quality`, `space-age` and `elevated-rails` **disabled**. Sea Block declares

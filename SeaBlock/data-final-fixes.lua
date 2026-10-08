@@ -27,6 +27,10 @@ require("data-final-fixes/lab-coverage")
 require("data-final-fixes/mapgen")
 require("data-final-fixes/SpaceMod")
 require("data-final-fixes/ScienceCostTweakerM")
+-- After every pass that edits prerequisites, including ScienceCostTweakerM's folding
+require("data-final-fixes/hidden-prerequisites")
+require("data-final-fixes/alien-artifacts")
+require("data-final-fixes/hidden-ingredients")
 require("data-final-fixes/menu-simulations")
 
 data.raw.recipe["copper-cable"].allow_decomposition = true
@@ -37,6 +41,3 @@ for _, v in pairs(data.raw.character) do
     table.insert(v.crafting_categories, "sb-crafting-handonly")
   end
 end
-
--- Last, so it sees every item any earlier stage has touched
-require("data-final-fixes/fuel-categories")

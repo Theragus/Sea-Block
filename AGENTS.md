@@ -241,8 +241,10 @@ patches, so they keep working as Bob's, Angel's and the base game move:
   Angel's alien bio processing; `data-updates/military.lua` unhides the
   recipes Bob's Enemies hides when aliens drop no artifacts).
 - `hidden-ingredients.lua`: replaces ingredients Sea Block hid with what the
-  recipe used before; today `bob-nickel-plate` becomes `steel-plate`, the
-  plate Bob's swaps out whenever nickel plate exists.
+  recipe used before; today `bob-nickel-plate` and `bob-gunmetal-alloy` become
+  `steel-plate`, the plate Bob's swaps out whenever they exist.
+  `audit_ingredient_sources.lua` finds the next one: it fails on any visible,
+  unlockable recipe with an ingredient nothing produces.
 
 When adding a fix, prefer this shape over patching one prototype by name if the
 same breakage can recur elsewhere.
@@ -315,7 +317,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.7 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.12 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,
@@ -421,8 +423,10 @@ Say so in the PR rather than claiming the load test passed.
 - **Hide content.** `seablock.lib.hide(type, name)` for items and entities,
   `bobmods.lib.recipe.hide` for recipes, `seablock.lib.hide_technology` for
   techs. Hidden things are excluded from the reachability audit; disabled but
-  visible things must have an unlock. `lab-coverage.lua` still has to be happy
-  with a hidden technology's pack set.
+  visible things must have an unlock. Hiding an item or fluid strands every
+  visible recipe that still uses it; `audit_ingredient_sources.lua` lists them,
+  and each needs a substitute (`hidden-ingredients.lua`) or hiding too.
+  `lab-coverage.lua` still has to be happy with a hidden technology's pack set.
 - **Change the starting chest.** `starting-items.lua` only. It is read both at
   runtime and in the data stage (for YAFC via `data.data_crawler`), and
   `audit_starting_items.lua` checks every name exists.

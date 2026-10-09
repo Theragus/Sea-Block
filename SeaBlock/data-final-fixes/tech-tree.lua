@@ -25,6 +25,14 @@ if data.raw.technology["bob-steel-axe-3"] then
   bobmods.lib.tech.replace_prerequisite("bob-steel-axe-3", "bob-brass-processing", "angels-cobalt-steel-smelting-1")
 end
 
+-- The sniper rifle is made from brass gear wheels and glass, but sb-sniper-rifle only
+-- requires Military science pack, so it could be researched before either can be made.
+-- Gate it on the technologies that unlock them.
+if data.raw.technology["sb-sniper-rifle"] then
+  bobmods.lib.tech.add_prerequisite("sb-sniper-rifle", "bob-brass-processing")
+  bobmods.lib.tech.add_prerequisite("sb-sniper-rifle", "angels-glass-smelting-1")
+end
+
 -- Unhide solid fuel from hydrogen
 seablock.lib.unhide_recipe("bob-solid-fuel-from-hydrogen")
 seablock.lib.add_recipe_unlock("flammables", "bob-solid-fuel-from-hydrogen", 4)

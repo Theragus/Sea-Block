@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.13
+Date: 2026-10-14
+  Changes:
+    - With Circuit Processing, the first speed, efficiency and productivity modules no longer
+      wait for blue science
+      - Circuit Processing 2.x put a polished gem into each tier 1 module processor and made
+        Modules require Gem processing 3, which costs blue science in Sea Block. In 1.1 the
+        first modules needed no gems
+      - The gems now go into the tier 2 processors instead, four each, and Gem processing 3
+        moves to Modules 2. Tier 2 and later modules cost the same gems as before
+      - Agriculture module 1 still needs a polished topaz and now lists Gem processing 3 as a
+        prerequisite
+---------------------------------------------------------------------------------------------------
 Version: 2.1.11
 Date: 2026-10-08
   Changes:

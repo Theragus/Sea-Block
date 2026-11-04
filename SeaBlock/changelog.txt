@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.12
+Date: 2026-11-04
+  Bugfixes:
+    - Fixed a crash when loading a save from the Factorio 2.0 version of Sea Block
+      - An old migration looked up the Steel and Electric chemical furnace technologies, which
+        no longer exist
+      - Another old migration called Angel's item replacement helpers without loading them
+---------------------------------------------------------------------------------------------------
 Version: 2.1.11
 Date: 2026-10-08
   Changes:

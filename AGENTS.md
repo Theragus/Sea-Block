@@ -91,7 +91,8 @@ tools/
   package.py                  zips both mods as name_version.zip; checks LICENSE and changelog/version
   publish.py                  uploads to the mod portal; --pending asks it what is new, --check-tag checks a tag
   loadtest/                   the test rig (see its README): ci.sh, build_mods.py, discover.py,
-                              run.lua + env.lua (Lua harness), audit_*.lua, check_references.py
+                              run.lua + env.lua (Lua harness), audit_*.lua, check_references.py,
+                              fixtures/ (stand-in mods that exercise Sea Block's interfaces)
 .github/workflows/
   loadtest.yml                push, PR, weekly: tools/loadtest/ci.sh
   stylua.yml                  push: formats *.lua and commits "Format Code" as StyLuaFormatter (check run "prettier")
@@ -270,6 +271,24 @@ same breakage can recur elsewhere.
 - Companion Drones: on player creation, swap the drones' coal for wood pellets
   and strip their weapons and shields.
 
+### Interfaces other mods use
+
+Two things are public, and other mods' code depends on them, so do not rename
+or drop them in a cleanup. Nothing inside Sea Block uses either, and that is
+how upstream lost the flag. Both are listed in the README under "For other
+mods".
+
+- The remote interface `SeaBlock21` (above).
+- `seablock.trigger.mining_productivity`: a mod sets it in its `data.lua`, and
+  `data-updates/misc.lua` then leaves `mining-productivity-1` to `-4` visible
+  with their effects instead of hiding them. Seablock Mining
+  (`seablock-mining-tz`) uses it. Sea Block does not check for that mod by
+  name: upstream did, for the old name `seablock-mining`, and the check went
+  stale when the mod was renamed. Do not add the mod to `info.json` either; it
+  already declares `? SeaBlock21`, so that would be a dependency loop.
+  `audit_mining_productivity_flag.lua` and the `mining-flag` load-test
+  configuration cover both states of the flag.
+
 ### Settings
 
 `settings.lua` adds `sb-default-landfill` only when LandfillPainting is
@@ -318,7 +337,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.16 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.19 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,
@@ -370,8 +389,9 @@ tools/loadtest/ci.sh               # fetch factorio-data, Bob's, Angel's, SCT an
 tools/loadtest/ci.sh --skip-fetch  # reuse what is already under .loadtest/
 ```
 
-It loads two configurations, the core pack and core plus ScienceCostTweakerM,
-and runs every audit after each. Needs bash, python3, **lua5.2**, curl, git and
+It loads three configurations, the core pack, core plus ScienceCostTweakerM,
+and core plus the `fixtures/sb-loadtest-mining-productivity` stand-in mod, and
+runs every audit after each. Needs bash, python3, **lua5.2**, curl, git and
 network access to factorio.com and github.com. Everything lands in
 `.loadtest/` (gitignored). CI runs the same script on push, pull request and
 weekly.

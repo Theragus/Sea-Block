@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 #
-# Fetch the dependencies, then load Sea Block two ways: the core pack, and the
+# Fetch the dependencies, then load Sea Block three ways: the core pack; the
 # core pack plus ScienceCostTweakerM, which exercises a large amount of
-# Sea Block-specific code that the core pack never touches.
+# Sea Block-specific code that the core pack never touches; and the core pack
+# plus a fixture mod that sets seablock.trigger.mining_productivity, the opt-in
+# other mods use to keep the mining productivity technologies.
 #
 # Runs the same locally as in CI. Everything lands under $WORK (default
 # .loadtest/), which is safe to delete.
@@ -55,7 +57,7 @@ if [ "${1:-}" != "--skip-fetch" ]; then
 fi
 
 ROOTS=(--root "$DEPS/factorio-data" --root "$DEPS/bobsmods" --root "$DEPS/angelsmods"
-       --root "$DEPS/sct" --root "$REPO")
+       --root "$DEPS/sct" --root "$REPO" --root "$HERE/fixtures")
 
 # The pack as the metapack defines it, minus the mods that are not on GitHub.
 CORE_PACK=(boblibrary bobores bobplates bobelectronics boblogistics bobassembly
@@ -105,12 +107,14 @@ run_config() {
     "$HERE/audit_starting_items.lua" "$HERE/audit_milestones_preset.lua" "$HERE/audit_reachability.lua" \
     "$HERE/audit_trigger_techs.lua" "$HERE/audit_trigger_items.lua" "$HERE/audit_tutorial_techs.lua" \
     "$HERE/audit_hidden_prerequisites.lua" "$HERE/audit_ingredient_sources.lua" \
+    "$HERE/audit_mining_productivity_flag.lua" \
     "$HERE/audit_dead_techs.lua"
 }
 
 failed=0
 run_config core "${CORE_PACK[@]}" || failed=1
 run_config sct "${CORE_PACK[@]}" ScienceCostTweakerM || failed=1
+run_config mining-flag "${CORE_PACK[@]}" sb-loadtest-mining-productivity || failed=1
 
 echo
 if [ "$failed" -eq 0 ]; then

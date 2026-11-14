@@ -26,8 +26,9 @@ major versions to Factorio, and Bob's and Angel's had moved to 2.1).
 - **Dependencies.** Hard: `base`, Bob's 3.0.x (`boblibrary`, `bobores`,
   `bobplates`, `bobelectronics`, `boblogistics`) and Angel's 2.1.x (`refining`,
   `petrochem`, `smelting`, `bioprocessing`). Many more are optional and gated
-  with `if mods["..."]`. `quality`, `space-age`, `alien-biomes` and
-  `angelsexploration` are declared incompatible. See `SeaBlock/info.json`.
+  with `if mods["..."]`. `quality`, `space-age`, `alien-biomes`,
+  `angelsexploration` and `cargo-ships-oil-rig` are declared incompatible. See
+  `SeaBlock/info.json`.
 - **Status.** It needs Factorio 2.1.20 or later, and loads and generates maps
   on 2.1.20 and 2.1.21 headless, with and without ScienceCostTweakerM. It has
   been play-tested to green science. Cliffs, migrations and balance are open
@@ -317,7 +318,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.12 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.15 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,

@@ -26,8 +26,9 @@ major versions to Factorio, and Bob's and Angel's had moved to 2.1).
 - **Dependencies.** Hard: `base`, Bob's 3.0.x (`boblibrary`, `bobores`,
   `bobplates`, `bobelectronics`, `boblogistics`) and Angel's 2.1.x (`refining`,
   `petrochem`, `smelting`, `bioprocessing`). Many more are optional and gated
-  with `if mods["..."]`. `quality`, `space-age`, `alien-biomes` and
-  `angelsexploration` are declared incompatible. See `SeaBlock/info.json`.
+  with `if mods["..."]`. `quality`, `space-age`, `alien-biomes`,
+  `angelsexploration` and `cargo-ships-oil-rig` are declared incompatible. See
+  `SeaBlock/info.json`.
 - **Status.** It needs Factorio 2.1.20 or later, and loads and generates maps
   on 2.1.20 and 2.1.21 headless, with and without ScienceCostTweakerM. It has
   been play-tested to green science. Cliffs, migrations and balance are open
@@ -398,11 +399,33 @@ weekly.
 - The headless build never loads sprites, so `audit_icons.lua` is the only
   check that an `icon_size` matches the PNG.
 
-**In a sandbox without lua5.2 or network access** (true of the Claude Code
-cloud container at the time of writing: only `python3` is present), the full
-load test cannot run. What still can: `python3 tools/package.py --out <dir>`
-and `python3 tools/publish.py --tag vX.Y.Z --check-tag`, plus careful reading.
-Say so in the PR rather than claiming the load test passed.
+**In the Claude Code cloud container** only `python3` is preinstalled, but
+`apt-get install -y lua5.2` works, and github.com and the factorio.com headless
+download are reachable through its proxy. With `lua5.2` installed,
+`tools/loadtest/ci.sh` runs in full there, real game included, in a little over
+a minute (verified 2026-11 on 2.1.21). Run it before claiming the load test
+passed, and say in the PR if it could not run.
+
+The harness also answers "what does the player actually get" questions, since
+it leaves the final `data.raw` after every mod has run. Write a throwaway
+`audit_*`-shaped file in a scratch directory that prints the recipes or
+technologies in question and returns 0, then run it against a manifest
+(`--enable base --enable core` are needed explicitly):
+
+```sh
+python3 tools/loadtest/discover.py --root .loadtest/deps/factorio-data \
+  --root .loadtest/deps/bobsmods --root .loadtest/deps/angelsmods --root . \
+  --enable base --enable core --enable SeaBlock21 --enable <every other pack mod> \
+  --out /tmp/manifest.lua
+LOADTEST_DETERMINISTIC=1 lua5.2 tools/loadtest/run.lua /tmp/manifest.lua /tmp/query.lua
+```
+
+`ci.sh` also leaves `.loadtest/core-manifest.lua` and `.loadtest/sct-manifest.lua`
+behind, which can be used directly.
+
+In a sandbox with neither `lua5.2` nor network access, what still runs is
+`python3 tools/package.py --out <dir>` and
+`python3 tools/publish.py --tag vX.Y.Z --check-tag`, plus careful reading.
 
 ## Common tasks
 

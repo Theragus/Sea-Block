@@ -1,0 +1,9 @@
+{
+  "name": "sb-loadtest-mining-productivity",
+  "version": "1.0.0",
+  "title": "Sea Block load test: mining productivity flag",
+  "author": "Sea Block load test",
+  "description": "Test fixture only, never published. Sets seablock.trigger.mining_productivity the way another mod would.",
+  "factorio_version": "2.1",
+  "dependencies": ["base", "? SeaBlock21"]
+}

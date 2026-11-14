@@ -27,7 +27,6 @@ bobmods.lib.tech.add_prerequisite("angels-bio-wood-processing-2", "angels-bio-pr
 -- chemistry is made to depend on this tier below, so keeping it is circular.
 bobmods.lib.tech.remove_prerequisite("angels-bio-wood-processing-2", "angels-coal-processing")
 bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-2", "angels-wood-charcoal")
-bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-3", "angels-bio-resin-wood-reprocessing")
 bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-2", "bob-rubber")
 bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-2", "angels-bio-processor")
 bobmods.lib.tech.add_recipe_unlock("angels-bio-wood-processing-2", "angels-wood-pellets")
@@ -35,10 +34,11 @@ bobmods.lib.tech.add_recipe_unlock("angels-bio-wood-processing-2", "angels-wood-
 bobmods.lib.tech.add_recipe_unlock("angels-bio-wood-processing-2", "sb-wood-bricks-charcoal")
 bobmods.lib.tech.add_recipe_unlock("angels-bio-wood-processing-2", "angels-gas-carbon-dioxide")
 
-bobmods.lib.tech.remove_prerequisite("angels-bio-wood-processing-3", "angels-coal-processing")
-bobmods.lib.tech.add_prerequisite("angels-bio-wood-processing-3", "angels-bio-arboretum-1")
-bobmods.lib.tech.remove_recipe_unlock("angels-bio-wood-processing-3", "angels-wood-bricks")
-bobmods.lib.tech.add_recipe_unlock("angels-bio-wood-processing-3", "angels-cellulose-fiber-raw-wood")
+-- Angel's 2.x unlocks only the bioprocessor and resin wood reprocessing here, and
+-- turns the technology off itself when resin is not in use. Sea Block removes
+-- resin by hand below, the bioprocessor already comes with Farming 1, and
+-- cellulose fiber from raw wood moved to Arboretum 1, so nothing is left (#33).
+seablock.lib.hide_technology("angels-bio-wood-processing-3")
 
 -- Remove solid resin
 bobmods.lib.recipe.hide("angels-bio-resin-wood-reprocessing")

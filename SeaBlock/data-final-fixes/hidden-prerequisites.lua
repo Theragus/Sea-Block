@@ -32,6 +32,12 @@ local successors = {
   -- processing unlocks (data-final-fixes/alien-artifacts.lua). Power armor MK3 and
   -- Fission reactor equipment 3 still name it.
   ["bob-alien-research"] = "bob-artifact-processing",
+  -- Hidden because they had nothing left to unlock (audit_dead_techs.lua). Pellet
+  -- coke, the only unlock of charcoal processing 3, is on tier 2; the other two
+  -- gave nothing, so whatever requires them loses nothing by dropping them.
+  ["angels-coal-processing-3"] = "angels-coal-processing-2",
+  ["angels-bio-wood-processing-3"] = false,
+  ["electric-mining-drill"] = false,
 }
 
 local function usable(name)

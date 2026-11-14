@@ -107,7 +107,8 @@ run_config() {
     "$HERE/audit_starting_items.lua" "$HERE/audit_milestones_preset.lua" "$HERE/audit_reachability.lua" \
     "$HERE/audit_trigger_techs.lua" "$HERE/audit_trigger_items.lua" "$HERE/audit_tutorial_techs.lua" \
     "$HERE/audit_hidden_prerequisites.lua" "$HERE/audit_ingredient_sources.lua" \
-    "$HERE/audit_mining_productivity_flag.lua"
+    "$HERE/audit_mining_productivity_flag.lua" \
+    "$HERE/audit_dead_techs.lua"
 }
 
 failed=0

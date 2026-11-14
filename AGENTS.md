@@ -337,7 +337,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.18 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.19 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,

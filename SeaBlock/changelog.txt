@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.18
+Date: 2026-11-14
+  Bugfixes:
+    - Three technologies could be researched but gave nothing, and are now hidden
+      - Wood processing 3 unlocked the Bioprocessor, which Farming 1 already unlocks, and
+        Cellulose fiber from raw wood, which Angel's 2.x moved to Arboretum 1
+      - Charcoal processing 3 unlocked nothing, because Sea Block moves its only recipe,
+        pellet coke, to Charcoal processing 2
+      - Electric mining drill unlocked nothing, because Sea Block has no mining drills
+---------------------------------------------------------------------------------------------------
 Version: 2.1.17
 Date: 2026-11-14
   Bugfixes:

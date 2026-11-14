@@ -1,5 +1,7 @@
 seablock.lib.hide("mining-drill", "burner-mining-drill")
 seablock.lib.hide("mining-drill", "electric-mining-drill")
+-- Factorio 2.0 gives the drill a technology of its own, which has nothing left to unlock.
+seablock.lib.hide_technology("electric-mining-drill")
 seablock.lib.hide("mining-drill", "pumpjack")
 
 -- Hide Oil & Gas Separator

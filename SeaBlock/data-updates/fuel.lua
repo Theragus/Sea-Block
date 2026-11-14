@@ -58,6 +58,15 @@ for _, v in pairs({
   end
 end
 
+-- Bob's Revamp turns the petroleum gas of oil processing into sour gas and makes solid
+-- fuel from it. Angel's hides sour gas along with the oil processing recipes that make
+-- it, refining oil its own way, so nothing makes sour gas and Flammables unlocked a
+-- solid fuel recipe that could never run.
+if data.raw.recipe["bob-solid-fuel-from-sour-gas"] then
+  bobmods.lib.tech.remove_recipe_unlock("flammables", "bob-solid-fuel-from-sour-gas")
+  bobmods.lib.recipe.hide("bob-solid-fuel-from-sour-gas")
+end
+
 if mods["KS_Power"] then
   seablock.lib.hide("boiler", "oil-steam-boiler")
   seablock.lib.hide("burner-generator", "big-burner-generator")

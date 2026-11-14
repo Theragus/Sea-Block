@@ -3,20 +3,20 @@ if mods["Clowns-Extended-Minerals"] then
     {
       type = "item-subgroup",
       name = "resource-refining-2",
-      group = "resource-refining",
+      group = "angels-resource-refining",
       order = "i-a",
     },
     {
       type = "item-subgroup",
       name = "slag-processing-2",
-      group = "resource-refining",
+      group = "angels-resource-refining",
       order = "i-b",
     },
     {
       type = "recipe",
       name = "sb-slag-processing-clowns-1",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore1" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -25,7 +25,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore1", amount = 1 },
@@ -37,7 +37,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-2",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore2" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -46,7 +46,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore2", amount = 1 },
@@ -58,7 +58,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-3",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore3" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -67,7 +67,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore3", amount = 1 },
@@ -79,7 +79,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-4",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore4" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -88,7 +88,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore4", amount = 1 },
@@ -100,7 +100,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-5",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore5" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -109,7 +109,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore5", amount = 1 },
@@ -121,7 +121,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-6",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore6" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -130,7 +130,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore6", amount = 1 },
@@ -142,7 +142,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-7",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore7" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -151,7 +151,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore7", amount = 1 },
@@ -163,7 +163,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-8",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore8" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -172,7 +172,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore8", amount = 1 },
@@ -184,7 +184,7 @@ if mods["Clowns-Extended-Minerals"] then
       type = "recipe",
       name = "sb-slag-processing-clowns-9",
       localised_name = {
-        "recipe-name.slag-processing",
+        "recipe-name.angels-slag-processing",
         { "item-name.clown-mat", { "entity-name.clowns-ore9" }, "Ore" },
       },
       categories = { "angels-crystallizing" },
@@ -193,7 +193,7 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "fluid", name = "mineral-sludge", amount = 25 },
+        { type = "fluid", name = "angels-mineral-sludge", amount = 25 },
       },
       results = {
         { type = "item", name = "clowns-ore9", amount = 1 },
@@ -210,8 +210,9 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "item", name = "solid-sand", amount = 1 },
-        { type = "item", name = "stone-crushed", amount = 6 },
+        { type = "item", name = "angels-solid-sand", amount = 1 },
+        -- data-final-fixes/recipe.lua turns crushed stone into stone, so name it as Angel's does
+        { type = "item", name = "angels-stone-crushed", amount = 6 },
       },
       results = {
         { type = "item", name = "clowns-resource1", amount = 1 },
@@ -228,8 +229,8 @@ if mods["Clowns-Extended-Minerals"] then
       allow_decomposition = false,
       energy_required = 4,
       ingredients = {
-        { type = "item", name = "solid-sand", amount = 5 },
-        { type = "item", name = "blue-cellulose-fiber", amount = 1 },
+        { type = "item", name = "angels-solid-sand", amount = 5 },
+        { type = "item", name = "angels-blue-cellulose-fiber", amount = 1 },
       },
       results = {
         { type = "item", name = "clowns-resource2", amount = 5 },

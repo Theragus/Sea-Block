@@ -1,6 +1,6 @@
 {
   "name": "SeaBlock21",
-  "version": "2.1.12",
+  "version": "2.1.13",
   "factorio_version": "2.1",
   "title": "Sea Block",
   "author": "Trainwreck, KiwiHawk, Theragus",
@@ -32,6 +32,7 @@
     "? bobtech >= 3.0.0",
     "? bobwarfare >= 3.0.1",
     "? CircuitProcessing >= 2.1.0",
+    "? Clowns-Extended-Minerals",
     "? KS_Power >= 2.1.0",
     "? LandfillPainting",
     "? Milestones >= 1.5.2",

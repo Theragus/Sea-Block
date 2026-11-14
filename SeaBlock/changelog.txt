@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.13
+Date: 2026-11-14
+  Bugfixes:
+    - Fixed a startup error with Clowns Extended Minerals installed
+      - Sea Block's recipes for Clowns ores, Alluvial deposit and Oil sands still used Angel's
+        names from before Factorio 2.0 for mineral sludge, solid sand, crushed stone and blue
+        cellulose fiber
+      - The crystallizing recipes are now named "Crystallizing to ..." again, and their recipe
+        groups sit under Angel's resource refining tab
+---------------------------------------------------------------------------------------------------
 Version: 2.1.12
 Date: 2026-11-04
   Bugfixes:

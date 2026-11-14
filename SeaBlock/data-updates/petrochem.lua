@@ -1,5 +1,9 @@
 -- Merge basic chemistry 2 into basic chemistry
+-- Recorded so data-final-fixes/merged-technologies.lua can move unlocks that other mods
+-- add to a merged technology after this runs.
+seablock.merged_technologies = seablock.merged_technologies or {}
 local function movealleffects(from, to)
+  seablock.merged_technologies[from] = to
   for _, v in pairs(data.raw.technology[from].effects) do
     table.insert(data.raw.technology[to].effects, v)
   end

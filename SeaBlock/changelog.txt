@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.17
+Date: 2026-11-14
+  Bugfixes:
+    - With Clowns Processing and Clowns Extended Minerals, four recipes could never be used
+      - Oil Sand Liquification is now unlocked by Oil processing, beside the Oil Sands recipe
+        that feeds it. Clowns unlocked it with Oil gathering, which Sea Block hides
+      - Hydrochloric Acid Electrolysis is now unlocked by Chlorine processing 2. Sea Block
+        merges Chlorine processing 3 into 2 and hides it, but Clowns added the recipe to 3
+        after the merge
+      - The fifth Molten aluminium recipe, from aluminium, magnesium and zinc ingots, is
+        unlocked by Advanced Magnesium Smelting 2, which now also requires Advanced zinc
+        smelting 3. Clowns skipped the unlock because Sea Block turns off Angel's zinc plate
+      - Dimethylmercury Synthesis uses chlorine in place of chloromethane gas, which Sea Block
+        hides. Cellulose paste already makes the same swap
+---------------------------------------------------------------------------------------------------
 Version: 2.1.16
 Date: 2026-11-14
   Bugfixes:

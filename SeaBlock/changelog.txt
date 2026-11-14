@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.1.17
+Version: 2.1.20
 Date: 2026-11-14
   Features:
     - Two Sea Block main menu scenes, built from script rather than a save
@@ -11,6 +11,40 @@ Date: 2026-11-14
     - Removed the vanilla menu scenes built on ore patches and oil fields: burner city, early
       smelting, mining defense, oil pumpjacks and uranium processing. Sea Block deletes every
       resource, so they loaded with their drills and pumpjacks standing on bare ground
+---------------------------------------------------------------------------------------------------
+Version: 2.1.19
+Date: 2026-11-14
+  Bugfixes:
+    - Three technologies could be researched but gave nothing, and are now hidden
+      - Wood processing 3 unlocked the Bioprocessor, which Farming 1 already unlocks, and
+        Cellulose fiber from raw wood, which Angel's 2.x moved to Arboretum 1
+      - Charcoal processing 3 unlocked nothing, because Sea Block moves its only recipe,
+        pellet coke, to Charcoal processing 2
+      - Electric mining drill unlocked nothing, because Sea Block has no mining drills
+---------------------------------------------------------------------------------------------------
+Version: 2.1.18
+Date: 2026-11-14
+  Features:
+    - Other mods can again keep the mining productivity research. A mod that sets
+      seablock.trigger.mining_productivity = true in its data.lua gets the four mining
+      productivity technologies visible, with their effects. Upstream Sea Block had this
+      setting and dropped it; Seablock Mining needs it to put mining productivity on Angel's
+      crystallizers. Without such a mod, mining productivity stays hidden as before
+---------------------------------------------------------------------------------------------------
+Version: 2.1.17
+Date: 2026-11-14
+  Bugfixes:
+    - With Clowns Processing and Clowns Extended Minerals, four recipes could never be used
+      - Oil Sand Liquification is now unlocked by Oil processing, beside the Oil Sands recipe
+        that feeds it. Clowns unlocked it with Oil gathering, which Sea Block hides
+      - Hydrochloric Acid Electrolysis is now unlocked by Chlorine processing 2. Sea Block
+        merges Chlorine processing 3 into 2 and hides it, but Clowns added the recipe to 3
+        after the merge
+      - The fifth Molten aluminium recipe, from aluminium, magnesium and zinc ingots, is
+        unlocked by Advanced Magnesium Smelting 2, which now also requires Advanced zinc
+        smelting 3. Clowns skipped the unlock because Sea Block turns off Angel's zinc plate
+      - Dimethylmercury Synthesis uses chlorine in place of chloromethane gas, which Sea Block
+        hides. Cellulose paste already makes the same swap
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.16
 Date: 2026-11-14

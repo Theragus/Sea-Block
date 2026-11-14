@@ -129,6 +129,31 @@ one. To build the zips without publishing, run `tools/package.py`.
 
 [api]: https://wiki.factorio.com/Mod_upload_API
 
+## For other mods
+
+Sea Block offers two interfaces to other mods:
+
+- **Remote interface `SeaBlock21`** (control stage), in `SeaBlock/remote.lua`:
+  starting items, research unlocks, the Milestones preset and victory screen
+  statistics.
+- **`seablock.trigger.mining_productivity`** (data stage). Sea Block hides the
+  mining productivity technologies. A mod that sets this flag in its `data.lua`
+  keeps all four visible, with their effects:
+
+  ```lua
+  seablock = seablock or {}
+  seablock.trigger = seablock.trigger or {}
+  seablock.trigger.mining_productivity = true
+  ```
+
+  It works whatever order the two mods load in, because every mod's `data.lua`
+  runs before any `data-updates.lua`. It is upstream's flag, restored in 2.1.18
+  for [Seablock Mining](https://mods.factorio.com/mod/seablock-mining-tz).
+
+Both are kept stable. Nothing inside Sea Block uses either one, which is how
+upstream lost the flag, so the load test checks them instead: the flag has its
+own audit and configuration, and the Milestones preset has an audit.
+
 ## Licence and credit
 
 MIT, © KiwiHawk, which permits redistribution and modification provided the

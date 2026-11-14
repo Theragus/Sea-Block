@@ -14,10 +14,15 @@
 -- also swaps copper plate for gunmetal in bullet and shotgun shell casings; those are
 -- hidden with the rest of the cut ammunition, so steel is right for every visible
 -- recipe that uses it.
+--
+-- data-updates/unobtainable-items.lua hides Angel's chloromethane gas and already makes
+-- cellulose paste with chlorine instead. Clowns-Processing's dimethylmercury synthesis
+-- asks for chloromethane too; chlorine is the substitute there as well.
 
 local substitutes = {
   ["bob-nickel-plate"] = "steel-plate",
   ["bob-gunmetal-alloy"] = "steel-plate",
+  ["angels-gas-chlor-methane"] = "angels-gas-chlorine",
 }
 
 local names = {}
@@ -32,7 +37,7 @@ for _, name in ipairs(names) do
     for from, to in pairs(substitutes) do
       for _, ingredient in pairs(recipe.ingredients or {}) do
         if ingredient.name == from then
-          -- Merges into an existing steel plate ingredient instead of listing it twice
+          -- Merges into an existing ingredient of the same name instead of listing it twice
           bobmods.lib.recipe.replace_ingredient(name, from, to)
           log(("Sea Block: %s used hidden %s, now uses %s"):format(name, from, to))
           break

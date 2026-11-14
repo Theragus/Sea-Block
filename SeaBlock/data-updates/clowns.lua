@@ -251,4 +251,25 @@ if mods["Clowns-Extended-Minerals"] then
   seablock.lib.add_recipe_unlock("clowns-ore-crushing", "sb-slag-processing-clowns-1", 1)
   seablock.lib.add_recipe_unlock("angels-water-washing-2", "sb-clowns-resource-1")
   seablock.lib.add_recipe_unlock("angels-oil-processing", "sb-clowns-resource-2")
+  -- Clowns unlocks liquification at oil-gathering, which data-updates/misc.lua hides
+  -- because there is no oil to pump. Put it beside the recipe that makes the oil sands
+  -- it consumes.
+  seablock.lib.moveeffect("clowns-resource2-liquification", "oil-gathering", "angels-oil-processing")
+end
+
+if mods["Clowns-Processing"] then
+  -- Clowns creates this recipe in its data stage when Angel's zinc plate is on, which it
+  -- is with Bob's plates, and adds the unlock in its data-updates under the same check.
+  -- data/misc.lua turns the zinc plate off in between, so the recipe exists with no
+  -- unlock. It only takes zinc ingots, which Sea Block keeps, so unlock it as Clowns would.
+  if
+    data.raw.recipe["molten-aluminium-smelting-5"]
+    and data.raw.technology["advanced-magnesium-smelting-2"]
+    and not seablock.lib.findtechunlock("molten-aluminium-smelting-5")
+  then
+    seablock.lib.add_recipe_unlock("advanced-magnesium-smelting-2", "molten-aluminium-smelting-5")
+    if data.raw.technology["angels-zinc-smelting-3"] then
+      bobmods.lib.tech.add_prerequisite("advanced-magnesium-smelting-2", "angels-zinc-smelting-3")
+    end
+  end
 end

@@ -9,12 +9,16 @@ that loop fast and to catch a whole class of breakage in one pass.
 There are two layers, and `ci.sh` drives both:
 
 ```sh
-tools/loadtest/ci.sh              # fetch everything, then load two configurations
+tools/loadtest/ci.sh              # fetch everything, then load three configurations
 tools/loadtest/ci.sh --skip-fetch # reuse what is already in .loadtest/
 ```
 
-It loads the core pack and the core pack plus ScienceCostTweakerM, which
-exercises a lot of Sea Block code the core pack never reaches. A configuration
+It loads the core pack, the core pack plus ScienceCostTweakerM, which
+exercises a lot of Sea Block code the core pack never reaches, and the core
+pack plus `fixtures/sb-loadtest-mining-productivity`. That fixture is a
+stand-in mod, never published, that sets `seablock.trigger.mining_productivity`
+the way Seablock Mining does, so the path other mods opt in to is loaded by the
+real game and audited too. A configuration
 passes when the game creates a map, Sea Block logs no warnings of its own, and
 the audits come back clean. Other mods' warnings are theirs; failing on those
 would make this rig hostage to upstream noise.
@@ -173,6 +177,8 @@ Sea Block loads after the mod that trips it and cannot get in front of it.
 | `audit_tutorial_techs.lua` | every tutorial technology completes by research trigger rather than a science pack cost, and its trigger item has a recipe that is enabled or unlocked on the way there — the tutorial runs before any lab exists, and a pack cost there reads as a soft-lock |
 | `audit_hidden_prerequisites.lua` | no visible technology requires a hidden or disabled one — the tree does not draw hidden technologies, so the player sees every prerequisite green and is still told one is missing; there are no exceptions, so a technology behind content Sea Block cuts on purpose has to be hidden with it |
 | `audit_ingredient_sources.lua` | every ingredient of a visible recipe the player can unlock has a source: another usable recipe (recycling does not count), a map entity or resource, an offshore pump or water tile, a boiler, a burnt or rocket launch result, a technology reward, or the starting chest — the check that a recipe can be crafted once it is unlocked; gunmetal in the sniper rifle, Bob's 2.x nickel plate and the missing alien artifacts were all this shape |
+| `audit_mining_productivity_flag.lua` | the mining productivity technologies are hidden unless a mod set `seablock.trigger.mining_productivity`, and visible with their effects when one did — the flag is an interface only other mods use, so nothing else would notice it breaking; upstream lost it in a cleanup that way |
+| `audit_dead_techs.lua` | no visible technology is a dead end: one that nothing requires and whose every unlock the player gets anyway (the recipe is enabled, hidden, or unlocked by another usable technology) — the player pays the science and nothing changes; Wood processing 3, Charcoal processing 3 and Electric mining drill were this shape. Technologies whose reward is runtime behaviour (Bob's Inserters' adjustment techs) are listed in the script with the mod that checks them |
 | `check_references.py` | cross-references names written in Sea Block's source against a dump, so renamed prototypes show up all at once |
 
 `LOADTEST_STOP_AFTER=data` stops after a given stage, which is how you find

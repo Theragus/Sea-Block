@@ -32,11 +32,9 @@ for _, name in pairs({ "carbon", "coal", "angels-coal-crushed" }) do
   item.fuel_categories = nil
 end
 
--- Move charcoal processing 3 to purple science
--- Sodium carbonate is unusable before then
-bobmods.lib.tech.add_science_pack("angels-coal-processing-3", "chemical-science-pack", 1)
-bobmods.lib.tech.add_science_pack("angels-coal-processing-3", "production-science-pack", 1)
+-- Angel's 2.x unlocks only pellet coke with charcoal processing 3, and the
+-- moveeffect above follows it down to tier 2, which leaves tier 3 empty.
 bobmods.lib.tech.remove_prerequisite("angels-sodium-processing-2", "angels-coal-processing-3")
-bobmods.lib.tech.add_prerequisite("angels-coal-processing-3", "angels-sodium-processing-2")
+seablock.lib.hide_technology("angels-coal-processing-3")
 
 data.raw.recipe["angels-filter-coal"].localised_name = { "item-name.angels-filter-charcoal" }

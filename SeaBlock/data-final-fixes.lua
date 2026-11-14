@@ -21,6 +21,8 @@ require("data-final-fixes/logistics")
 require("data-final-fixes/icons")
 require("data-final-fixes/recipe")
 require("data-final-fixes/tech-tree")
+-- After Angel's last OV.execute(), which ran in angelssmelting's data-final-fixes
+require("data-final-fixes/merged-technologies")
 require("data-final-fixes/unobtainable_items")
 require("data-final-fixes/research-triggers")
 require("data-final-fixes/lab-coverage")

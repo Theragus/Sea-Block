@@ -26,10 +26,17 @@ bobmods.lib.tech.remove_prerequisite("bob-electronics", "bob-chemical-processing
 
 seablock.lib.hide_technology("oil-gathering")
 
-for i = 1, 4, 1 do
-  if data.raw.technology["mining-productivity-" .. i] then
-    seablock.lib.hide_technology("mining-productivity-" .. i)
-    data.raw.technology["mining-productivity-" .. i].effects = {}
+-- Public interface for other mods: setting seablock.trigger.mining_productivity = true in
+-- data.lua keeps these technologies and their effects. Seablock Mining (seablock-mining-tz)
+-- uses it to apply mining productivity to Angel's crystallizers. Upstream had this flag and
+-- dropped it in a cleanup because nothing inside Sea Block read it; it is restored for #38,
+-- and tools/loadtest/audit_mining_productivity_flag.lua now runs both paths so it stays.
+if not seablock.trigger.mining_productivity then
+  for i = 1, 4, 1 do
+    if data.raw.technology["mining-productivity-" .. i] then
+      seablock.lib.hide_technology("mining-productivity-" .. i)
+      data.raw.technology["mining-productivity-" .. i].effects = {}
+    end
   end
 end
 

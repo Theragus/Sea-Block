@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.18
+Date: 2026-11-14
+  Features:
+    - Other mods can again keep the mining productivity research. A mod that sets
+      seablock.trigger.mining_productivity = true in its data.lua gets the four mining
+      productivity technologies visible, with their effects. Upstream Sea Block had this
+      setting and dropped it; Seablock Mining needs it to put mining productivity on Angel's
+      crystallizers. Without such a mod, mining productivity stays hidden as before
+---------------------------------------------------------------------------------------------------
 Version: 2.1.17
 Date: 2026-11-14
   Bugfixes:

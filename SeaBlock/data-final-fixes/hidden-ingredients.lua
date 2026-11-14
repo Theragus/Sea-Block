@@ -7,9 +7,17 @@
 -- chargepad 2 and others asked for a plate nothing makes. Steel is what each of those
 -- recipes uses without nickel. Done across all recipes rather than by name, so a
 -- recipe Bob's moves to nickel later is covered too.
+--
+-- Gunmetal is the same story: data/misc.lua turns off Angel's gunmetal and
+-- data-updates/military.lua hides it, but Bob's Warfare still puts it in the sniper
+-- rifle in place of steel, and Sea Block unlocks the rifle with sb-sniper-rifle. Bob's
+-- also swaps copper plate for gunmetal in bullet and shotgun shell casings; those are
+-- hidden with the rest of the cut ammunition, so steel is right for every visible
+-- recipe that uses it.
 
 local substitutes = {
   ["bob-nickel-plate"] = "steel-plate",
+  ["bob-gunmetal-alloy"] = "steel-plate",
 }
 
 local names = {}

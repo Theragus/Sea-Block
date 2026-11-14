@@ -104,7 +104,7 @@ run_config() {
     "$HERE/audit_integrity.lua" "$HERE/audit_recipes.lua" "$HERE/audit_icons.lua" \
     "$HERE/audit_starting_items.lua" "$HERE/audit_milestones_preset.lua" "$HERE/audit_reachability.lua" \
     "$HERE/audit_trigger_techs.lua" "$HERE/audit_trigger_items.lua" "$HERE/audit_tutorial_techs.lua" \
-    "$HERE/audit_hidden_prerequisites.lua"
+    "$HERE/audit_hidden_prerequisites.lua" "$HERE/audit_ingredient_sources.lua"
 }
 
 failed=0

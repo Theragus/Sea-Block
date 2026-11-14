@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.1.12
-Date: 2026-10-08
+Version: 2.1.17
+Date: 2026-11-14
   Features:
     - Two Sea Block main menu scenes, built from script rather than a save
       - A new game's sand island and rock chest, the engineer landfilling a way out to the logo
@@ -11,6 +11,60 @@ Date: 2026-10-08
     - Removed the vanilla menu scenes built on ore patches and oil fields: burner city, early
       smelting, mining defense, oil pumpjacks and uranium processing. Sea Block deletes every
       resource, so they loaded with their drills and pumpjacks standing on bare ground
+---------------------------------------------------------------------------------------------------
+Version: 2.1.16
+Date: 2026-11-14
+  Bugfixes:
+    - Fixed a startup error with Clowns Extended Minerals installed
+      - Sea Block's recipes for Clowns ores, Alluvial deposit and Oil sands still used Angel's
+        names from before Factorio 2.0 for mineral sludge, solid sand, crushed stone and blue
+        cellulose fiber
+      - The crystallizing recipes are now named "Crystallizing to ..." again, and their recipe
+        groups sit under Angel's resource refining tab
+---------------------------------------------------------------------------------------------------
+Version: 2.1.15
+Date: 2026-11-14
+  Bugfixes:
+    - Sniper rifle can be crafted again. It uses 10 steel plate in place of gunmetal, as
+      Bob's sniper rifle does without gunmetal
+      - Sea Block hides gunmetal, but Bob's Warfare 2.x still put it in the rifle, so its
+        technology unlocked a recipe that nothing could supply
+    - Sniper rifle research now requires Brass processing and Glass smelting 1
+      - The rifle is made from brass gear wheels and glass, and its research only required
+        Military science pack, so it could be finished before the rifle could be made
+  Changes:
+    - Hidden Solid fuel from sour gas, and Flammables no longer unlocks it
+      - Angel's hides sour gas and the oil processing recipes that make it, so the recipe
+        could never run
+---------------------------------------------------------------------------------------------------
+Version: 2.1.14
+Date: 2026-11-14
+  Changes:
+    - With Circuit Processing, the first speed, efficiency and productivity modules no longer
+      wait for blue science
+      - Circuit Processing 2.x put a polished gem into each tier 1 module processor and made
+        Modules require Gem processing 3, which costs blue science in Sea Block. In 1.1 the
+        first modules needed no gems
+      - The gems now go into the tier 2 processors instead, four each, and Gem processing 3
+        moves to Modules 2. Tier 2 and later modules cost the same gems as before
+      - Agriculture module 1 still needs a polished topaz and now lists Gem processing 3 as a
+        prerequisite
+---------------------------------------------------------------------------------------------------
+Version: 2.1.13
+Date: 2026-11-14
+  Changes:
+    - Sea Block is now incompatible with Cargo Ships: Oil Rig
+      - Since Factorio 2.1 the Oil rig and Offshore oil come from that separate mod. Sea Block
+        has no ore or oil patches, so the mod failed on the missing Offshore oil. Cargo Ships and
+        Floating Electric Poles still work with Sea Block
+---------------------------------------------------------------------------------------------------
+Version: 2.1.12
+Date: 2026-11-04
+  Bugfixes:
+    - Fixed a crash when loading a save from the Factorio 2.0 version of Sea Block
+      - An old migration looked up the Steel and Electric chemical furnace technologies, which
+        no longer exist
+      - Another old migration called Angel's item replacement helpers without loading them
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.11
 Date: 2026-10-08

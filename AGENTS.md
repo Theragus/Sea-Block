@@ -26,8 +26,9 @@ major versions to Factorio, and Bob's and Angel's had moved to 2.1).
 - **Dependencies.** Hard: `base`, Bob's 3.0.x (`boblibrary`, `bobores`,
   `bobplates`, `bobelectronics`, `boblogistics`) and Angel's 2.1.x (`refining`,
   `petrochem`, `smelting`, `bioprocessing`). Many more are optional and gated
-  with `if mods["..."]`. `quality`, `space-age`, `alien-biomes` and
-  `angelsexploration` are declared incompatible. See `SeaBlock/info.json`.
+  with `if mods["..."]`. `quality`, `space-age`, `alien-biomes`,
+  `angelsexploration` and `cargo-ships-oil-rig` are declared incompatible. See
+  `SeaBlock/info.json`.
 - **Status.** It needs Factorio 2.1.20 or later, and loads and generates maps
   on 2.1.20 and 2.1.21 headless, with and without ScienceCostTweakerM. It has
   been play-tested to green science. Cliffs, migrations and balance are open
@@ -245,8 +246,10 @@ patches, so they keep working as Bob's, Angel's and the base game move:
   Angel's alien bio processing; `data-updates/military.lua` unhides the
   recipes Bob's Enemies hides when aliens drop no artifacts).
 - `hidden-ingredients.lua`: replaces ingredients Sea Block hid with what the
-  recipe used before; today `bob-nickel-plate` becomes `steel-plate`, the
-  plate Bob's swaps out whenever nickel plate exists.
+  recipe used before; today `bob-nickel-plate` and `bob-gunmetal-alloy` become
+  `steel-plate`, the plate Bob's swaps out whenever they exist.
+  `audit_ingredient_sources.lua` finds the next one: it fails on any visible,
+  unlockable recipe with an ingredient nothing produces.
 
 When adding a fix, prefer this shape over patching one prototype by name if the
 same breakage can recur elsewhere.
@@ -319,7 +322,7 @@ may be absent are guarded with `if data.raw.<type>["name"] then`.
 ## Versioning, changelog and releases
 
 - `SeaBlock/info.json` and `SeaBlockMetaPack/info.json` carry independent
-  versions that interleave on one line (currently `SeaBlock21` is at 2.1.12 and
+  versions that interleave on one line (currently `SeaBlock21` is at 2.1.17 and
   the pack at 2.1.1). Bump only what changed, to the next free number.
 - **Every version bump needs a changelog entry whose `Version:` equals
   `info.json`.** `tools/package.py` fails otherwise, and so does the release,
@@ -402,11 +405,33 @@ weekly.
 - The headless build never loads sprites, so `audit_icons.lua` is the only
   check that an `icon_size` matches the PNG.
 
-**In a sandbox without lua5.2 or network access** (true of the Claude Code
-cloud container at the time of writing: only `python3` is present), the full
-load test cannot run. What still can: `python3 tools/package.py --out <dir>`
-and `python3 tools/publish.py --tag vX.Y.Z --check-tag`, plus careful reading.
-Say so in the PR rather than claiming the load test passed.
+**In the Claude Code cloud container** only `python3` is preinstalled, but
+`apt-get install -y lua5.2` works, and github.com and the factorio.com headless
+download are reachable through its proxy. With `lua5.2` installed,
+`tools/loadtest/ci.sh` runs in full there, real game included, in a little over
+a minute (verified 2026-11 on 2.1.21). Run it before claiming the load test
+passed, and say in the PR if it could not run.
+
+The harness also answers "what does the player actually get" questions, since
+it leaves the final `data.raw` after every mod has run. Write a throwaway
+`audit_*`-shaped file in a scratch directory that prints the recipes or
+technologies in question and returns 0, then run it against a manifest
+(`--enable base --enable core` are needed explicitly):
+
+```sh
+python3 tools/loadtest/discover.py --root .loadtest/deps/factorio-data \
+  --root .loadtest/deps/bobsmods --root .loadtest/deps/angelsmods --root . \
+  --enable base --enable core --enable SeaBlock21 --enable <every other pack mod> \
+  --out /tmp/manifest.lua
+LOADTEST_DETERMINISTIC=1 lua5.2 tools/loadtest/run.lua /tmp/manifest.lua /tmp/query.lua
+```
+
+`ci.sh` also leaves `.loadtest/core-manifest.lua` and `.loadtest/sct-manifest.lua`
+behind, which can be used directly.
+
+In a sandbox with neither `lua5.2` nor network access, what still runs is
+`python3 tools/package.py --out <dir>` and
+`python3 tools/publish.py --tag vX.Y.Z --check-tag`, plus careful reading.
 
 ## Common tasks
 
@@ -425,8 +450,10 @@ Say so in the PR rather than claiming the load test passed.
 - **Hide content.** `seablock.lib.hide(type, name)` for items and entities,
   `bobmods.lib.recipe.hide` for recipes, `seablock.lib.hide_technology` for
   techs. Hidden things are excluded from the reachability audit; disabled but
-  visible things must have an unlock. `lab-coverage.lua` still has to be happy
-  with a hidden technology's pack set.
+  visible things must have an unlock. Hiding an item or fluid strands every
+  visible recipe that still uses it; `audit_ingredient_sources.lua` lists them,
+  and each needs a substitute (`hidden-ingredients.lua`) or hiding too.
+  `lab-coverage.lua` still has to be happy with a hidden technology's pack set.
 - **Change the starting chest.** `starting-items.lua` only. It is read both at
   runtime and in the data stage (for YAFC via `data.data_crawler`), and
   `audit_starting_items.lua` checks every name exists.

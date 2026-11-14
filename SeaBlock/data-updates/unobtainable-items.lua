@@ -145,10 +145,6 @@ seablock.lib.hide_item("bob-zinc-plate")
 bobmods.lib.recipe.hide("bob-zinc-plate")
 bobmods.lib.tech.remove_recipe_unlock("bob-zinc-processing", "bob-zinc-plate")
 
-if mods["cargo-ships"] then
-  seablock.lib.hide_item("oil_rig")
-end
-
 -- Hide the farm environment kits
 seablock.lib.hide("item", "angels-desert-upgrade")
 seablock.lib.hide("item", "angels-swamp-upgrade")

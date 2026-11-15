@@ -9,7 +9,7 @@ that loop fast and to catch a whole class of breakage in one pass.
 There are two layers, and `ci.sh` drives both:
 
 ```sh
-tools/loadtest/ci.sh              # fetch everything, then load three configurations
+tools/loadtest/ci.sh              # fetch everything, then load four configurations
 tools/loadtest/ci.sh --skip-fetch # reuse what is already in .loadtest/
 ```
 
@@ -18,7 +18,8 @@ exercises a lot of Sea Block code the core pack never reaches, and the core
 pack plus `fixtures/sb-loadtest-mining-productivity`. That fixture is a
 stand-in mod, never published, that sets `seablock.trigger.mining_productivity`
 the way Seablock Mining does, so the path other mods opt in to is loaded by the
-real game and audited too. A configuration
+real game and audited too. The fourth is the core pack plus CircuitProcessing,
+which is in the metapack and rewrites Bob's circuits and modules. A configuration
 passes when the game creates a map, Sea Block logs no warnings of its own, and
 the audits come back clean. Other mods' warnings are theirs; failing on those
 would make this rig hostage to upstream noise.
@@ -79,8 +80,13 @@ lua5.2 run.lua /tmp/manifest.lua audit_integrity.lua
 
 Pass `--order-from-log` a `factorio-current.log` from a real run. Load order
 decides which mod sees which data first, and the game's order is the one that
-matters; the local topological sort in `discover.py` is only a fallback and
-does differ in places.
+matters. Without it, `discover.py` sorts the way the game does, by dependency
+depth (the longest chain of enabled mods that must load first) and then by
+name, case-insensitively in natural order; on the CI configurations that gives
+the logged order exactly. Mods with no Lua (the Angel's graphics packs) never
+appear in the log, so their place is unconfirmed, and harmless. An earlier
+plain topological sort ran Bob's Personal Equipment after Angel's, which
+reported eight missing ingredients and hidden prerequisites the game never has.
 
 The harness is not a substitute for the game. It does not validate prototypes,
 and it stubs the graphics metadata that `factorio-data` strips. Treat a

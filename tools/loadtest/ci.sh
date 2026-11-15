@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 #
-# Fetch the dependencies, then load Sea Block three ways: the core pack; the
+# Fetch the dependencies, then load Sea Block four ways: the core pack; the
 # core pack plus ScienceCostTweakerM, which exercises a large amount of
 # Sea Block-specific code that the core pack never touches; and the core pack
 # plus a fixture mod that sets seablock.trigger.mining_productivity, the opt-in
-# other mods use to keep the mining productivity technologies.
+# other mods use to keep the mining productivity technologies; and the core pack
+# plus CircuitProcessing, the one metapack mod on GitHub that rewrites Bob's
+# circuit and module recipes underneath Sea Block.
 #
 # Runs the same locally as in CI. Everything lands under $WORK (default
 # .loadtest/), which is safe to delete.
@@ -44,6 +46,7 @@ if [ "${1:-}" != "--skip-fetch" ]; then
   GIT_LFS_SKIP_SMUDGE=1 clone_at "$BOBSMODS_REPO" "$BOBSMODS_REF" "$DEPS/bobsmods"
   GIT_LFS_SKIP_SMUDGE=1 clone_at "$ANGELS_REPO" "$ANGELS_REF" "$DEPS/angelsmods"
   GIT_LFS_SKIP_SMUDGE=1 clone_at "$SCT_REPO" "$SCT_REF" "$DEPS/sct"
+  GIT_LFS_SKIP_SMUDGE=1 clone_at "$CIRCUITPROCESSING_REPO" "$CIRCUITPROCESSING_REF" "$DEPS/circuitprocessing"
 
   if [ ! -x "$GAME/bin/x64/factorio" ]; then
     echo "  downloading Factorio $FACTORIO_VERSION headless"
@@ -57,7 +60,7 @@ if [ "${1:-}" != "--skip-fetch" ]; then
 fi
 
 ROOTS=(--root "$DEPS/factorio-data" --root "$DEPS/bobsmods" --root "$DEPS/angelsmods"
-       --root "$DEPS/sct" --root "$REPO" --root "$HERE/fixtures")
+       --root "$DEPS/sct" --root "$DEPS/circuitprocessing" --root "$REPO" --root "$HERE/fixtures")
 
 # The pack as the metapack defines it, minus the mods that are not on GitHub.
 CORE_PACK=(boblibrary bobores bobplates bobelectronics boblogistics bobassembly
@@ -115,6 +118,7 @@ failed=0
 run_config core "${CORE_PACK[@]}" || failed=1
 run_config sct "${CORE_PACK[@]}" ScienceCostTweakerM || failed=1
 run_config mining-flag "${CORE_PACK[@]}" sb-loadtest-mining-productivity || failed=1
+run_config circuitprocessing "${CORE_PACK[@]}" CircuitProcessing || failed=1
 
 echo
 if [ "$failed" -eq 0 ]; then

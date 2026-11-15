@@ -385,13 +385,13 @@ Block logs no warnings, and the whole-graph audits pass". Read
 `tools/loadtest/README.md` for the full picture; the short version:
 
 ```sh
-tools/loadtest/ci.sh               # fetch factorio-data, Bob's, Angel's, SCT and the headless build, then load
+tools/loadtest/ci.sh               # fetch factorio-data, Bob's, Angel's, SCT, CircuitProcessing and the headless build, then load
 tools/loadtest/ci.sh --skip-fetch  # reuse what is already under .loadtest/
 ```
 
-It loads three configurations, the core pack, core plus ScienceCostTweakerM,
-and core plus the `fixtures/sb-loadtest-mining-productivity` stand-in mod, and
-runs every audit after each. Needs bash, python3, **lua5.2**, curl, git and
+It loads four configurations, the core pack, core plus ScienceCostTweakerM,
+core plus the `fixtures/sb-loadtest-mining-productivity` stand-in mod, and core
+plus CircuitProcessing, and runs every audit after each. Needs bash, python3, **lua5.2**, curl, git and
 network access to factorio.com and github.com. Everything lands in
 `.loadtest/` (gitignored). CI runs the same script on push, pull request and
 weekly.
@@ -442,8 +442,11 @@ python3 tools/loadtest/discover.py --root .loadtest/deps/factorio-data \
 LOADTEST_DETERMINISTIC=1 lua5.2 tools/loadtest/run.lua /tmp/manifest.lua /tmp/query.lua
 ```
 
-`ci.sh` also leaves `.loadtest/core-manifest.lua` and `.loadtest/sct-manifest.lua`
-behind, which can be used directly.
+`ci.sh` also leaves a `.loadtest/<configuration>-manifest.lua` for each
+configuration (`core`, `sct`, `mining-flag`, `circuitprocessing`), in the order
+the game logged, which can be used directly. `discover.py` without
+`--order-from-log` sorts the way the game does (dependency depth, then name);
+if a hand-built manifest and a `ci.sh` one disagree, compare the order first.
 
 In a sandbox with neither `lua5.2` nor network access, what still runs is
 `python3 tools/package.py --out <dir>` and

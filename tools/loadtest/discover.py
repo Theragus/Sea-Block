@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 """Scan mod directories, resolve load order, emit a Lua manifest.
 
-Factorio orders mods topologically by their declared dependencies and falls
-back to alphabetical order for mods that do not constrain each other. This
-reproduces that so the harness runs data stages in the same order the game
-would.
+Factorio orders mods by dependency depth first, the length of the longest chain
+of enabled mods that must load before each one, and by name second, in a
+case-insensitive natural order. This reproduces that so the harness runs data
+stages in the same order the game would.
+
+A plain topological sort is not enough: it is a valid order, but not the
+game's, and some mods only behave when they run in the game's order. Bob's
+Personal Equipment adds Bob's heavy water and fuel cells to its recipes in its
+data-updates, and Angel's swaps them for its own in a later data-updates; a
+topological sort with alphabetical tie-breaks ran Angel's first and left the
+recipes needing items nothing makes.
 """
 
 import argparse
@@ -57,7 +64,7 @@ def find_mods(roots):
 
 
 def resolve(mods, enabled):
-    """Topologically sort `enabled`, reporting unmet hard deps and conflicts."""
+    """Order `enabled` the way the game does, reporting unmet hard deps and conflicts."""
     problems = []
     selected = {n: mods[n] for n in enabled if n in mods}
     for name in enabled:
@@ -72,31 +79,29 @@ def resolve(mods, enabled):
             elif not dep["optional"] and dep["name"] not in selected:
                 problems.append(f"{mod['name']} requires {dep['name']}, which is not enabled")
 
-    order, visiting, done = [], set(), set()
+    depth, visiting = {}, set()
 
-    def visit(name):
-        if name in done:
-            return
+    def depth_of(name):
+        if name in depth:
+            return depth[name]
         if name in visiting:
             problems.append(f"dependency cycle involving {name}")
-            return
+            return 0
         visiting.add(name)
-        mod = selected.get(name)
-        if mod:
-            for dep in sorted(mod["deps"], key=lambda d: d["name"]):
-                if dep["ordering"] and not dep["incompatible"] and dep["name"] in selected:
-                    visit(dep["name"])
+        d = 0
+        if name != "core":
+            for dep in selected[name]["deps"]:
+                if dep["ordering"] and dep["name"] in selected and dep["name"] != name:
+                    d = max(d, depth_of(dep["name"]) + 1)
         visiting.discard(name)
-        done.add(name)
-        if mod:
-            order.append(name)
+        depth[name] = d
+        return d
 
-    # core and base always come first, then everything else alphabetically.
-    for name in ("core", "base"):
-        if name in selected:
-            visit(name)
-    for name in sorted(selected):
-        visit(name)
+    def natural_key(name):
+        return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", name.lower())]
+
+    # core always comes first; every other mod depends on base, directly or not.
+    order = sorted(selected, key=lambda n: (n != "core", depth_of(n), natural_key(n)))
 
     return order, problems
 

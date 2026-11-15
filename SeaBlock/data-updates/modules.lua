@@ -25,9 +25,24 @@ if mods["CircuitProcessing"] and mods["bobmodules"] and data.raw.technology["bob
   if moved then
     bobmods.lib.tech.remove_prerequisite("modules", "bob-gem-processing-3")
     bobmods.lib.tech.add_prerequisite("bob-modules-2", "bob-gem-processing-3")
-    -- Circuit Processing gives Agriculture module 1 a polished topaz, and its
-    -- technology found Gem processing 3 only through Modules.
-    if data.raw.technology["angels-bio-yield-module"] then
+    -- Circuit Processing also puts five polished topaz straight into
+    -- Agriculture module 1, which kept it behind blue science after the other
+    -- first modules moved forward. Move them to Agriculture module 2, which
+    -- needs blue science anyway and uses four tier 1 modules, so tier 2 and
+    -- later still cost the same topaz. If the topaz is not where expected,
+    -- give the technology Gem processing 3, which it found only through Modules.
+    local bio1 = data.raw.recipe["angels-bio-yield-module"]
+    local bio2 = data.raw.recipe["angels-bio-yield-module-2"]
+    local topaz
+    for _, ingredient in pairs(bio1 and bio1.ingredients or {}) do
+      if ingredient.name == "bob-topaz-5" then
+        topaz = ingredient.amount
+      end
+    end
+    if topaz and bio2 then
+      bobmods.lib.recipe.remove_ingredient(bio1.name, "bob-topaz-5")
+      bobmods.lib.recipe.add_ingredient(bio2.name, { type = "item", name = "bob-topaz-5", amount = 4 * topaz })
+    elseif data.raw.technology["angels-bio-yield-module"] then
       bobmods.lib.tech.add_prerequisite("angels-bio-yield-module", "bob-gem-processing-3")
     end
   end

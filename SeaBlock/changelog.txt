@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.20
+Date: 2026-11-15
+  Changes:
+    - With Circuit Processing, Agriculture module 1 no longer waits for blue science
+      - Circuit Processing puts five polished topaz into Agriculture module 1, and polished
+        gems come after blue science in Sea Block. 2.1.14 moved the other first modules
+        forward but left this one behind
+      - The topaz now goes into Agriculture module 2 instead, twenty each, so tier 2 and later
+        agriculture modules cost the same topaz as before
+---------------------------------------------------------------------------------------------------
 Version: 2.1.19
 Date: 2026-11-14
   Bugfixes:

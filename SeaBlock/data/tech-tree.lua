@@ -88,6 +88,10 @@ seablock.lib.add_recipe_unlock("military", "pistol", 1)
 seablock.lib.add_recipe_unlock("military", "firearm-magazine", 3)
 seablock.lib.add_recipe_unlock("military", "light-armor", 4)
 seablock.lib.add_recipe_unlock("military", "repair-pack", nil)
+-- Factorio 2.0 gives the repair pack a technology of its own, which has nothing
+-- left to unlock once Military has it. Repair pack 2, which requires it, is
+-- pointed at Military by data-final-fixes/hidden-prerequisites.lua.
+seablock.lib.hide_technology("repair-pack")
 
 bobmods.lib.tech.add_prerequisite("gun-turret", "military")
 bobmods.lib.tech.add_prerequisite("stone-wall", "military")

@@ -41,6 +41,13 @@ seablock.lib.moveeffect("angels-water-gas-shift-1", "angels-basic-chemistry", "a
 seablock.lib.moveeffect("angels-water-gas-shift-2", "angels-basic-chemistry", "angels-basic-chemistry-2")
 bobmods.lib.tech.add_prerequisite("angels-nickel-smelting-1", "angels-basic-chemistry-2")
 
+-- Bob's Plates gives the chemical plant a technology of its own, but Angel's
+-- already unlocks the plant with Basic chemistry, which is cheaper and comes first.
+-- That left Chemical plant with nothing to give. Lubricant, the only visible
+-- technology that requires it, is pointed at Basic chemistry by
+-- data-final-fixes/hidden-prerequisites.lua.
+seablock.lib.hide_technology("bob-chemical-plant")
+
 -- Make Basic Chemistry depend on Wood Processing 2
 bobmods.lib.tech.add_prerequisite("angels-basic-chemistry", "angels-bio-wood-processing-2")
 

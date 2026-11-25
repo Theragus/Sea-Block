@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.21
+Date: 2026-11-25
+  Bugfixes:
+    - Hid the Chemical plant technology, which unlocked nothing new
+      - Basic chemistry already unlocks the chemical plant earlier and for red science only,
+        so researching Chemical plant gave the player nothing
+      - Lubricant now requires Basic chemistry instead
+---------------------------------------------------------------------------------------------------
 Version: 2.1.20
 Date: 2026-11-15
   Changes:

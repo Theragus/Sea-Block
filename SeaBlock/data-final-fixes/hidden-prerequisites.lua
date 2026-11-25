@@ -38,6 +38,9 @@ local successors = {
   ["angels-coal-processing-3"] = "angels-coal-processing-2",
   ["angels-bio-wood-processing-3"] = false,
   ["electric-mining-drill"] = false,
+  -- data-updates/petrochem.lua hides it: Basic chemistry already unlocks the
+  -- chemical plant. Lubricant requires it.
+  ["bob-chemical-plant"] = "angels-basic-chemistry",
 }
 
 local function usable(name)

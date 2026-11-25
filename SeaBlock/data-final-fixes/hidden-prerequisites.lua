@@ -41,6 +41,9 @@ local successors = {
   -- data-updates/petrochem.lua hides it: Basic chemistry already unlocks the
   -- chemical plant. Lubricant requires it.
   ["bob-chemical-plant"] = "angels-basic-chemistry",
+  -- data/tech-tree.lua hides it: Military unlocks the repair pack. Bob's Repair
+  -- pack 2 requires it.
+  ["repair-pack"] = "military",
 }
 
 local function usable(name)
